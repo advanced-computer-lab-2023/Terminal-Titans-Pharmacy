@@ -39,6 +39,11 @@ app.get("/home", (req, res) => {
 }
 );
 
+app.get("", (req, res) => {
+  res.render('Home.ejs')
+}
+);
+
 
 //view engine
 

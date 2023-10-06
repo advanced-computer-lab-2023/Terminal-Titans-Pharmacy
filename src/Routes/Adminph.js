@@ -168,7 +168,7 @@ const getListMed = async (req, res) => {
 const getPatient = async (req, res) => {
    const Name = req.query.Name.toLowerCase();
    if (!Name) {
-     return res.status(400).send({ message: 'user not filled ' });
+     return res.status(400).send({ message: 'user not filled' });
    }
  
    try {
@@ -183,4 +183,34 @@ const getPatient = async (req, res) => {
    }
  }
  router.get('/getPatient', getPatient);
+
+ //filter 
+ const filterMed = async (req, res) => {
+//     const medicaluse = req.query.MedicalUse.toLowerCase();
+//     if (!medicaluse) {
+//       return res.status(400).send({ message: 'user not filled' });
+//     }
+//     try{
+//     const filteredMeds = await MedicineModel.findOne({ medicaluse });
+//     if (!medicaluse) {
+//       return res.status(400).send({ message: 'msh ' });
+//     }
+//     res.status(200).send(filteredMeds);
+//   } catch (err) {
+//     res.status(500).send({ message: err.message });
+//   }
+const MedicalUse = req.query.MedicalUse.toLowerCase();
+if (!MedicalUse) {
+  return res.status(400).send({ message: 'Please fill the input' });
+}
+
+const Medicines = await MedicineModel.find({ MedicalUse });
+if (!Medicines.length) {
+  return res.status(400).send({ message: 'No medicines found with the specified medical use.' });
+}
+
+res.status(200).send(Medicines)
+  
+ }
+ router.get('/filterMedical', filterMed);
 module.exports = router;
