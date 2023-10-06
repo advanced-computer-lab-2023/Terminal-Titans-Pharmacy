@@ -24,7 +24,28 @@
     <h1>get Patient</h1>
     <form method="get"  action="/Admin/getPatient">
       Name: <br>
-        <input type="text" name="name"> <br>
+        <input type="text" name="Name"> <br>
       <button type="submit">Submit</button><br><br>  </form>
+</body>
+<body>
+  <h1>get Allmedicines</h1>
+  <form method="get"  action="/Admin/getAllMedicine">
+    <button type="submit">Submit</button><br><br>  </form>
+</body>
+<body>
+  <h1>Search for Med</h1>
+  <form method="get"  action="/Admin/getMedicine">
+    Name: <br>
+      <input type="text" name="Name"> <br>
+    <button type="submit">Submit</button><br><br>  </form>
+</body>
+<body>
+  <h1>Delete Admin</h1>
+
+  <form action="Admin/deleteAdmin" method="DELETE">
+    <input type="text" name="Username" placeholder="Username">
+    <button type="submit">Delete</button>
+  </form>
+  
 </body>
 </html>

@@ -4,8 +4,11 @@ const patientModel = require('../Models/Patient.js');
 const MedicineModel = require('../Models/Medicine.js');
 const express = require('express');
 const router = express.Router();
+
 //App variables
 const app = express();
+app.use(express.urlencoded({extended: false}))
+
 
 // router.get('/createAdmin', (req, res) => {
 //    res.render('Adminview.ejs')
@@ -64,30 +67,54 @@ const createAdmin = async (req, res) => {
 router.post('/createAdmin', createAdmin);
 
 const deleteAdmin = async (req, res) => {
-   const Username = req.body.Username;
-   //const pos = 'Admin';
-   const Dph =  await phModel.findOneAndRemove(Username);
-  // const PositionAdmin = await adminModel.findOne(pos)
-   const Dpatient =  await patientModel.findOneAndRemove(Username);
-   // || !Dpatient
-
-
-   if(!Dph){
-      res.status(404).json({message : "user not found in Pharma"})
+   const username = req.query.Username.toLowerCase();
+   if (!username) {
+     return res.status(400).send({ message: 'user not filled' });
    }
-   else if (!Dpatient){
-     res.status(404).json({message : "user not found in patient"})
+ 
+   try {
+     const dph = await phModel.findOneAndRemove({ username });
+     const dPatient = await patientModel.findOneAndRemove({ username });
+ 
+     if (!dph && !dPatient) {
+       res.status(404).json({ message: 'user not found' });
+     } else {
+       res.sendStatus(204);
+     }
+   } catch (error) {
+     res.status(500).json({ message: 'Failed to delete user' });
    }
-  else{
-     res.status(204).send({message : "Deleted success"});}
-  }
+ };
+ router.get('/deleteAdmin', async (req, res) => {
+   // Handle GET requests.
+   const username = req.query.Username.toLowerCase();
 
-  router.delete('/deleteAdmin', deleteAdmin)
+   // If the username is not present, return a 400 Bad Request response.
+   if (!username) {
+     return res.status(400).json({ message: 'Username is required.' });
+   }
+ 
+   // Try to find the admin in the database.
+   const admin = await adminModel.findOne({ username });
+ 
+   // If the admin is not found, return a 404 Not Found response.
+   if (!admin) {
+     return res.status(404).json({ message: 'Admin not found.' });
+   }
+ });
+ 
+ router.delete('/deleteAdmin', deleteAdmin);
+
+
 //search for medicine based on name
 const getMedicine = async (req, res) => {
+   const Name = req.query.Name.toLowerCase();
+   if (!Name) {
+     return res.status(400).send({ message: 'Please fill the input' });
+   }
    try{
-      const Name = req.body;
-      const Medicines= await MedicineModel.findOne(Name);
+     // const Name = req.body;
+      const Medicines= await MedicineModel.findOne({Name});
       if (!Medicines){
         return(res.status(400).send({message: "msh "}));
       }
@@ -118,9 +145,12 @@ const getListMed = async (req, res) => {
  router.get('/getAllMedicine', getListMed);
 //view a pharmacist's information
  const getPharmacist = async (req, res) => {
+   const Name = req.query.Name.toLowerCase();
+   if (!Name) {
+     return res.status(400).send({ message: 'user not filled ' });
+   }
   try{
-     const Name = req.body.Name;
-     const Pharma= await phModel.findOne(Name);
+     const Pharma= await phModel.findOne({Name});
      if (!Pharma){
       return(res.status(400).send({message: "msh "}));
      }
@@ -136,22 +166,21 @@ const getListMed = async (req, res) => {
 
 //view a patients's information
 const getPatient = async (req, res) => {
-   const Name = req.body.name;
-   if(!req.body.name){
-      return(res.status(400).send({message: "user not filled "}));
+   const Name = req.query.Name.toLowerCase();
+   if (!Name) {
+     return res.status(400).send({ message: 'user not filled ' });
+   }
+ 
+   try {
+     const Patient = await patientModel.findOne({ Name });
+     if (!Patient) {
+       return res.status(400).send({ message: 'msh ' });
      }
-  try{
-     
-     const Patient= await patientModel.findOne({Name});
-     if (!Patient){
-      return(res.status(400).send({message: "msh "}));
-     }
+ 
      res.status(200).json(Patient);
-     }
-  
-  catch(error){
-     res.status(500).json({message:"Failed getPatient"})
-  }
+   } catch (error) {
+     res.status(500).json({ message: 'Failed getPatient' });
+   }
  }
  router.get('/getPatient', getPatient);
 module.exports = router;

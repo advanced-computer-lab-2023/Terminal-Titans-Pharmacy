@@ -46,7 +46,7 @@ app.get("/home", (req, res) => {
 // #Routing to userController here
 
 app.use(express.json())
-app.use(express.urlencoded({extended: true}))
+app.use(express.urlencoded({extended: false}))
 app.use('/Admin', Admin);
 
 app.get('/Admin', (req, res) => {
