@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <h1>Edit Medicine</h1>
+  <form method="PUT"  action="/Pharma/editMedicine">
+    Medicine Name : <br>
+    <input type="text" name="medicineName"> <br>
+    New Active ingredients: <br>
+    <input type="text" name="newIngredients"> <br>
+    New Price: <br>
+   <input type="text" name="newPrice"> <br> 
+   New Quantity: <br>
+   <input type="text" name="newQuantity"> <br> 
+    <button type="submit">Submit</button><br><br>
+  <div id="edit">
+
+  </div>
+  </form>
+</body>
+  <h1>Filter Medicine</h1>
+
+  <form action="Admin/filterMedical" method="get">
+    <input type="text" name="MedicalUse" placeholder="MedicalUse">
+    <button type="submit">Submit</button>
+  </form>
+  
+</body>
+</html>
