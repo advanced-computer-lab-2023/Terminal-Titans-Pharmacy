@@ -1,11 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const GenderEnum = {
-    MALE: 'Male',
-    FEMALE: 'Female',
-  };
-
 const PatientSchema = new Schema({
     Username: {
       type: String,
@@ -25,7 +20,7 @@ const PatientSchema = new Schema({
         required: true
     },
     Gender: {
-        type: GenderEnum,
+        type: String,
         required: true
     },
     HourlyRate: {

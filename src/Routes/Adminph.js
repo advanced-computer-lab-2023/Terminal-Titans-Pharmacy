@@ -9,38 +9,9 @@ const router = express.Router();
 const app = express();
 app.use(express.urlencoded({extended: false}))
 
-
-// router.get('/createAdmin', (req, res) => {
-//    res.render('Adminview.ejs')
-// })
-
-// const createAdmin = async (req, res) => {
-//    const Username = req.body.username;
-//    const Pass = req.body.password;
-//    try {
-//      // const { Username, Pass } = req.body;
-//       const Position = 'Admin';
-//       const userexist = await adminModel.findOne({ Username });
-//       if (!userexist) {
-//          const admin = new adminModel({ Username, Pass, Position });
-//          const Nadmin = await admin.save();
-//          res.status(201).json(Nadmin);
-
-//          //throw new Error("Username already exist");
-//       }
-//       else {
-//          res.status(500).json({ message: 'Username already exist' });
-//       }
-//    }
-//    catch (error) {
-//       res.status(500).json({ message: 'failed create Admin' })
-//    }
-// }
-
-// router.post('/createAdmin', createAdmin);
 const createAdmin = async (req, res) => {
-   const Username = req.body.Username;
-   const Pass = req.body.Pass;
+   const Username = req.body.Username.toLowerCase();
+   const Pass = req.body.Pass.toLowerCase();
   const Position = 'Admin';
   if(!req.body.Username){
     return(res.status(400).send({message: "user not filled "}));
@@ -186,19 +157,6 @@ const getPatient = async (req, res) => {
 
  //filter 
  const filterMed = async (req, res) => {
-//     const medicaluse = req.query.MedicalUse.toLowerCase();
-//     if (!medicaluse) {
-//       return res.status(400).send({ message: 'user not filled' });
-//     }
-//     try{
-//     const filteredMeds = await MedicineModel.findOne({ medicaluse });
-//     if (!medicaluse) {
-//       return res.status(400).send({ message: 'msh ' });
-//     }
-//     res.status(200).send(filteredMeds);
-//   } catch (err) {
-//     res.status(500).send({ message: err.message });
-//   }
 const MedicalUse = req.query.MedicalUse.toLowerCase();
 if (!MedicalUse) {
   return res.status(400).send({ message: 'Please fill the input' });
