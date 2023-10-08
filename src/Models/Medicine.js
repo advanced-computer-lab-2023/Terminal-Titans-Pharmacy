@@ -19,9 +19,13 @@ const MedicineSchema = new Schema({
     type: Array,
     required: true
   },
-  MedicalUse:{
+  MedicalUse: {
     type: Array,
     required: true
+  },
+  Picture: {
+    type: Buffer,
+    required: false
   }
 }, { timestamps: true });
 

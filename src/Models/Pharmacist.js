@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const userModel=require('./user.js')
 const PharmacistSchema = new Schema({
+    Username: {
+      type: String,
+      required: true,
+      unique : true
+    },
     Name: {
       type: String,
       required: true

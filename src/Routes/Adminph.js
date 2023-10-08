@@ -2,8 +2,10 @@ const adminModel = require('../Models/Admin.js');
 const phModel = require('../Models/Pharmacist.js');
 const patientModel = require('../Models/Patient.js');
 const MedicineModel = require('../Models/Medicine.js');
+const ReqPharmModel = require('../Models/requestedPharmacist.js');
 const express = require('express');
 const router = express.Router();
+
 
 //App variables
 const app = express();
@@ -173,4 +175,17 @@ res.status(200).send(Medicines)
   
  }
  router.get('/filterMedical', filterMed);
+
+
+const viewReqPharm = async(req,res) =>{
+try{
+const pharms = await ReqPharmModel.find();
+res.status(200).json(pharms);
+}
+catch(error){
+  res.status(500).json({message:"Failed view req pharms"})
+}
+}
+router.get('/viewReqPharm', viewReqPharm);
+
 module.exports = router;

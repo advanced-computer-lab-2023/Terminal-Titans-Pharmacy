@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Patient Page</title>
+</head>
+
+<body>
+  <h1>View the list of all available medicines</h1>
+  <form method="get"  action="/Patient/getAllMedicine">
+    <button type="submit">Submit</button><br><br>  </form>
+</body>
+<body>
+  <h1>Search for a medicine using name</h1>
+  <form method="get"  action="/Patient/getMedicine">
+    Name: <br>
+      <input type="text" name="Name"> <br>
+    <button type="submit">Submit</button><br><br>  </form>
+</body>
+
+<body>
+  <h1>Filter Medicine</h1>
+
+  <form method="get" action="/Patient/filterMedical">
+    <input type="text" name="MedicalUse" placeholder="MedicalUse">
+    <button type="submit">Submit</button>
+  </form>
+  
+</body>
+</html>

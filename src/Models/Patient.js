@@ -3,6 +3,11 @@ const Schema = mongoose.Schema;
 const userModel=require('./user');
 
 const PatientSchema = new Schema({
+    Username: {
+      type: String,
+      required: true,
+      unique : true
+    },
     Name: {
       type: String,
       required: true
