@@ -14,6 +14,7 @@ const port = process.env.PORT || "8000";
 
 const Admin = require('./Routes/Adminph.js');
 //const Pharmacist = require('./Routes/PharmacistController.js');
+const RegisterModule=require('./Routes/RegisterRoute.js')
 const ejs = require('ejs');
 // #Importing the userController
 
@@ -55,6 +56,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 app.use('/Admin', Admin);
 //app.use('/Pharmacist', Pharmacist);
+app.use('/register',RegisterModule)
 
 app.get('/Admin', (req, res) => {
   res.render('AdminPage.ejs')
