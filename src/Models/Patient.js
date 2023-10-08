@@ -5,6 +5,7 @@ const PatientSchema = new Schema({
     Username: {
       type: String,
       required: true,
+      unique : true
     },
     Name: {
       type: String,
@@ -19,23 +20,32 @@ const PatientSchema = new Schema({
         type: String,
         required: true
     },
+    DateOfBirth: {
+      type : Date,
+      required: true
+    },
     Gender: {
         type: String,
         enum: ['Male', 'Female', 'Other'],
         required: true
     },
-    HourlyRate: {
+    MobileNumber: {
         type: Number,
         required: true 
     },
-    Affiliation: {
-        type: String,
-        required: true
+    EmergencyContactFullName: {
+      type : String,
+      required: true
     },
-    EducationalBackground: {
-        type: String,
-        required: true 
+    EmergencyContactMobileNumber: {
+      type : Number,
+      required: true
+    },
+    EmergencyContactRelationToThePatient: {
+      type : String,
+      required: true
     }
+
   }, { timestamps: true });
   
   const Patient = mongoose.model('Patient', PatientSchema);

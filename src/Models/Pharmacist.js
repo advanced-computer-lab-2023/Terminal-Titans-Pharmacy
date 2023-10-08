@@ -5,6 +5,7 @@ const PharmacistSchema = new Schema({
     Username: {
       type: String,
       required: true,
+      unique : true
     },
     Name: {
       type: String,
