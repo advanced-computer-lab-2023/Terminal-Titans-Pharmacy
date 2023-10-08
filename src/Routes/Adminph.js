@@ -38,19 +38,19 @@ const createAdmin = async (req, res) => {
 router.post('/createAdmin', createAdmin);
 
 const deleteAdmin = async (req, res) => {
-   const username = req.query.Username.toLowerCase();
-   if (!username) {
+   const Username = req.query.Username.toLowerCase();
+   if (!Username) {
      return res.status(400).send({ message: 'user not filled' });
    }
  
    try {
-     const dph = await phModel.findOneAndRemove({ username });
-     const dPatient = await patientModel.findOneAndRemove({ username });
+     const dph = await phModel.findOneAndRemove({ Username });
+     const dPatient = await patientModel.findOneAndRemove({ Username });
  
      if (!dph && !dPatient) {
        res.status(404).json({ message: 'user not found' });
      } else {
-       res.sendStatus(204);
+      res.status(200).json({ message: 'Admin has deleted successfully.' });
      }
    } catch (error) {
      res.status(500).json({ message: 'Failed to delete user' });
@@ -58,19 +58,21 @@ const deleteAdmin = async (req, res) => {
  };
  router.get('/deleteAdmin', async (req, res) => {
    // Handle GET requests.
-   const username = req.query.Username.toLowerCase();
+   const Username = req.query.Username.toLowerCase();
 
    // If the username is not present, return a 400 Bad Request response.
-   if (!username) {
+   if (!Username) {
      return res.status(400).json({ message: 'Username is required.' });
    }
  
    // Try to find the admin in the database.
-   const admin = await adminModel.findOne({ username });
- 
-   // If the admin is not found, return a 404 Not Found response.
-   if (!admin) {
-     return res.status(404).json({ message: 'Admin not found.' });
+   const dph = await phModel.findOneAndRemove({ Username });
+   const dPatient = await patientModel.findOneAndRemove({ Username });
+
+   if (!dph && !dPatient) {
+     res.status(404).json({ message: 'user not found' });
+   } else {
+    res.status(200).json({ message: 'Admin has deleted successfully.' });
    }
  });
  
@@ -87,7 +89,7 @@ const getMedicine = async (req, res) => {
      // const Name = req.body;
       const Medicines= await MedicineModel.findOne({Name});
       if (!Medicines){
-        return(res.status(400).send({message: "msh "}));
+        return(res.status(400).send({message: "No Medicine with this name"}));
       }
       res.status(200).json(Medicines);
       }
@@ -121,9 +123,9 @@ const getListMed = async (req, res) => {
      return res.status(400).send({ message: 'user not filled ' });
    }
   try{
-     const Pharma= await phModel.findOne({Name});
+     const Pharma= await phModel.find({Name});
      if (!Pharma){
-      return(res.status(400).send({message: "msh "}));
+      return(res.status(400).send({message: "Pharmacist Not Found"}));
      }
      res.status(200).json(Pharma);
      }
@@ -143,9 +145,9 @@ const getPatient = async (req, res) => {
    }
  
    try {
-     const Patient = await patientModel.findOne({ Name });
+     const Patient = await patientModel.find({ Name });
      if (!Patient) {
-       return res.status(400).send({ message: 'msh ' });
+       return res.status(400).send({ message: 'Patirnt not found' });
      }
  
      res.status(200).json(Patient);

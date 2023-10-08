@@ -21,6 +21,7 @@ const PatientSchema = new Schema({
     },
     Gender: {
         type: String,
+        enum: ['Male', 'Female', 'Other'],
         required: true
     },
     HourlyRate: {
