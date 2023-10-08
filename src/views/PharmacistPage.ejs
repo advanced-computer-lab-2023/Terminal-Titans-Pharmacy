@@ -1,30 +1,40 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
+  <title>Pharmacist and Medicine Manager</title>
 </head>
 <body>
-    <h1>Edit Medicine</h1>
-  <form method="PUT"  action="/Pharma/editMedicine">
-    Medicine Name : <br>
-    <input type="text" name="medicineName"> <br>
-    New Active ingredients: <br>
-    <input type="text" name="newIngredients"> <br>
-    New Price: <br>
-   <input type="text" name="newPrice"> <br> 
-   New Quantity: <br>
-   <input type="text" name="newQuantity"> <br> 
-    <button type="submit">Submit</button><br><br>
-  <div id="edit">
-
-  </div>
+  <h1>Pharmacist and Medicine Manager</h1>
+  <h2>Create a Pharmacist</h2>
+  <form action="/Pharma/createPharmacist" method="POST">
+    <input type="text" name="Username" placeholder="Username">
+    <input type="text" name="Name" placeholder="Name">
+    <input type="email" name="Email" placeholder="Email">
+    <input type="password" name="Password" placeholder="Password">
+    <input type="date" name="DateOfBirth" placeholder="Date of Birth">
+    <input type="number" name="HourlyRate" placeholder="Hourly Rate">
+    <input type="text" name="Affiliation" placeholder="Affiliation">
+    <input type="text" name="EducationalBackground" placeholder="Educational Background">
+    <input type="text" name="Position" placeholder="Position">
+    <button type="submit">Create Pharmacist</button>
   </form>
-</body>
-  <h1>Filter Medicine</h1>
 
-  <form action="Admin/filterMedical" method="get">
-    <input type="text" name="MedicalUse" placeholder="MedicalUse">
-    <button type="submit">Submit</button>
+  <h2>Add a Medicine</h2>
+  <form action="/Pharma/addMedicine" method="POST">
+    <input type="text" name="Name" placeholder="Name">
+    <input type="number" name="Price" placeholder="Price">
+    <input type="number" name="Quantity" placeholder="Quantity">
+    <input type="text" name="ActiveIngredients" placeholder="Active Ingredients">
+    <input type="text" name="MedicalUse" placeholder="Medical Use">
+    <button type="submit">Add Medicine</button>
   </form>
-  
+
+  <h2>Edit a Medicine</h2>
+  <form action="/Pharma/editMedicine" method="PUT">
+    <input type="text" name="medicineName" placeholder="Medicine Name">
+    <input type="number" name="newPrice" placeholder="New Price">
+    <input type="text" name="newIngredients" placeholder="New Ingredients">
+    <button type="submit">Edit Medicine</button>
+  </form>
 </body>
 </html>
