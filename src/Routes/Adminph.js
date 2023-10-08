@@ -29,7 +29,7 @@ const createAdmin = async (req, res) => {
       throw new Error('Username already exist');
     }
 
-    const admin = new adminModel({ Username, Pass, Position });
+    const admin = new adminModel({ Username:Username, Password:Pass,Position: Position });
     const Nadmin = await admin.save();
     res.status(201).json(Nadmin);
   } catch (error) {

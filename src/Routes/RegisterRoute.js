@@ -69,8 +69,8 @@ router.post('/patient',async (req,res)=>{
     });
     
     newPatient.save();
-    res.status(200).json({success:true});
-   // return res.redirect('/'); //render patient views page
+    // res.status(200).json({success:true});
+   return res.redirect('/'); //render patient views page
     }
     catch(error){
         res.status(400).send({error: error});
