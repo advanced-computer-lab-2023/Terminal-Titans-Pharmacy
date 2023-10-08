@@ -10,8 +10,8 @@ router.get('/patient',(req,res)=>{
     res.render('patientRegistration',{ message: "" });
 })
 
-router.get('/doctor',(req,res)=>{
-    res.render('../../views/doctorRegistration',{ message: "" });
+router.get('/pharmacist',(req,res)=>{
+    res.render('pharmacistRegistration',{ message: "" });
 
 })
 
@@ -56,15 +56,15 @@ router.post('/patient',async (req,res)=>{
      //   return(res.status(400).json({message:"Please enter a valid email"}))
    try{
     const newPatient = new patientModel({
-        Username : req.body.username,
+        Username : req.body.username.toLowerCase(),
         Password : req.body.password,
-         Name:req.body.name,
-         Email:req.body.email,
+        Name:req.body.name.toLowerCase(),
+        Email:req.body.email,
          DateOfBirth:req.body.dob,
-         Mobile :req.body.mobile,
-         EmergencyName:req.body.first+" "+req.body.last,
-         EmergencyMobile:req.body.emergencyNumber,
-         EmergencyRelation:req.body.emergencyRel,
+         MobileNumber :req.body.mobile,
+         EmergencyContactFullName:req.body.first+" "+req.body.last,
+         EmergencyContactMobileNumber:req.body.emergencyNumber,
+         EmergencyContactRelationToThePatient:req.body.emergencyRel,
          Gender:req.body.gender
     });
     
@@ -96,29 +96,29 @@ router.post('/pharmacist',async (req,res)=>{
         // if( !req.body.speciality) msg+="Speciality, "
 
      //return(res.status(400).send({message: msg.slice(0,-2)}));
-     return(res.render('../../views/pharmacistRegistration',{message: "please fill all fields"}));
+     return(res.render('pharmacistRegistration',{message: "please fill all fields"}));
 
     }
     if(req.body.username.includes(' ')){
-        return(res.render('../../views/pharmacistRegistration',{message: "username has to be one word"}));
+        return(res.render('pharmacistRegistration',{message: "username has to be one word"}));
 
         //return(res.status(400).send({message: "username has to be"}));
 
     }
     const savedUser =  await userModel.find({Username :req.body.username});
      if(savedUser.length>0)
-     return(res.render('../../views/pharmacistRegistration',{message: "username exists "}));
+     return(res.render('pharmacistRegistration',{message: "username exists "}));
 
      //return(res.status(400).send({message: "username exists "}));
      if(!validator.validate(req.body.email))
-     return(res.render('../../views/pharmacistRegistration',{message:"Please enter a valid email"}));
+     return(res.render('pharmacistRegistration',{message:"Please enter a valid email"}));
     // if(!validator.validate(req.body.email))
     //      return(res.status(400).json({message:"Please enter a valid email"}))   
     try{
      const NewPharmacist = new reqPharmacist({
-         Username : req.body.username,
+        Username : req.body.username.toLowerCase(),
          Password : req.body.password,
-          Name:req.body.name,
+          Name:req.body.name.toLowerCase(),
           Email:req.body.email,
           DateOfBirth:req.body.dob,
           HourlyRate:req.body.hourlyRate,
@@ -127,7 +127,7 @@ router.post('/pharmacist',async (req,res)=>{
      });
      
      NewPharmacist.save();
-     res.status(200).send("success");
+     //res.status(200).send("success");
      return res.redirect('/');
      }
      catch(error){

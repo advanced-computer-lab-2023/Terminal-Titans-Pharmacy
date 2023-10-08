@@ -12,7 +12,7 @@ const PatientSchema = new Schema({
       required: true,
       unique: true
     },
-    Dob:{
+    DateOfBirth:{
       type:Date,
       required:true,
     },
