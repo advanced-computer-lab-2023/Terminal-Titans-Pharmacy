@@ -39,7 +39,7 @@ const createPatient = async(req,res) => {
    res.status(200).send(Medicines)
      
     }
-    router.get('/filterMedical', filterMed);
+  router.get('/filterMedical', filterMed);
 
 
 
