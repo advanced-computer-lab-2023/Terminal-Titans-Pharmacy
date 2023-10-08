@@ -29,5 +29,5 @@ const PharmacistSchema = new Schema({
     }
   }, { timestamps: true });
   
-  const Pharmacist = userModel.discriminator('Pharmacist', PharmacistSchema);
-  module.exports = Pharmacist;
+  const ReqPharmacist = userModel.discriminator('ReqPharmacist', PharmacistSchema);
+  module.exports = ReqPharmacist;

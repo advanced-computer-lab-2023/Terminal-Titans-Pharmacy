@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <style>
+        body {
+            /* background-image: url("background2.jpg"); */
+            background-repeat: no-repeat;
+            background-size: 100%;
+            }
+        h1 {
+            text-align: center;
+        }
+        .cont {
+            position:relative;
+            left:600px;
+            top:50px;
+           
+        }
+        .box {
+    inline-size: 450px;
+    overflow-wrap: break-word;
+}
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+    </style>
+   
+    <title>Sign up</title>
+   
+</head>
+<body>
+    <div class="container">
+        <h1>Registeration</h1>
+    </div>
+    <div class="cont">
+        <form method='post' action='/register/patient'>
+            Username: <br>
+            <input type="text" id="user" name="username"> <br>
+            Name: <br>
+            <input type="text" id="name" name="name"> <br>
+            Email: <br>
+            <input type="text" id="email" name="email"> <br>
+            Password: <br>
+            <input type="password" id="password" name="password"> <br> 
+            Date of birth: <br>
+            <input type="date" id="dob" name="dob"> <br>
+            Gender: <br>
+            <select id="gender" name="gender">
+                <option value="male">Male</option>
+                <option value="female">female</option>
+              </select><br>
+            mobile number: <br>
+            <input type="number" id="mobile" name="mobile"> <br>
+            <br>
+            emergency contanct info: <br>
+            <input type="text" id="first" name="first" placeholder="first name"> <br>
+            <input type="text" id="last" name="last" placeholder="last name"><br>
+            <input type="text" id="mobile" name="emergencyNumber" placeholder="mobile number"> <br>
+            <input type="text" id="emergencyRel" name="emergencyRel" placeholder="Relationship"> <br><br><br>
+            <br><br>
+            <input type="submit" id="simple_click" class="btn btn-secondary" value="Sign up"> <br><br>
+            <div class="box">
+            <p style="color: red;text-align: left;"><%= message %></p>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
