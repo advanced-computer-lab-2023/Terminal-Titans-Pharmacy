@@ -15,6 +15,10 @@ const MedicineSchema = new Schema({
     type: Number,
     required: true
   },
+  Sales:{
+    type : Number,
+    required: false
+  },
   ActiveIngredients: {
     type: Array,
     required: true

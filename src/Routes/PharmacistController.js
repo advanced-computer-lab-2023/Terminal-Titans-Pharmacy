@@ -180,5 +180,22 @@ router.get('/editMedicine', async (req, res) => {
 });
 
 router.put('/editMedicine',editMedicine);
+
+const getListMed = async (req, res) => {
+  //retrieve all users from the database
+  try{
+     const meds= await MedicineModel.find().select({
+      Name:1,
+      Quantity: 1,
+      Sales: 1,
+    });;
+     res.status(200).json({Result : meds, success: true});
+     }
+  
+  catch(error){
+     res.status(500).json({message:"No Medicine listed", success : false})
+  }
+ }
+ router.get('/getinfoMeds',getListMed)
    module.exports={addMedicine,createPharmacist};
    module.exports = router;
