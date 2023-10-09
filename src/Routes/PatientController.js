@@ -21,22 +21,22 @@ const createPatient = async(req,res) => {
        res.status(201).json(NewPatient);  
      }
     catch (error){
-       res.status(500).json({error: 'Failed OP'})
+       res.status(500).json({error: 'Failed OP', success : false })
     }
  }
   //filter 
   const filterMed = async (req, res) => {
    const MedicalUse = req.query.MedicalUse.toLowerCase();
    if (!MedicalUse) {
-     return res.status(400).send({ message: 'Please fill the input' });
+     return res.status(400).send({ message: 'Please fill the input', success : false  });
    }
    
    const Medicines = await MedicineModel.find({ MedicalUse });
    if (!Medicines.length) {
-     return res.status(400).send({ message: 'No medicines found with the specified medical use.' });
+     return res.status(400).send({ message: 'No medicines found with the specified medical use.', success : false  });
    }
    
-   res.status(200).send(Medicines)
+   res.status(200).send({Result : Medicines, success : true })
      
     }
   router.get('/filterMedical', filterMed);
@@ -47,19 +47,19 @@ const createPatient = async(req,res) => {
 const getMedicine = async (req, res) => {
    const Name = req.query.Name.toLowerCase();
    if (!Name) {
-     return res.status(400).send({ message: 'Please fill the input' });
+     return res.status(400).send({ message: 'Please fill the input' , success : false });
    }
    try{
      // const Name = req.body;
       const Medicines= await MedicineModel.findOne({Name});
       if (!Medicines){
-        return(res.status(400).send({message: "No Medicine with this name"}));
+        return(res.status(400).send({message: "No Medicine with this name", success : false }));
       }
       res.status(200).json(Medicines);
       }
    
    catch(error){
-      res.status(500).json({message:"Failed getMedicine"})
+      res.status(500).json({message:"Failed getMedicine", success : false })
    }
   }
 

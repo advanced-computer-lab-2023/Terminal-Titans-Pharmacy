@@ -14,19 +14,19 @@ const AdminController = require('./Adminph');
 const getMedicine = async (req, res) => {
   const Name = req.query.Name.toLowerCase();
   if (!Name) {
-    return res.status(400).send({ message: 'Please fill the input' });
+    return res.status(400).send({ message: 'Please fill the input', success : false  });
   }
   try{
     // const Name = req.body;
      const Medicines= await MedicineModel.findOne({Name});
      if (!Medicines){
-       return(res.status(400).send({message: "No Medicine with this name"}));
+       return(res.status(400).send({message: "No Medicine with this name", success : false }));
      }
-     res.status(200).json(Medicines);
+     res.status(200).json({Redult : Medicines, success : true });
      }
   
   catch(error){
-     res.status(500).json({message:"Failed getMedicine"})
+     res.status(500).json({message:"Failed getMedicine", success : false })
   }
  }
 
@@ -51,10 +51,10 @@ const createPharmacist = async(req,res) => {
        }
        const Pharmacist = new PharmacistModel({Username, Name,Email,Password,DateOfBirth,HourlyRate,Affiliation,EducationalBackground,Position});
        const NewPharmacist = await Pharmacist.save();
-       res.status(201).json(NewPharmacist);  
+       res.status(201).json({Result : NewPharmacist, success : true });  
      }
     catch (error){
-       res.status(500).json({error: 'Failed OP'})
+       res.status(500).json({error: 'Failed OP', success : false })
     }
  }
 router.post('/createPharmacist', createPharmacist);
@@ -73,11 +73,11 @@ router.post('/createPharmacist', createPharmacist);
      }
        const medicine = new MedicineModel({Name,Price,Quantity,ActiveIngredients,MedicalUse});
        const NewMedicine = await medicine.save();
-       res.status(201).json(NewMedicine);
+       res.status(201).json({Result : NewMedicine , success : true });
      
     }
     catch(error){
-       res.status(500).json({error:"Cannot do this"})
+       res.status(500).json({error:"Cannot do this", success : false })
     }
 
  }
@@ -99,10 +99,10 @@ const editMedicine = async (req, res) => {
     if (!updatedMedicine) {
       return res.status(404).json({ error: 'Medicine not found' });
     }
-    res.status(200).json(updatedMedicine);
+    res.status(200).json({Result : updatedMedicine, success : true });
    }
    catch(error){
-    res.status(500).json({error:"Cannot do this"})
+    res.status(500).json({error:"Cannot do this", success : false })
  }
 }
 router.put('/editMedicine',editMedicine);

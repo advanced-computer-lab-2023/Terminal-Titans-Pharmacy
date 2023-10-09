@@ -13,7 +13,7 @@ app.use(express.urlencoded({extended: false}))
 
 const createAdmin = async (req, res) => {
    const Username = req.body.Username.toLowerCase();
-   const Pass = req.body.Pass.toLowerCase();
+   const Pass = req.body.Pass;
   const Position = 'Admin';
   if(!req.body.Username){
     return(res.status(400).send({message: "user not filled "}));
@@ -31,9 +31,9 @@ const createAdmin = async (req, res) => {
 
     const admin = new adminModel({ Username:Username, Password:Pass,Position: Position });
     const Nadmin = await admin.save();
-    res.status(201).json(Nadmin);
+    res.status(201).json({Result : Nadmin, success : true});
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message, success : false });
   }
 };
 
@@ -50,12 +50,12 @@ const deleteAdmin = async (req, res) => {
      const dPatient = await patientModel.findOneAndRemove({ Username });
  
      if (!dph && !dPatient) {
-       res.status(404).json({ message: 'user not found' });
+       res.status(404).json({ message: 'user not found' , success: false});
      } else {
-      res.status(200).json({ message: 'Admin has deleted successfully.' });
+      res.status(200).json({ message: 'Admin has deleted successfully.' , success : true});
      }
    } catch (error) {
-     res.status(500).json({ message: 'Failed to delete user' });
+     res.status(500).json({ message: 'Failed to delete user', success : false });
    }
  };
  router.get('/deleteAdmin', async (req, res) => {
@@ -64,7 +64,7 @@ const deleteAdmin = async (req, res) => {
 
    // If the username is not present, return a 400 Bad Request response.
    if (!Username) {
-     return res.status(400).json({ message: 'Username is required.' });
+     return res.status(400).json({ message: 'Username is required.', success: false  });
    }
  
    // Try to find the admin in the database.
@@ -72,9 +72,9 @@ const deleteAdmin = async (req, res) => {
    const dPatient = await patientModel.findOneAndRemove({ Username });
 
    if (!dph && !dPatient) {
-     res.status(404).json({ message: 'user not found' });
+     res.status(404).json({ message: 'user not found' , success: false });
    } else {
-    res.status(200).json({ message: 'Admin has deleted successfully.' });
+    res.status(200).json({ message: 'Admin has deleted successfully.', success: true });
    }
  });
  
@@ -93,11 +93,11 @@ const getMedicine = async (req, res) => {
       if (!Medicines){
         return(res.status(400).send({message: "No Medicine with this name"}));
       }
-      res.status(200).json(Medicines);
+      res.status(200).json({Result : Medicines, success : true});
       }
    
    catch(error){
-      res.status(500).json({message:"Failed getMedicine"})
+      res.status(500).json({message:"Failed getMedicine", success : false})
    }
   }
 
@@ -109,11 +109,11 @@ const getListMed = async (req, res) => {
   //retrieve all users from the database
   try{
      const meds= await MedicineModel.find();
-     res.status(200).json(meds);
+     res.status(200).json({Result : meds, success: true});
      }
   
   catch(error){
-     res.status(500).json({message:"No Medicine listed"})
+     res.status(500).json({message:"No Medicine listed", success : false})
   }
  }
 
@@ -122,18 +122,18 @@ const getListMed = async (req, res) => {
  const getPharmacist = async (req, res) => {
    const Name = req.query.Name.toLowerCase();
    if (!Name) {
-     return res.status(400).send({ message: 'user not filled ' });
+     return res.status(400).send({ message: 'user not filled ', success : false });
    }
   try{
      const Pharma= await phModel.find({Name});
      if (!Pharma){
-      return(res.status(400).send({message: "Pharmacist Not Found"}));
+      return(res.status(400).send({message: "Pharmacist Not Found", success : false}));
      }
-     res.status(200).json(Pharma);
+     res.status(200).json({Result : Pharma, success: true});
      }
   
   catch(error){
-     res.status(500).json({message:"Failed getPharmacist"})
+     res.status(500).json({message:"Failed getPharmacist", success: false})
   }
  }
 
@@ -143,18 +143,18 @@ const getListMed = async (req, res) => {
 const getPatient = async (req, res) => {
    const Name = req.query.Name.toLowerCase();
    if (!Name) {
-     return res.status(400).send({ message: 'user not filled' });
+     return res.status(400).send({ message: 'user not filled' , success : false });
    }
  
    try {
      const Patient = await patientModel.find({ Name });
      if (!Patient) {
-       return res.status(400).send({ message: 'Patirnt not found' });
+       return res.status(400).send({ message: 'Patient not found' , success : false });
      }
  
-     res.status(200).json(Patient);
+     res.status(200).json({Result : Patient, success : true });
    } catch (error) {
-     res.status(500).json({ message: 'Failed getPatient' });
+     res.status(500).json({ message: 'Failed getPatient' , success : false });
    }
  }
  router.get('/getPatient', getPatient);
@@ -163,15 +163,15 @@ const getPatient = async (req, res) => {
  const filterMed = async (req, res) => {
 const MedicalUse = req.query.MedicalUse.toLowerCase();
 if (!MedicalUse) {
-  return res.status(400).send({ message: 'Please fill the input' });
+  return res.status(400).send({ message: 'Please fill the input' , success : false  });
 }
 
 const Medicines = await MedicineModel.find({ MedicalUse });
 if (!Medicines.length) {
-  return res.status(400).send({ message: 'No medicines found with the specified medical use.' });
+  return res.status(400).send({ message: 'No medicines found with the specified medical use.', success : false  });
 }
 
-res.status(200).send(Medicines)
+res.status(200).send({Result : Medicines, success : true })
   
  }
  router.get('/filterMedical', filterMed);
@@ -180,7 +180,7 @@ res.status(200).send(Medicines)
 const viewReqPharm = async(req,res) =>{
 try{
 const pharms = await ReqPharmModel.find();
-res.status(200).json(pharms);
+res.status(200).json({Result : pharms, success: true});
 }
 catch(error){
   res.status(500).json({message:"Failed view req pharms"})
