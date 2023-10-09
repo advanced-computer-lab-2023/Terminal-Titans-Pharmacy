@@ -59,35 +59,85 @@ const createPharmacist = async(req,res) => {
  }
 router.post('/createPharmacist', createPharmacist);
    //add a medicine using name w ingredients w price w quantity
-   const addMedicine = async (req, res) => {
-    try{
-       const Name = req.body.Name;
-       const Price = req.body.Price;
-       const Quantity = req.body.Quantity;
-       const ActiveIngredients = req.body.ActiveIngredients;
-       const MedicalUse = req.body.MedicalUse;
-       const medicineExists = await MedicineModel.findOne({Name});
+//    const addMedicine = async (req, res) => {
+//     try{
+//        const Name = req.body.Name;
+//        const Price = req.body.Price;
+//        const Quantity = req.body.Quantity;
+//        const ActiveIngredients = req.body.ActiveIngredients;
+//        const MedicalUse = req.body.MedicalUse;
+//        const medicineExists = await MedicineModel.findOne({Name});
+//      if(medicineExists){
+//        res.status(500);
+//        throw new Error("Medicine already exists");
+//      }
+//        const medicine = new MedicineModel({Name,Price,Quantity,ActiveIngredients,MedicalUse});
+//        const NewMedicine = await medicine.save();
+//        res.status(201).json({Result : NewMedicine , success : true });
+     
+//     }
+//     catch(error){
+//        res.status(500).json({error:"Cannot do this", success : false })
+//     }
+
+//  }
+const addMedicine = async (req, res) => {
+  try {
+    // Get the ActiveIngredients and MedicalUse inputs
+    const Name = req.body.Name;
+    const Price = req.body.Price;
+    const Quantity = req.body.Quantity;
+    const ActiveIngredients = req.body.ActiveIngredients;
+    const MedicalUse = req.body.MedicalUse;
+
+    // Split the ActiveIngredients and MedicalUse inputs into arrays
+    const ActiveIngredientsArray = ActiveIngredients.split(',');
+    const MedicalUseArray = MedicalUse.split(',');
+
+    // Create an empty array to store the split ActiveIngredients and MedicalUse values
+    const SplitActiveIngredients = [];
+    const SplitMedicalUse = [];
+
+    // Iterate over the ActiveIngredients and MedicalUse arrays and push each value into the SplitActiveIngredients and SplitMedicalUse arrays
+    for (const ActiveIngredient of ActiveIngredientsArray) {
+      SplitActiveIngredients.push(ActiveIngredient.trim());
+    }
+
+    for (const MedicalUseValue of MedicalUseArray) {
+      SplitMedicalUse.push(MedicalUseValue.trim());
+    }
+    const medicineExists = await MedicineModel.findOne({Name});
      if(medicineExists){
        res.status(500);
        throw new Error("Medicine already exists");
      }
-       const medicine = new MedicineModel({Name,Price,Quantity,ActiveIngredients,MedicalUse});
-       const NewMedicine = await medicine.save();
-       res.status(201).json({Result : NewMedicine , success : true });
-     
-    }
-    catch(error){
-       res.status(500).json({error:"Cannot do this", success : false })
-    }
 
- }
+    // Update the medicine object with the split ActiveIngredients and MedicalUse values
+    const medicine = new MedicineModel({
+      Name: req.body.Name,
+      Price: req.body.Price,
+      Quantity: req.body.Quantity,
+      ActiveIngredients: SplitActiveIngredients,
+      MedicalUse: SplitMedicalUse,
+    });
+
+    // Save the medicine object to the database
+    const NewMedicine = await medicine.save();
+
+    // Return the new medicine object to the client
+    res.status(201).json({ Result: NewMedicine, success: true });
+  } catch (error) {
+    // Handle any errors
+    res.status(500).json({ error: 'Cannot do this', success: false });
+  }
+};
+
  router.post('/addMedicine',addMedicine);
-//Edit a medicine
-const editMedicine = async (req, res) => {
+  const editMedicine = async (req, res) => {
     try{
-    const medicineName = req.body.medicineName;
-    const newPrice = req.body.newPrice;
-    const newIngredients = req.body.newIngredients;
+    const medicineName = req.query.medicineName;
+    const newPrice = req.query.newPrice;
+    const newIngredients = req.query.newIngredients;
     const updateFields = {};
     updateFields.ActiveIngredients = newIngredients;
     updateFields.Price = newPrice;
@@ -99,14 +149,36 @@ const editMedicine = async (req, res) => {
     if (!updatedMedicine) {
       return res.status(404).json({ error: 'Medicine not found' });
     }
-    res.status(200).json({Result : updatedMedicine, success : true });
+    res.status(200).json(updatedMedicine);
    }
    catch(error){
-    res.status(500).json({error:"Cannot do this", success : false })
+    res.status(500).json({error:"Cannot do this"})
  }
 }
+
+router.get('/editMedicine', async (req, res) => {
+  try{
+    const medicineName = req.query.medicineName;
+    const newPrice = req.query.newPrice;
+    const newIngredients = req.query.newIngredients;
+    const updateFields = {};
+    updateFields.ActiveIngredients = newIngredients;
+    updateFields.Price = newPrice;
+    const updatedMedicine = await MedicineModel.findOneAndUpdate(
+      {Name: medicineName },
+      updateFields,
+      { new: true }
+    );
+    if (!updatedMedicine) {
+      return res.status(404).json({ error: 'Medicine not found' });
+    }
+    res.status(200).json(updatedMedicine);
+   }
+   catch(error){
+    res.status(500).json({error:"Cannot do this"})
+ }
+});
+
 router.put('/editMedicine',editMedicine);
-
-
-   module.exports={editMedicine,addMedicine,createPharmacist};
+   module.exports={addMedicine,createPharmacist};
    module.exports = router;

@@ -55,7 +55,7 @@ const getMedicine = async (req, res) => {
       if (!Medicines){
         return(res.status(400).send({message: "No Medicine with this name", success : false }));
       }
-      res.status(200).json(Medicines);
+      res.status(200).json({Result : Medicines, success : true });
       }
    
    catch(error){
