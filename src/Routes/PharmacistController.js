@@ -199,7 +199,7 @@ const getListMed = async (req, res) => {
   }
  }
  router.get('/getinfoMeds',getListMed)
-
+//SELL MEDICINE 
 router.get('/sellMedicine', async (req, res) => {
   try {
     let medicineName = req.query.medicineName.toLowerCase();
