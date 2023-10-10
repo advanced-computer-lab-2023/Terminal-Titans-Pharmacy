@@ -46,8 +46,10 @@ router.post('/patient',async (req,res)=>{
 }
    const savedUser =  await userModel.find({Username :req.body.username});
     if(savedUser.length>0)
-    return(res.render('patientRegistration',{message: "username has to be"}));
-
+    return(res.render('patientRegistration',{message: "username has to be unique "}));
+    const unqiueUser =  await userModel.find({Email :req.body.email});
+    if(unqiueUser.length>0)
+    return(res.render('patientRegistration',{message: "email has to be unique"}));
     //return(res.status(400).send({message: "username exists "}));
 
    if(!validator.validate(req.body.email))
@@ -108,7 +110,9 @@ router.post('/pharmacist',async (req,res)=>{
     const savedUser =  await userModel.find({Username :req.body.username});
      if(savedUser.length>0)
      return(res.render('pharmacistRegistration',{message: "username exists "}));
-
+     const unqiueUser =  await userModel.find({Email :req.body.email});
+    if(unqiueUser.length>0)
+    return(res.render('pharmacistRegistration',{message: "email has to be unique"}));
      //return(res.status(400).send({message: "username exists "}));
      if(!validator.validate(req.body.email))
      return(res.render('pharmacistRegistration',{message:"Please enter a valid email"}));

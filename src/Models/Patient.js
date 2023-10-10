@@ -21,10 +21,6 @@ const PatientSchema = new Schema({
       type:Date,
       required:true,
     },
-    DateOfBirth: {
-      type : Date,
-      required: true
-    },
     Gender: {
         type: String,
         enum: ['male', 'female', 'Other'],
