@@ -200,31 +200,10 @@ const getListMed = async (req, res) => {
  }
  router.get('/getinfoMeds',getListMed)
 
-// const sellMedicine = async(req,res) =>{
-//   try{
-//     const medicineName = req.query.medicineName;
-//     const medcheck= await MedicineModel.findOne(medicineName);
-//     if(!medcheck){
-//       res.status(404).json({message:"Medicine doesn't exist", success: false})
-//     }
-//     else{
-//       if(medcheck.Quantity===0){
-//         res.status(500).json({message:"Medicine out of stock", success:false})
-//       }
-//       else {
-//         medcheck.Quantity--
-//         medcheck.Sales++
-//       }
-//     }
-//   }
-//   catch(error){
-//     res.status(500).json({message:"error in selling med" , success:false})
-//   }
-// }
-const sellMedicine = async (req, res) => {
-  // try {
-    const medicineName = req.query.medicineName.toLowerCase();
-    const medcheck = await MedicineModel.find({medicineName});
+router.get('/sellMedicine', async (req, res) => {
+  try {
+    let medicineName = req.query.medicineName.toLowerCase();
+    let medcheck = await MedicineModel.findOne({Name:medicineName});
 
     if (!medcheck) {
       res.status(404).json({ message: "Medicine doesn't exist", success: false });
@@ -235,50 +214,24 @@ const sellMedicine = async (req, res) => {
       res.status(500).json({ message: "Medicine out of stock", success: false });
       return;
     }
-    // const updateFields = {};
-    // updateFields.Quantity =  medcheck.Quantity--;
-    // updateFields.Sales = medcheck.Sales++;
-    // medcheck = await MedicineModel.findOneAndUpdate(
-    //   {Name: medicineName },
-    //   updateFields,
-    //   { new: true }
-    //);
-    console.log(medcheck.medicineName);
-    console.log(medcheck.Quantity--);
-    console.log(medcheck.Sales++);
-
-   
-
-    res.status(200).json({ message: "Medicine sold successfully", success: true });
-  // }
-  //  catch (error) {
-  //   res.status(500).json({ message: "Error in selling medicine", success: false });
-  // }
-};
- router.get('/sellMedicine',sellMedicine), async (req, res) => {
-  // try {
-    const medicineName = req.query.medicineName.toLowerCase();
-    const medcheck = await MedicineModel.find({medicineName});
-
-    if (!medcheck) {
-      res.status(404).json({ message: "Medicine doesn't exist", success: false });
-      return;
-    }
-
-    if (medcheck.Quantity === 0) {
-      res.status(500).json({ message: "Medicine out of stock", success: false });
-      return;
-    }
-    console.log(medcheck.medicineName);
+    let updateFields = {};
+     updateFields.Quantity =  --medcheck.Quantity;
+     updateFields.Sales = ++medcheck.Sales;
+     medcheck = await MedicineModel.findOneAndUpdate(
+      {Name: medicineName },
+      updateFields,
+      { new: true }
+    );
+    console.log(medcheck.Name);
     console.log(medcheck.Quantity--);
     console.log(medcheck.Sales++);
 
     res.status(200).json({ message: "Medicine sold successfully", success: true });
-  // }
-  //  catch (error) {
-  //   res.status(500).json({ message: "Error in selling medicine", success: false });
-  // }
-};
-router.put('/sellMedicine',sellMedicine);
+  }
+   catch (error) {
+    res.status(500).json({ message: "Error in selling medicine", success: false });
+  }
+});
+
    module.exports={addMedicine,createPharmacist};
    module.exports = router;
