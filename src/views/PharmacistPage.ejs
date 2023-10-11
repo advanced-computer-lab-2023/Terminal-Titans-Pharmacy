@@ -26,8 +26,9 @@
     <input type="number" name="Quantity" placeholder="Quantity">
     <input type="text" name="ActiveIngredients" placeholder="Active Ingredients">
     <input type="text" name="MedicalUse" placeholder="Medical Use">
+      <input type="file" name="photo">
     <button type="submit">Add Medicine</button>
-  </form>
+</form>
   <h2>Edit a Medicine</h2>
   <form action="/Pharma/editMedicine" method="get">
     <input type="text" name="medicineName" placeholder="Medicine Name">
@@ -45,13 +46,9 @@
     <input id="medicineName" name="medicineName" type="text" placeholder="Medicine Name">
     <button type="submit">Sell Medicine</button>
   </form>
-  <h2>Upload Image</h2>
-  <form action="/Pharma/upload" method="POST" enctype="multipart/form-data">
-    <input type="file" name="photo">
-    <input type="submit" value="Upload Photo">
-  </form>
+  
 <h2>GET IMAGE</h2>
-<img src="/Pharma/get-image/:652653a864ffb23bc1c494f7" alt="Medicine Image">
+<img src="/Pharma/get-image/" alt="Medicine Image">
 </body>
 </html>
 

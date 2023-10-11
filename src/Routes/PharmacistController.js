@@ -113,6 +113,7 @@ const addMedicine = async (req, res) => {
        res.status(500);
        throw new Error("Medicine already exists");
      }
+     
 
     // Update the medicine object with the split ActiveIngredients and MedicalUse values
     const medicine = new MedicineModel({
@@ -149,6 +150,38 @@ const addMedicine = async (req, res) => {
       updateFields,
       { new: true }
     );
+    const storage = multer.memoryStorage();
+    const upload = multer({ storage: storage });
+    router.post('/upload', upload.single('photo'), async (req, res) => {
+      if (!req.file) {
+          return res.status(400).send('No file uploaded.');
+      }
+      const medicine = new MedicineModel({
+        Picture: {
+          data: req.file.buffer,
+          contentType: req.file.mimetype
+      }
+      });
+    
+      // Save the medicine object to the database
+      const NewMedicine = await medicine.save();
+    
+          res.send('Photo uploaded and saved.');
+          // const newPhoto = new Photo({
+      //     Picture: {
+      //         data: req.file.buffer,
+      //         contentType: req.file.mimetype
+      //     }
+      // });
+    
+      //newPhoto.save((err) => {
+          //if (err) {
+            //  return res.status(500).send('Error saving the photo.');
+         // }
+      
+     // });
+    });
+    
     if (!updatedMedicine) {
       return res.status(404).json({ error: 'Medicine not found' });
     }
@@ -234,36 +267,6 @@ router.get('/sellMedicine', async (req, res) => {
   }
 });
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
-router.post('/upload', upload.single('photo'), async (req, res) => {
-  if (!req.file) {
-      return res.status(400).send('No file uploaded.');
-  }
-  const medicine = new MedicineModel({
-    Picture: {
-      data: req.file.buffer,
-      contentType: req.file.mimetype
-  }
-  });
-
-  // Save the medicine object to the database
-  const NewMedicine = await medicine.save();
-
-  // const newPhoto = new Photo({
-  //     Picture: {
-  //         data: req.file.buffer,
-  //         contentType: req.file.mimetype
-  //     }
-  // });
-
-  //newPhoto.save((err) => {
-      //if (err) {
-        //  return res.status(500).send('Error saving the photo.');
-     // }
-      res.send('Photo uploaded and saved.');
- // });
-});
 
 
 router.get('/get-image/:id', async (req, res) => {
