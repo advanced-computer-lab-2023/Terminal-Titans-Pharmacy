@@ -20,13 +20,13 @@
   </form>
 
   <h2>Add a Medicine</h2>
-  <form action="/Pharma/addMedicine" method="POST">
+  <form action="/Pharma/addMedicine" method="POST" enctype="multipart/form-data">
     <input type="text" name="Name" placeholder="Name">
     <input type="number" name="Price" placeholder="Price">
     <input type="number" name="Quantity" placeholder="Quantity">
     <input type="text" name="ActiveIngredients" placeholder="Active Ingredients">
     <input type="text" name="MedicalUse" placeholder="Medical Use">
-      <input type="file" name="photo">
+    <input type="file" name="photo">
     <button type="submit">Add Medicine</button>
 </form>
   <h2>Edit a Medicine</h2>
@@ -36,7 +36,7 @@
     <input type="text" name="newIngredients" placeholder="New Ingredients">
     <button type="submit">Edit Medicine</button>
   </form>
-  <h2>Get All Meds</h2>
+  <h2>Get All Meds SALES + Quantity</h2>
   <form action="/Pharma/getinfoMeds" method="get">
     <button type="submit">Get All Meds</button>
   </form>
@@ -46,9 +46,76 @@
     <input id="medicineName" name="medicineName" type="text" placeholder="Medicine Name">
     <button type="submit">Sell Medicine</button>
   </form>
+  <h1>Filter Medicine</h1>
+
+  <form method="get" action="/Patient/filterMedical">
+    <input type="text" name="MedicalUse" placeholder="MedicalUse">
+    <button type="submit">Submit</button>
+  </form>
+<h2>GET ALL MEDICINES INFOO<h2>
+  <button type="submit" onclick="getAllMedicines()"> Get All</button>
+  <div id="medicine_list"></div>
+  <script>
+    //getAllMedicines()
+    async function getAllMedicines() {
+              try {
+                // PICTURE , PRICE , DESCRIPTION
   
-<h2>GET IMAGE</h2>
-<img src="/Pharma/get-image/" alt="Medicine Image">
+                  // Remove the colon from the URL placeholder
+                  var response = await fetch(`http://localhost:8000/Admin/getAllMedicine/`);
+                  var res = await response.json();
+  
+  
+                  if (!res.success)
+                      return alert(res.message);
+  
+                  var list = res.Result
+                  //console.log(list)
+                  var cartoona = ''
+                 for (let i = 0; i < list.length; i++) {
+                  
+                  if(!list[i].Picture)
+                    continue
+
+                    
+                    console.log(list[i]);
+                      cartoona += `
+                      <ul>
+                        <li><strong>Pic:</strong>
+                          <img src= "/Pharma/get-image/${list[i]?._id}">
+                  </li>
+                  <li>Name: ${list[i].Name}
+                  </li>
+                  <li><strong>Price:</strong>
+                      ${list[i].Price}
+                  </li>
+                  <li><strong>Quantity:</strong>
+                      ${list[i].Quantity}
+                  </li>
+                  <li><strong>Sales:</strong>
+                      ${list[i].Sales}
+                  </li>
+                  <li><strong>Active Ingredients:</strong>
+                      ${list[i].ActiveIngredients}
+                  </li>
+                  <li><strong>Medical Use:</strong>
+                      ${list[i].MedicalUse}
+                  </li>
+          </ul>`
+                  }
+  
+                  var element = document.getElementById('medicine_list')
+                  element.innerHTML = cartoona
+
+             // }
+                }
+              catch (error) {
+                  console.error('Error fetching patient data:', error);
+              }
+          }
+
+  
+    </script>
 </body>
 </html>
 

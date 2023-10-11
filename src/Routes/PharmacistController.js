@@ -8,6 +8,8 @@ const express = require('express');
 const multer = require('multer');
 const router = express.Router();
 const AdminController = require('./Adminph');
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 
 
@@ -85,12 +87,83 @@ router.post('/createPharmacist', createPharmacist);
 const addMedicine = async (req, res) => {
   try {
     // Get the ActiveIngredients and MedicalUse inputs
+    console.log(req);
     const Name = req.body.Name;
     const Price = req.body.Price;
     const Quantity = req.body.Quantity;
     const ActiveIngredients = req.body.ActiveIngredients;
     const MedicalUse = req.body.MedicalUse;
     const Sales=0;
+
+    console.log(req.file.buffer)
+
+    // Split the ActiveIngredients and MedicalUse inputs into arrays
+    const ActiveIngredientsArray = ActiveIngredients.split(',');
+    const MedicalUseArray = MedicalUse.split(',');
+
+    // Create an empty array to store the split ActiveIngredients and MedicalUse values
+    const SplitActiveIngredients = [];
+    const SplitMedicalUse = [];
+
+    // Iterate over the ActiveIngredients and MedicalUse arrays and push each value into the SplitActiveIngredients and SplitMedicalUse arrays
+    for (const ActiveIngredient of ActiveIngredientsArray) {
+      SplitActiveIngredients.push(ActiveIngredient.trim());
+    }
+
+    for (const MedicalUseValue of MedicalUseArray) {
+      SplitMedicalUse.push(MedicalUseValue.trim());
+    }
+    const medicineExists = await MedicineModel.findOne({Name});
+     if(medicineExists){
+       res.status(500);
+       throw new Error("Medicine already exists");
+     }
+    //router.post('/upload', upload.single('photo'), async (req, res) => {
+      if (!req.body.file) {
+          return res.status(400).send('No file uploaded.');
+      }
+           
+        
+     
+    
+
+    // Update the medicine object with the split ActiveIngredients and MedicalUse values
+    const medicine = new MedicineModel({
+      Name: req.body.Name,
+      Price: req.body.Price,
+      Quantity: req.body.Quantity,
+      Sales ,
+      ActiveIngredients: SplitActiveIngredients,
+      MedicalUse: SplitMedicalUse,
+      Picture: {
+        data: req.file.buffer,
+        contentType: req.file.mimetype
+    }
+    });
+
+    // Save the medicine object to the database
+    const NewMedicine = await medicine.save();
+
+    // Return the new medicine object to the client
+    res.status(201).json({ Result: NewMedicine, success: true });
+  } catch (error) {
+    // Handle any errors
+    res.status(500).json({ error: 'Cannot do this', success: false });
+  }
+};
+
+ router.post('/addMedicine',upload.single('photo'),async (req, res) => {
+  try {
+    // Get the ActiveIngredients and MedicalUse inputs
+    console.log(req);
+    const Name = req.body.Name;
+    const Price = req.body.Price;
+    const Quantity = req.body.Quantity;
+    const ActiveIngredients = req.body.ActiveIngredients;
+    const MedicalUse = req.body.MedicalUse;
+    const Sales=0;
+
+    console.log(req.file.buffer)
 
     // Split the ActiveIngredients and MedicalUse inputs into arrays
     const ActiveIngredientsArray = ActiveIngredients.split(',');
@@ -114,6 +187,14 @@ const addMedicine = async (req, res) => {
        throw new Error("Medicine already exists");
      }
      
+    //router.post('/upload', upload.single('photo'), async (req, res) => {
+      if (!req.file) {
+          return res.status(400).send('No file uploaded.');
+      }
+           
+
+     
+    
 
     // Update the medicine object with the split ActiveIngredients and MedicalUse values
     const medicine = new MedicineModel({
@@ -123,20 +204,33 @@ const addMedicine = async (req, res) => {
       Sales ,
       ActiveIngredients: SplitActiveIngredients,
       MedicalUse: SplitMedicalUse,
+      Picture: {
+        data: req.file.buffer,
+        contentType: req.file.mimetype
+    }
     });
 
     // Save the medicine object to the database
     const NewMedicine = await medicine.save();
 
     // Return the new medicine object to the client
-    res.status(201).json({ Result: NewMedicine, success: true });
+    res.status(201).json({ Result:"Medicine added ", success: true });
   } catch (error) {
     // Handle any errors
-    res.status(500).json({ error: 'Cannot do this', success: false });
+    res.status(500).json({ error: error.message, success: false });
   }
-};
+});
 
- router.post('/addMedicine',addMedicine);
+
+
+
+
+
+
+
+
+
+ 
   const editMedicine = async (req, res) => {
     try{
     const medicineName = req.query.medicineName;
@@ -150,37 +244,6 @@ const addMedicine = async (req, res) => {
       updateFields,
       { new: true }
     );
-    const storage = multer.memoryStorage();
-    const upload = multer({ storage: storage });
-    router.post('/upload', upload.single('photo'), async (req, res) => {
-      if (!req.file) {
-          return res.status(400).send('No file uploaded.');
-      }
-      const medicine = new MedicineModel({
-        Picture: {
-          data: req.file.buffer,
-          contentType: req.file.mimetype
-      }
-      });
-    
-      // Save the medicine object to the database
-      const NewMedicine = await medicine.save();
-    
-          res.send('Photo uploaded and saved.');
-          // const newPhoto = new Photo({
-      //     Picture: {
-      //         data: req.file.buffer,
-      //         contentType: req.file.mimetype
-      //     }
-      // });
-    
-      //newPhoto.save((err) => {
-          //if (err) {
-            //  return res.status(500).send('Error saving the photo.');
-         // }
-      
-     // });
-    });
     
     if (!updatedMedicine) {
       return res.status(404).json({ error: 'Medicine not found' });
@@ -271,11 +334,11 @@ router.get('/sellMedicine', async (req, res) => {
 
 router.get('/get-image/:id', async (req, res) => {
   try {
-    const medicine = await MedicineModel.findById('652653a864ffb23bc1c494f7');
+    const medicine = await MedicineModel.findById(req.params.id);
     if (!medicine) {
       return res.status(404).send('Medicine not found');
     }
-
+    console.log(medicine.Picture.contentType);
     res.set('Content-Type', medicine.Picture.contentType);
     res.send(medicine.Picture.data);
   } catch (error) {

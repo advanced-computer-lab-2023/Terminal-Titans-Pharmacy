@@ -109,7 +109,6 @@ const getListMed = async (req, res) => {
   //retrieve all users from the database
   try{
      const meds= await MedicineModel.find();
-     res.set('Conrwb')
      res.status(200).json({Result : meds, success: true});
      }
   
