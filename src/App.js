@@ -1,13 +1,11 @@
 // External variables
 const express = require("express");
 const mongoose = require('mongoose');
+const multer = require("multer");
 mongoose.set('strictQuery', false);
 require("dotenv").config();
 // const {createAdmin, deleteAdmin, getMedicine, getListMed, getPharmacist, getPatient} = require("./Routes/Adminph");
 const MongoURI = process.env.MONGO_URI;
-
-
-
 //App variables
 const app = express();
 const port = process.env.PORT || "8000";
@@ -16,6 +14,7 @@ const Admin = require('./Routes/Adminph.js');
 const Patient = require('./Routes/PatientController.js');
 const Pharmacist = require('./Routes/PharmacistController.js');
 const RegisterModule=require('./Routes/RegisterRoute.js')
+
 const ejs = require('ejs');
 // #Importing the userController
 
@@ -46,6 +45,7 @@ app.get("", (req, res) => {
   res.render('Home.ejs')
 }
 );
+
 
 
 //view engine

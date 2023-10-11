@@ -5,6 +5,7 @@ const { default: mongoose } = require('mongoose');
 const MedicineModel = require('../Models/Medicine.js');
 //const {getMedicine} = require("./Adminph.js");
 const express = require('express');
+const multer = require('multer');
 const router = express.Router();
 const AdminController = require('./Adminph');
 
@@ -230,6 +231,53 @@ router.get('/sellMedicine', async (req, res) => {
   }
    catch (error) {
     res.status(500).json({ message: "Error in selling medicine", success: false });
+  }
+});
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+router.post('/upload', upload.single('photo'), async (req, res) => {
+  if (!req.file) {
+      return res.status(400).send('No file uploaded.');
+  }
+  const medicine = new MedicineModel({
+    Picture: {
+      data: req.file.buffer,
+      contentType: req.file.mimetype
+  }
+  });
+
+  // Save the medicine object to the database
+  const NewMedicine = await medicine.save();
+
+  // const newPhoto = new Photo({
+  //     Picture: {
+  //         data: req.file.buffer,
+  //         contentType: req.file.mimetype
+  //     }
+  // });
+
+  //newPhoto.save((err) => {
+      //if (err) {
+        //  return res.status(500).send('Error saving the photo.');
+     // }
+      res.send('Photo uploaded and saved.');
+ // });
+});
+
+
+router.get('/get-image/:id', async (req, res) => {
+  try {
+    const medicine = await MedicineModel.findById('652653a864ffb23bc1c494f7');
+    if (!medicine) {
+      return res.status(404).send('Medicine not found');
+    }
+
+    res.set('Content-Type', medicine.Picture.contentType);
+    res.send(medicine.Picture.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error retrieving the image.');
   }
 });
 
