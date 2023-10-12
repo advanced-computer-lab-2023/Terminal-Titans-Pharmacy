@@ -130,15 +130,16 @@ const getListMed = async (req, res) => {
 
  const getPharmacist = async (req, res) => {
    const Name = req.query.Name.toLowerCase();
+   console.log(Name);
    if (!Name) {
      return res.status(400).send({ message: 'user not filled ', success : false });
    }
   try{
-     const Pharma= await phModel.find({Name});
-     if (!Pharma){
+     const Pharma= await phModel.find({Name: Name});
+     if (!Pharma || Pharma.length===0){
       return(res.status(400).send({message: "Pharmacist Not Found", success : false}));
      }
-     res.status(200).json({Result : Pharma, success: true});
+     res.status(200).json({Pharma, success: true});
      }
   
   catch(error){
@@ -157,7 +158,7 @@ const getPatient = async (req, res) => {
  
    try {
      const Patient = await patientModel.find({ Name });
-     if (!Patient) {
+     if (!Patient || Patient.length===0) {
        return res.status(400).send({ message: 'Patient not found' , success : false });
      }
  
