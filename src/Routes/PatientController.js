@@ -26,7 +26,7 @@ const createPatient = async(req,res) => {
  }
   //filter 
   const filterMed = async (req, res) => {
-   const MedicalUse = req.query.MedicalUse.toLowerCase();
+   const MedicalUse = req.params.MedicalUse.toLowerCase();
    if (!MedicalUse) {
      return res.status(400).send({ message: 'Please fill the input', success : false  });
    }
@@ -39,13 +39,13 @@ const createPatient = async(req,res) => {
    res.status(200).send({Result : Medicines, success : true })
      
     }
-  router.get('/filterMedical', filterMed);
+  router.get('/filterMedical/:MedicalUse', filterMed);
 
 
 
 //search for medicine based on name
 const getMedicine = async (req, res) => {
-   const Name = req.query.Name.toLowerCase();
+   const Name = req.params.Name.toLowerCase();
    if (!Name) {
      return res.status(400).send({ message: 'Please fill the input' , success : false });
    }
@@ -63,7 +63,7 @@ const getMedicine = async (req, res) => {
    }
   }
 
-  router.get('/getMedicine', getMedicine);
+  router.get('/getMedicine/:Name', getMedicine);
 
   //view a list of all available medicine pic,price,description
   const viewInfo =async (req,res)=> {

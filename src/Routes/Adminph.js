@@ -3,6 +3,7 @@ const phModel = require('../Models/Pharmacist.js');
 const patientModel = require('../Models/Patient.js');
 const MedicineModel = require('../Models/Medicine.js');
 const ReqPharmModel = require('../Models/requestedPharmacist.js');
+const userModel=require('../Models/user.js')
 const express = require('express');
 const router = express.Router();
 
@@ -24,7 +25,7 @@ const createAdmin = async (req, res) => {
    }
 
   try {
-    const userexist = await adminModel.findOne({ Username });
+    const userexist = await userModel.findOne({ Username });
     if (userexist) {
       throw new Error('Username already exist');
     }
@@ -83,7 +84,8 @@ const deleteAdmin = async (req, res) => {
 
 //search for medicine based on name
 const getMedicine = async (req, res) => {
-   const Name = req.query.Name.toLowerCase();
+   const Name = req.params.Name.toLowerCase();
+   console.log(Name)
    if (!Name) {
      return res.status(400).send({ message: 'Please fill the input' });
    }
@@ -101,7 +103,7 @@ const getMedicine = async (req, res) => {
    }
   }
 
-  router.get('/getMedicine', getMedicine);
+  router.get('/getMedicine/:Name', getMedicine);
 
 
 //view a list of all available medicines (including picture of medicine, price, description)
@@ -170,7 +172,7 @@ const getPatient = async (req, res) => {
 
  //filter 
  const filterMed = async (req, res) => {
-const MedicalUse = req.query.MedicalUse.toLowerCase();
+const MedicalUse = req.params.MedicalUse.toLowerCase();
 if (!MedicalUse) {
   return res.status(400).send({ message: 'Please fill the input' , success : false  });
 }
@@ -183,7 +185,7 @@ if (!Medicines.length) {
 res.status(200).send({Result : Medicines, success : true })
   
  }
- router.get('/filterMedical', filterMed);
+ router.get('/filterMedical/:MedicalUse', filterMed);
 
 
 const viewReqPharm = async(req,res) =>{
