@@ -66,13 +66,13 @@ const getMedicine = async (req, res) => {
   router.get('/getMedicine/:Name', getMedicine);
 
   //view a list of all available medicine pic,price,description
-  const viewInfo =async (req,res)=> {
-   const pic = req.query.Picture;
-   const price = req.query.Price;
+  // const viewInfo =async (req,res)=> {
+  //  const pic = req.query.Picture;
+  //  const price = req.query.Price;
 
 
 
-  }
-  router.get('/viewAvailableMedicines', viewInfo);
+  // }
+  // router.get('/viewAvailableMedicines', viewInfo);
 
    module.exports = router;
