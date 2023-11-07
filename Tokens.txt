@@ -1,0 +1,13 @@
+username:pharm
+password:pass
+token:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NGE4NzI3NGQ2MDgzZjQ5ZmVmOTYzYiIsImlhdCI6MTY5OTM4MzM2MSwiZXhwIjoxNzAxOTc1MzYxfQ.M3eJKmtm1ou9Dq_7twSsvJCyvE9GiWxhplALGQbkugI
+
+----------
+username:patient
+password:pass
+token:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NGE4OTZkZjBiN2U3Y2JjZTk4MTFiNCIsImlhdCI6MTY5OTM4MzY5OCwiZXhwIjoxNzAxOTc1Njk4fQ.6i51wKDWyWSspMZdIVUWmQ4kcFeE9nNo_7PZDz4IEdc
+
+---------
+username:admin
+password:admin
+token:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NGE4YmYzZTU2YWY4M2JkZmM2ZDg1NCIsImlhdCI6MTY5OTM4NDMzNywiZXhwIjoxNzAxOTc2MzM3fQ.JTPtCy01zBADzgEqltCoqHTnWfJ7pyHuPGJeGjfU0DE
