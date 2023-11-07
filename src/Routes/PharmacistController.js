@@ -17,51 +17,120 @@ const upload = multer({ storage: storage });
 const getMedicine = async (req, res) => {
   const Name = req.query.Name.toLowerCase();
   if (!Name) {
-    return res.status(400).send({ message: 'Please fill the input', success : false  });
+    return res.status(400).send({ message: 'Please fill the input', success: false });
   }
-  try{
+  try {
     // const Name = req.body;
-     const Medicines= await MedicineModel.findOne({Name});
-     if (!Medicines){
-       return(res.status(400).send({message: "No Medicine with this name", success : false }));
-     }
-     res.status(200).json({Redult : Medicines, success : true });
-     }
-  
-  catch(error){
-     res.status(500).json({message:"Failed getMedicine", success : false })
+    const Medicines = await MedicineModel.findOne({ Name });
+    if (!Medicines) {
+      return (res.status(400).send({ message: "No Medicine with this name", success: false }));
+    }
+    res.status(200).json({ Redult: Medicines, success: true });
   }
- }
+
+  catch (error) {
+    res.status(500).json({ message: "Failed getMedicine", success: false })
+  }
+}
 
 router.get('/getMedicine', getMedicine);
 
 //add another pharmacist with a set username and password
-const createPharmacist = async(req,res) => {
-    try{
-       const Username= req.body.Username;
-       const Name = req.body.Name;
-       const Email = req.body.Email;
-       const Password = req.body.Password;
-       const DateOfBirth = req.body.DateOfBirth;
-       const HourlyRate = req.body.HourlyRate;
-       const Affiliation = req.body.Affiliation;
-       const EducationalBackground = req.body.EducationalBackground;
-       const Position = req.body.Position;
-       const userexist = await PharmacistModel.findOne({Username});
-       if(userexist){
-         res.status(400);
-         throw new Error("Username already exist");
-       }
-       const Pharmacist = new PharmacistModel({Username, Name,Email,Password,DateOfBirth,HourlyRate,Affiliation,EducationalBackground,Position});
-       const NewPharmacist = await Pharmacist.save();
-       res.status(201).json({Result : NewPharmacist, success : true });  
-     }
-    catch (error){
-       res.status(500).json({error: 'Failed OP', success : false })
+
+router.post('/createPharmacist', upload.fields([{name: "ID"},{name:"Degree"},{name:"License"}]), async (req, res) => {
+  try {
+    // Wait for the upload.single('ID') middleware to finish
+    // await upload.single('ID')(req, res, async () => {
+    //   if (!req.file) {
+    //     return res.status(400).send('No file uploaded.');
+    //   }
+
+    // Process the form data and save the pharmacist to the database
+    const Username = req.body.Username;
+    const Name = req.body.Name;
+    const Email = req.body.Email;
+    const Password = req.body.Password;
+    const DateOfBirth = req.body.DateOfBirth;
+    const HourlyRate = req.body.HourlyRate;
+    const Affiliation = req.body.Affiliation;
+    const EducationalBackground = req.body.EducationalBackground;
+    const Position = req.body.Position;
+
+    const userExist = await PharmacistModel.findOne({ Username });
+    if (userExist) {
+      res.status(400);
+      throw new Error('Username already exists');
     }
- }
-router.post('/createPharmacist', createPharmacist);
-   //add a medicine using name w ingredients w price w quantity
+    const pharmacist = new PharmacistModel({
+      Username,
+      Name,
+      Email,
+      Password,
+      DateOfBirth,
+      HourlyRate,
+      Affiliation,
+      EducationalBackground,
+      Position,
+      ID: {
+        data: req.files.ID[0].buffer,
+        contentType: req.files.ID[0].mimetype,
+      },
+      Degree: {
+        data: req.files.Degree[0].buffer,
+        contentType: req.files.Degree[0].mimetype,
+      },
+      License: {
+        data: req.files.License[0].buffer,
+        contentType: req.files.License[0].mimetype,
+      },
+    });
+
+    const newPharmacist = await pharmacist.save();
+
+    res.status(201).json({ Result: newPharmacist, success: true });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ error: 'Failed OP', success: false });
+  }
+});
+
+// ,async(req,res)=>{
+//   try{
+//     const Username= req.body.Username;
+//     const Name = req.body.Name;
+//     const Email = req.body.Email;
+//     const Password = req.body.Password;
+//     const DateOfBirth = req.body.DateOfBirth;
+//     const HourlyRate = req.body.HourlyRate;
+//     const Affiliation = req.body.Affiliation;
+//     const EducationalBackground = req.body.EducationalBackground;
+//     const Position = req.body.Position;
+//     const userexist = await PharmacistModel.findOne({Username});
+//     if(userexist){
+//       res.status(400);
+//       throw new Error("Username already exist");
+//     }
+//     if (!req.file) {
+//      return res.status(400).send('No file uploaded.');
+//  } 
+//     const Pharmacist = new PharmacistModel({Username, Name,Email,Password,DateOfBirth,HourlyRate,Affiliation,EducationalBackground,Position,
+//      Picture:{
+//        data: req.file.buffer,
+//        contentType: req.file.mimetype
+//      }
+//    });
+//     const NewPharmacist = await Pharmacist.save();
+//     res.status(201).json({Result : NewPharmacist, success : true }); 
+
+//   }
+
+//  catch (error){
+//     res.status(500).json({error: 'Failed OP', success : false })
+//  }
+// });
+
+
+//add a medicine using name w ingredients w price w quantity
 //    const addMedicine = async (req, res) => {
 //     try{
 //        const Name = req.body.Name;
@@ -77,14 +146,15 @@ router.post('/createPharmacist', createPharmacist);
 //        const medicine = new MedicineModel({Name,Price,Quantity,ActiveIngredients,MedicalUse});
 //        const NewMedicine = await medicine.save();
 //        res.status(201).json({Result : NewMedicine , success : true });
-     
+
 //     }
 //     catch(error){
 //        res.status(500).json({error:"Cannot do this", success : false })
 //     }
 
 //  }
-const addMedicine = async (req, res) => {
+
+router.post('/addMedicine', upload.single('photo'), async (req, res) => {
   try {
     // Get the ActiveIngredients and MedicalUse inputs
     console.log(req);
@@ -93,7 +163,7 @@ const addMedicine = async (req, res) => {
     const Quantity = req.body.Quantity;
     const ActiveIngredients = req.body.ActiveIngredients;
     const MedicalUse = req.body.MedicalUse;
-    const Sales=0;
+    const Sales = 0;
 
     console.log(req.file.buffer)
 
@@ -113,108 +183,40 @@ const addMedicine = async (req, res) => {
     for (const MedicalUseValue of MedicalUseArray) {
       SplitMedicalUse.push(MedicalUseValue.trim());
     }
-    const medicineExists = await MedicineModel.findOne({Name});
-     if(medicineExists){
-       res.status(500);
-       throw new Error("Medicine already exists");
-     }
+    const medicineExists = await MedicineModel.findOne({ Name });
+    if (medicineExists) {
+      res.status(500);
+      throw new Error("Medicine already exists");
+    }
+
     //router.post('/upload', upload.single('photo'), async (req, res) => {
-      if (!req.body.file) {
-          return res.status(400).send('No file uploaded.');
-      }
-           
-        
-     
-    
+    if (!req.file) {
+      return res.status(400).send('No file uploaded.');
+    }
+
+
+
+
 
     // Update the medicine object with the split ActiveIngredients and MedicalUse values
     const medicine = new MedicineModel({
       Name: req.body.Name,
       Price: req.body.Price,
       Quantity: req.body.Quantity,
-      Sales ,
+      Sales,
       ActiveIngredients: SplitActiveIngredients,
       MedicalUse: SplitMedicalUse,
       Picture: {
         data: req.file.buffer,
         contentType: req.file.mimetype
-    }
-    });
-
-    // Save the medicine object to the database
-    const NewMedicine = await medicine.save();
-
-    // Return the new medicine object to the client
-    res.status(201).json({ Result: NewMedicine, success: true });
-  } catch (error) {
-    // Handle any errors
-    res.status(500).json({ error: 'Cannot do this', success: false });
-  }
-};
-
- router.post('/addMedicine',upload.single('photo'),async (req, res) => {
-  try {
-    // Get the ActiveIngredients and MedicalUse inputs
-    console.log(req);
-    const Name = req.body.Name;
-    const Price = req.body.Price;
-    const Quantity = req.body.Quantity;
-    const ActiveIngredients = req.body.ActiveIngredients;
-    const MedicalUse = req.body.MedicalUse;
-    const Sales=0;
-
-    console.log(req.file.buffer)
-
-    // Split the ActiveIngredients and MedicalUse inputs into arrays
-    const ActiveIngredientsArray = ActiveIngredients.split(',');
-    const MedicalUseArray = MedicalUse.split(',');
-
-    // Create an empty array to store the split ActiveIngredients and MedicalUse values
-    const SplitActiveIngredients = [];
-    const SplitMedicalUse = [];
-
-    // Iterate over the ActiveIngredients and MedicalUse arrays and push each value into the SplitActiveIngredients and SplitMedicalUse arrays
-    for (const ActiveIngredient of ActiveIngredientsArray) {
-      SplitActiveIngredients.push(ActiveIngredient.trim());
-    }
-
-    for (const MedicalUseValue of MedicalUseArray) {
-      SplitMedicalUse.push(MedicalUseValue.trim());
-    }
-    const medicineExists = await MedicineModel.findOne({Name});
-     if(medicineExists){
-       res.status(500);
-       throw new Error("Medicine already exists");
-     }
-     
-    //router.post('/upload', upload.single('photo'), async (req, res) => {
-      if (!req.file) {
-          return res.status(400).send('No file uploaded.');
       }
-           
-
-     
-    
-
-    // Update the medicine object with the split ActiveIngredients and MedicalUse values
-    const medicine = new MedicineModel({
-      Name: req.body.Name,
-      Price: req.body.Price,
-      Quantity: req.body.Quantity,
-      Sales ,
-      ActiveIngredients: SplitActiveIngredients,
-      MedicalUse: SplitMedicalUse,
-      Picture: {
-        data: req.file.buffer,
-        contentType: req.file.mimetype
-    }
     });
 
     // Save the medicine object to the database
     const NewMedicine = await medicine.save();
 
     // Return the new medicine object to the client
-    res.status(201).json({ Result:"Medicine added ", success: true });
+    res.status(201).json({ Result: "Medicine added ", success: true });
   } catch (error) {
     // Handle any errors
     res.status(500).json({ error: error.message, success: false });
@@ -223,16 +225,8 @@ const addMedicine = async (req, res) => {
 
 
 
-
-
-
-
-
-
-
- 
-  const editMedicine = async (req, res) => {
-    try{
+const editMedicine = async (req, res) => {
+  try {
     const medicineName = req.query.medicineName;
     const newPrice = req.query.newPrice;
     const newIngredients = req.query.newIngredients;
@@ -240,23 +234,23 @@ const addMedicine = async (req, res) => {
     updateFields.ActiveIngredients = newIngredients;
     updateFields.Price = newPrice;
     const updatedMedicine = await MedicineModel.findOneAndUpdate(
-      {Name: medicineName },
+      { Name: medicineName },
       updateFields,
       { new: true }
     );
-    
+
     if (!updatedMedicine) {
       return res.status(404).json({ error: 'Medicine not found' });
     }
     res.status(200).json(updatedMedicine);
-   }
-   catch(error){
-    res.status(500).json({error:"Cannot do this"})
- }
+  }
+  catch (error) {
+    res.status(500).json({ error: "Cannot do this" })
+  }
 }
 
 router.get('/editMedicine', async (req, res) => {
-  try{
+  try {
     const medicineName = req.query.medicineName;
     const newPrice = req.query.newPrice;
     const newIngredients = req.query.newIngredients;
@@ -264,7 +258,7 @@ router.get('/editMedicine', async (req, res) => {
     updateFields.ActiveIngredients = newIngredients;
     updateFields.Price = newPrice;
     const updatedMedicine = await MedicineModel.findOneAndUpdate(
-      {Name: medicineName },
+      { Name: medicineName },
       updateFields,
       { new: true }
     );
@@ -272,35 +266,35 @@ router.get('/editMedicine', async (req, res) => {
       return res.status(404).json({ error: 'Medicine not found' });
     }
     res.status(200).json(updatedMedicine);
-   }
-   catch(error){
-    res.status(500).json({error:"Cannot do this"})
- }
+  }
+  catch (error) {
+    res.status(500).json({ error: "Cannot do this" })
+  }
 });
 
-router.put('/editMedicine',editMedicine);
+router.put('/editMedicine', editMedicine);
 
 const getListMed = async (req, res) => {
   //retrieve all users from the database
-  try{
-     const meds= await MedicineModel.find().select({
-      Name:1,
+  try {
+    const meds = await MedicineModel.find().select({
+      Name: 1,
       Quantity: 1,
       Sales: 1,
     });;
-     res.status(200).json({Result : meds, success: true});
-     }
-  
-  catch(error){
-     res.status(500).json({message:"No Medicine listed", success : false})
+    res.status(200).json({ Result: meds, success: true });
   }
- }
- router.get('/getinfoMeds',getListMed)
+
+  catch (error) {
+    res.status(500).json({ message: "No Medicine listed", success: false })
+  }
+}
+router.get('/getinfoMeds', getListMed)
 //SELL MEDICINE 
 router.get('/sellMedicine', async (req, res) => {
   try {
     let medicineName = req.query.medicineName.toLowerCase();
-    let medcheck = await MedicineModel.findOne({Name:medicineName});
+    let medcheck = await MedicineModel.findOne({ Name: medicineName });
 
     if (!medcheck) {
       res.status(404).json({ message: "Medicine doesn't exist", success: false });
@@ -312,10 +306,10 @@ router.get('/sellMedicine', async (req, res) => {
       return;
     }
     let updateFields = {};
-     updateFields.Quantity =  --medcheck.Quantity;
-     updateFields.Sales = ++medcheck.Sales;
-     medcheck = await MedicineModel.findOneAndUpdate(
-      {Name: medicineName },
+    updateFields.Quantity = --medcheck.Quantity;
+    updateFields.Sales = ++medcheck.Sales;
+    medcheck = await MedicineModel.findOneAndUpdate(
+      { Name: medicineName },
       updateFields,
       { new: true }
     );
@@ -325,7 +319,7 @@ router.get('/sellMedicine', async (req, res) => {
 
     res.status(200).json({ message: "Medicine sold successfully", success: true });
   }
-   catch (error) {
+  catch (error) {
     res.status(500).json({ message: "Error in selling medicine", success: false });
   }
 });
@@ -347,5 +341,5 @@ router.get('/get-image/:id', async (req, res) => {
   }
 });
 
-   module.exports={addMedicine,createPharmacist};
-   module.exports = router;
+// module.exports = { addMedicine };
+module.exports = router;

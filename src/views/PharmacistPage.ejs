@@ -1,12 +1,14 @@
 <!doctype html>
 <html>
+
 <head>
   <title>Pharmacist and Medicine Manager</title>
 </head>
+
 <body>
   <h1>Pharmacist and Medicine Manager</h1>
   <h2>Create a Pharmacist</h2>
-  <form action="/Pharma/createPharmacist" method="POST">
+  <form action="/Pharma/createPharmacist" method="POST" enctype="multipart/form-data">
     <input type="text" name="Username" placeholder="Username">
     <input type="text" name="Name" placeholder="Name">
     <input type="email" name="Email" placeholder="Email">
@@ -16,6 +18,11 @@
     <input type="text" name="Affiliation" placeholder="Affiliation">
     <input type="text" name="EducationalBackground" placeholder="Educational Background">
     <input type="text" name="Position" placeholder="Position">
+    <input type="file" name="ID">
+    <br>
+    <input type="file" name="Degree">
+    <br>
+    <input type="file" name="License">
     <button type="submit">Create Pharmacist</button>
   </form>
 
@@ -28,7 +35,7 @@
     <input type="text" name="MedicalUse" placeholder="Medical Use">
     <input type="file" name="photo">
     <button type="submit">Add Medicine</button>
-</form>
+  </form>
   <h2>Edit a Medicine</h2>
   <form action="/Pharma/editMedicine" method="get">
     <input type="text" name="medicineName" placeholder="Medicine Name">
@@ -51,42 +58,42 @@
   <input type="text" name="MedicalUse" placeholder="MedicalUse" id="MedicalUse">
   <button type="submit" onclick="filterMedicines()"> Get All</button>
   <div id="medicine_filter"></div>
-  
-<body>
-  <h1>Search for a medicine using name</h1>
+
+  <body>
+    <h1>Search for a medicine using name</h1>
     Name: <br>
-      <input type="text" name="Name" id="medName"> <br>
-      <button type="submit" onclick="searchForMedicine()"> Get All</button>
-      <div id="medicine_info"></div>
-</body>
-<h2>GET ALL MEDICINES INFOO<h2>
-  <button type="submit" onclick="getAllMedicines()"> Get All</button>
-  <div id="medicine_list"></div>
-  <script>
-    //getAllMedicines()
-    async function getAllMedicines() {
-              try {
-                // PICTURE , PRICE , DESCRIPTION
-  
-                  // Remove the colon from the URL placeholder
-                  var response = await fetch(`http://localhost:8000/Admin/getAllMedicine/`);
-                  var res = await response.json();
-  
-  
-                  if (!res.success)
-                      return alert(res.message);
-  
-                  var list = res.Result
-                  //console.log(list)
-                  var cartoona = ''
-                 for (let i = 0; i < list.length; i++) {
-                  
-                  if(!list[i].Picture)
-                    continue
+    <input type="text" name="Name" id="medName"> <br>
+    <button type="submit" onclick="searchForMedicine()"> Get All</button>
+    <div id="medicine_info"></div>
+  </body>
+  <h2>GET ALL MEDICINES INFOO<h2>
+      <button type="submit" onclick="getAllMedicines()"> Get All</button>
+      <div id="medicine_list"></div>
+      <script>
+        //getAllMedicines()
+        async function getAllMedicines() {
+          try {
+            // PICTURE , PRICE , DESCRIPTION
 
-                    
-                    console.log(list[i]);
-                      cartoona += `
+            // Remove the colon from the URL placeholder
+            var response = await fetch(`http://localhost:8000/Admin/getAllMedicine/`);
+            var res = await response.json();
+
+
+            if (!res.success)
+              return alert(res.message);
+
+            var list = res.Result
+            //console.log(list)
+            var cartoona = ''
+            for (let i = 0; i < list.length; i++) {
+
+              if (!list[i].Picture)
+                continue
+
+
+              console.log(list[i]);
+              cartoona += `
                       <ul>
                         <li><strong>Pic:</strong>
                           <img src= "/Pharma/get-image/${list[i]?._id}">
@@ -109,42 +116,42 @@
                       ${list[i].MedicalUse}
                   </li>
           </ul>`
-                  }
-  
-                  var element = document.getElementById('medicine_list')
-                  element.innerHTML = cartoona
+            }
 
-             // }
-                }
-              catch (error) {
-                  console.error('Error fetching patient data:', error);
-              }
+            var element = document.getElementById('medicine_list')
+            element.innerHTML = cartoona
+
+            // }
           }
-          async function filterMedicines() {
-              try {
-                // PICTURE , PRICE , DESCRIPTION
-                  var MedicalUse=document.getElementById('MedicalUse').value
-                  console.log(MedicalUse)
-                  // Remove the colon from the URL placeholder
-                  var response = await fetch(`http://localhost:8000/patient/filterMedical/${MedicalUse}`);
-                  var res = await response.json();
-  
-  
-                  if (!res.success)
-                      return alert(res.message);
-  
-                  var list = res.Result
-                  console.log(list)
-                  var cartoona = ''
-                  
-                  for (let i = 0; i < list.length; i++) {
-                  
-                  if(!list[i].Picture)
-                    continue
+          catch (error) {
+            console.error('Error fetching patient data:', error);
+          }
+        }
+        async function filterMedicines() {
+          try {
+            // PICTURE , PRICE , DESCRIPTION
+            var MedicalUse = document.getElementById('MedicalUse').value
+            console.log(MedicalUse)
+            // Remove the colon from the URL placeholder
+            var response = await fetch(`http://localhost:8000/patient/filterMedical/${MedicalUse}`);
+            var res = await response.json();
 
-                    
-                    console.log(list[i]);
-                      cartoona += `
+
+            if (!res.success)
+              return alert(res.message);
+
+            var list = res.Result
+            console.log(list)
+            var cartoona = ''
+
+            for (let i = 0; i < list.length; i++) {
+
+              if (!list[i].Picture)
+                continue
+
+
+              console.log(list[i]);
+              cartoona += `
                       <ul>
                         <li><strong>Pic:</strong>
                           <img src= "/Pharma/get-image/${list[i]?._id}">
@@ -167,37 +174,37 @@
                       ${list[i].MedicalUse}
                   </li>
           </ul>`
-                  }
-                  var element = document.getElementById('medicine_filter')
-                  element.innerHTML = cartoona
+            }
+            var element = document.getElementById('medicine_filter')
+            element.innerHTML = cartoona
 
-             // }
-                }
-              catch (error) {
-                  console.error('Error fetching patient data:', error);
-              }
+            // }
           }
-          async function searchForMedicine() {
-              try {
-                // PICTURE , PRICE , DESCRIPTION
-                  var name=document.getElementById('medName').value
-                  // Remove the colon from the URL placeholder
-                  var response = await fetch(`http://localhost:8000/patient/getMedicine/${name}`);
-                  var res = await response.json();
-  
-  
-                  if (!res.success)
-                      return alert(res.message);
-  
-                  var list = res.Result
-                  console.log(list)
-                  var cartoona = ''
-                  
-                  
+          catch (error) {
+            console.error('Error fetching patient data:', error);
+          }
+        }
+        async function searchForMedicine() {
+          try {
+            // PICTURE , PRICE , DESCRIPTION
+            var name = document.getElementById('medName').value
+            // Remove the colon from the URL placeholder
+            var response = await fetch(`http://localhost:8000/patient/getMedicine/${name}`);
+            var res = await response.json();
 
-                    
-                    console.log(list);
-                      cartoona += `
+
+            if (!res.success)
+              return alert(res.message);
+
+            var list = res.Result
+            console.log(list)
+            var cartoona = ''
+
+
+
+
+            console.log(list);
+            cartoona += `
                       <ul>
                         <li><strong>Pic:</strong>
                           <img src= "/Pharma/get-image/${list?._id}">
@@ -220,19 +227,19 @@
                       ${list.MedicalUse}
                   </li>
           </ul>`
-                  
-  
-                  var element = document.getElementById('medicine_info')
-                  element.innerHTML = cartoona
 
-             // }
-                }
-              catch (error) {
-                  console.error('Error fetching patient data:', error);
-              }
+
+            var element = document.getElementById('medicine_info')
+            element.innerHTML = cartoona
+
+            // }
           }
-  
-    </script>
-</body>
-</html>
+          catch (error) {
+            console.error('Error fetching patient data:', error);
+          }
+        }
 
+      </script>
+</body>
+
+</html>

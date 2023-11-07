@@ -31,7 +31,24 @@ const PharmacistSchema = new Schema({
     EducationalBackground: {
         type: String,
         required: true 
+    },
+    ID: {
+      data: Buffer,
+      contentType:String,
+      required: false
+    },
+    Degree: {
+      data: Buffer,
+      contentType:String,
+      required: false
     }
+,
+    License: {
+      data: Buffer,
+      contentType:String,
+      required: false
+    }
+
   }, { timestamps: true });
   
   const Pharmacist = userModel.discriminator('Pharmacist', PharmacistSchema);
