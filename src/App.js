@@ -52,7 +52,8 @@ app.get("", (req, res) => {
 
 
 // #Routing to userController here
-
+const cors = require('cors');
+app.use(cors());
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 app.use('/Admin', Admin);

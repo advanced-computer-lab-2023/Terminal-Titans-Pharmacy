@@ -1,9 +1,10 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useState } from 'react';
+
 // Screens
 import Homescreen from './Screens/Homescreen';
-import Meds from './Screens/Meds';
+import Meds2 from './Screens/Meds';
 import CartScreen from './Screens/cartScreen';
 
 // Components
@@ -29,7 +30,8 @@ function App() {
       <main>
         <Routes>
           <Route path="/patient" element={<Homescreen />} />
-          <Route path="/medicine/:id" element={<Meds />} />
+          <Route path="/medicine" element={<Meds2 />} />
+          <Route path="/medicine/:medicineId" element={<Meds2 />}/>
           <Route path="/cart" element={<CartScreen />} />
         </Routes>
       </main>

@@ -95,25 +95,48 @@ const getMedicine = async (req, res) => {
   // router.get('/viewAvailableMedicines', viewInfo);
   // Import required packages
 
-// Add a medicine to the cart
-router.post('/addToCart', async (req, res) => {
-  const medicineId = req.body.medicineId;
+/// Add to cart route
+router.post('/addToCart/:medicineId', async (req, res) => {
+  try {
+    const { medicineId } = req.params;
 
-  // Check if the item is already in the cart
-  const existingCartItem = await CartItem.findOne({ medicineId });
+    // Find the medicine and existing cart item
+    const medicine = await MedicineModel.findById(medicineId);
+    const existingCartItem = await CartItem.findOne({ medicineId });
 
-  if (existingCartItem) {
-    // If it exists, increment the quantity
-    existingCartItem.quantity += 1;
-    await existingCartItem.save();
-    res.json(existingCartItem);
-  } else {
-    // If not, create a new cart item
-    const newCartItem = new CartItem({ medicineId });
-    await newCartItem.save();
-    res.json(newCartItem);
+    if (!medicine) {
+      return res.status(404).json({ error: 'Medicine not found' });
+    }
+
+    // Check if the item is already in the cart
+    if (existingCartItem) {
+      // Check if there's enough quantity in stock
+      if (medicine.Quantity - existingCartItem.quantity > 0) {
+        // If it exists, increment the quantity
+        existingCartItem.quantity += 1;
+        await existingCartItem.save();
+        // Decrement the medicine quantity
+        medicine.Quantity -= 1;
+        await medicine.save();
+        res.json(existingCartItem);
+      } else {
+        res.status(400).json({ error: 'Not enough stock available' });
+      }
+    } else {
+      // If not, create a new cart item
+      const newCartItem = new CartItem({ medicineId });
+      await newCartItem.save();
+      // Decrement the medicine quantity
+      medicine.Quantity -= 1;
+      await medicine.save();
+      res.json(newCartItem);
+    }
+  } catch (error) {
+    console.error('Error adding to cart:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 // Add this route handler to your Express app (app.js or your main application file)
 
