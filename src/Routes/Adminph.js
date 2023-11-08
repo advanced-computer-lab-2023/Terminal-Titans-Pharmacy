@@ -235,13 +235,13 @@ router.post('/Acceptance/:username', protect, async (req, res) => {
       await pharmacist.save();
       res.status(200).json({
         success: true,
-        message: "User accepted successfully"
+        message: "Pharmacist accepted successfully"
       });
     }
     else {
       res.status(500).json({
         success: false,
-        message: "There are no users to accept"
+        message: "There are no pharmacists to accept"
       });
     }
   } catch (error) {
@@ -261,13 +261,13 @@ router.delete('/Rejection/:username', protect, async (req, res) => {
       await ReqPharmModel.deleteOne(user);
       res.status(200).json({
         success: true,
-        message: "User rejected successfully"
+        message: "Pharmacist rejected successfully"
       });
     }
     else {
       res.status(500).json({
         success: false,
-        message: "User doesn't exist"
+        message: "Pharmacist doesn't exist"
       });
     }
   } catch (error) {
