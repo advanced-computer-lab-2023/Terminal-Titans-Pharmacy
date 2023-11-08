@@ -210,4 +210,73 @@ const viewReqPharm = async (req, res) => {
 }
 router.get('/viewReqPharm', viewReqPharm);
 
+router.post('/Acceptance/:username', protect, async (req, res) => {
+  try {
+    const { username } = req.params
+    console.log(username, req.params.username);
+    const user = await ReqPharmModel.findOne({ Username:username });
+    console.log(user);
+    if (user) {
+      await ReqPharmModel.deleteOne(user);
+
+      const pharmacist= new phModel({
+          Username: user.Username,
+          Password:user.Password,
+          Name: user.Name,
+          Email: user.Email,
+          DateOfBirth : user.DateOfBirth,
+          HourlyRate: user.HourlyRate,
+          Affiliation : user.Affiliation,
+          EducationalBackground : user.EducationalBackground,
+          ID: user.ID,
+          Degree: user.Degree,
+          License: user.License
+      })
+      await pharmacist.save();
+      res.status(200).json({
+        success: true,
+        message: "User accepted successfully"
+      });
+    }
+    else {
+      res.status(500).json({
+        success: false,
+        message: "There are no users to accept"
+      });
+    }
+  } catch (error) {
+    console.error('Error: ', error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    })
+  }
+})
+
+router.delete('/Rejection/:username', protect, async (req, res) => {
+  try {
+    const { username } = req.params;
+    const user = await ReqPharmModel.findOne({Username: username });
+    if (user) {
+      await ReqPharmModel.deleteOne(user);
+      res.status(200).json({
+        success: true,
+        message: "User rejected successfully"
+      });
+    }
+    else {
+      res.status(500).json({
+        success: false,
+        message: "User doesn't exist"
+      });
+    }
+  } catch (error) {
+    console.error('Error: ', error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    })
+  }
+})
+
 module.exports = router;
