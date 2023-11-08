@@ -233,19 +233,34 @@ router.post('/checkout', async (req, res) => {
 
 // Add a new delivery address for a patient
 router.post('/addAddress', async (req, res) => {
-  const { patientId, newAddress } = req.body; // Assuming you send patientId and newAddress in the request body
-
+  const { patientId, newAddress} = req.body; // Assuming you send patientId and newAddress in the request body
+  console.log(newAddress);
   try {
     // Find the patient by their ID
     const patient = await PatientModel.findById(patientId);
-
+    console.log(patient);
     if (!patient) {
       return res.status(404).json({ error: 'Patient not found' });
     }
 
-    // Add the new address to the array of addresses
-    patient.address.push(newAddress);
+    // Check if the patient has an address array
+    if (!patient.address) {
+      patient.address = [];
+      console.log(patient.address);
+    }
 
+    // Validate the new address
+    if (typeof newAddress !== 'string') {
+      return res.status(400).json({ error: 'Invalid address format' });
+    }
+
+    // Add the new address to the array of addresses
+    //patient.address.push(newAddress);
+    if (patient.address.includes(newAddress)) {
+      return res.status(400).json({ error: 'Address already exists for this patient' });
+    }
+    patient.address.push(newAddress);
+    console.log(patient.address);
     // Save the updated patient data
     const updatedPatient = await patient.save();
 
@@ -255,6 +270,7 @@ router.post('/addAddress', async (req, res) => {
     res.status(500).json({ error: 'Failed to add the address' });
   }
 });
+
 
 // Retrieve the patient's addresses
 router.get('/getAddresses/:patientId', async (req, res) => {

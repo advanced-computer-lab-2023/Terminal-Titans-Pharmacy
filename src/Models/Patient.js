@@ -43,7 +43,7 @@ const PatientSchema = new Schema({
       required: true
     },
     address: {
-      type : String,
+      type : Array,
       required: false
     }
 
