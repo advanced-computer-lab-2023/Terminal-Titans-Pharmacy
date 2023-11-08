@@ -41,6 +41,10 @@ const PatientSchema = new Schema({
     EmergencyContactRelationToThePatient: {
       type : String,
       required: true
+    },
+    address: {
+      type : Array,
+      required: false
     }
 
   }, { timestamps: true });
