@@ -1,5 +1,7 @@
 const PatientModel = require("../Models/Patient.js");
 const MedicineModel = require("../Models/Medicine.js");
+const CartItem = require("../Models/Cart.js");
+const Order = require("../Models/Orders.js");
 const express = require('express');
 const router = express.Router();
 
@@ -70,9 +72,254 @@ const getMedicine = async (req, res) => {
   //  const pic = req.query.Picture;
   //  const price = req.query.Price;
 
-
+  router.get('/Admin/getAllMedicine', async (req, res) => {
+    try {
+      // Make a request to your medicine data source
+      const response = await fetch('http://localhost:8000/Admin/getAllMedicine/'); // Replace with your actual API endpoint
+      const data = await response.json();
+  
+      if (!data.success) {
+        return res.status(400).json({ success: false, message: data.message });
+      }
+  
+      const medicines = data.Result.filter((medicine) => medicine.Picture);
+      res.status(200).json({ success: true, Result: medicines });
+    } catch (error) {
+      console.error('Error fetching medicine data:', error);
+      res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+  });
+  
 
   // }
   // router.get('/viewAvailableMedicines', viewInfo);
+  // Import required packages
+
+// Add a medicine to the cart
+router.post('/addToCart', async (req, res) => {
+  const medicineId = req.body.medicineId;
+
+  // Check if the item is already in the cart
+  const existingCartItem = await CartItem.findOne({ medicineId });
+
+  if (existingCartItem) {
+    // If it exists, increment the quantity
+    existingCartItem.quantity += 1;
+    await existingCartItem.save();
+    res.json(existingCartItem);
+  } else {
+    // If not, create a new cart item
+    const newCartItem = new CartItem({ medicineId });
+    await newCartItem.save();
+    res.json(newCartItem);
+  }
+});
+
+// Add this route handler to your Express app (app.js or your main application file)
+
+// Delete an item from the cart
+router.delete('/deleteCartItem/:cartItemId', async (req, res) => {
+  const cartItemId = req.params.cartItemId;
+
+  try {
+    // Find the cart item by its unique ID and remove it
+    const deletedCartItem = await CartItem.findByIdAndRemove(cartItemId);
+
+    if (!deletedCartItem) {
+      return res.status(404).json({ error: 'Cart item not found' });
+    }
+
+    res.json({ message: 'Cart item deleted successfully', deletedCartItem });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// View the cart
+router.get('/cart', async (req, res) => {
+  const cartItems = await CartItem.find();
+  res.json(cartItems);
+});
+
+// Update the quantity of an item in the cart
+router.put('/updateCartItem/:cartItemId', async (req, res) => {
+  const cartItemId = req.params.cartItemId;
+  const newQuantity = req.body.quantity;
+
+  try {
+    // Find the cart item by its unique ID
+    const cartItem = await CartItem.findById(cartItemId);
+
+    if (!cartItem) {
+      return res.status(404).json({ error: 'Cart item not found' });
+    }
+
+    // Update the quantity
+    cartItem.quantity = newQuantity;
+    await cartItem.save();
+
+    res.json({ message: 'Cart item quantity updated successfully', updatedCartItem: cartItem });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
+
+
+
+// Checkout and create an order
+router.post('/checkout', async (req, res) => {
+  try {
+    // Get the items from the cart
+    const cartItems = await CartItem.find();
+    console.log(cartItems);
+
+    // Initialize variables for order creation
+    let total = 0;
+    const itemsForOrder = [];
+
+    // Calculate the total cost and construct the order
+    for (const cartItem of cartItems) {
+      const medicine = await MedicineModel.findById(cartItem.medicineId);
+      console.log(medicine);
+    
+      if (medicine) {
+        const itemTotal = cartItem.quantity * medicine.Price;
+        console.log('Item Total:', itemTotal); // Add this line for debugging
+        total += itemTotal;
+    
+        itemsForOrder.push({
+          medicineId: cartItem.medicineId,
+          quantity: cartItem.quantity,
+          price: medicine.Price, // Use the price from the medicine schema
+        });
+      } else {
+        // Handle the case where the medicine is not found
+        return res.status(400).json({ error: 'Medicine not found' });
+      }
+    
+    }
+
+    // Debugging: Output the 'total' value to the console for verification
+    console.log('Total before setting:', total);
+
+    // Check if the cart is empty and set 'total' to 0 in that case
+    if (itemsForOrder.length === 0) {
+      total = 0;
+    }
+
+    // Debugging: Output the 'total' value after setting it
+    console.log('Total after setting:', total);
+
+    // Create the order in the database
+    const newOrder = new Order({
+      items: itemsForOrder,
+      total,
+    });
+    await newOrder.save();
+
+    // Clear the cart by removing all cart items
+    await CartItem.deleteMany();
+
+    res.json({ message: 'Checkout successful. Your order has been placed.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Checkout failed. Server error.' });
+  }
+});
+
+// Add a new delivery address for a patient
+router.post('/addAddress', async (req, res) => {
+  const { patientId, newAddress } = req.body; // Assuming you send patientId and newAddress in the request body
+
+  try {
+    // Find the patient by their ID
+    const patient = await PatientModel.findById(patientId);
+
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found' });
+    }
+
+    // Add the new address to the array of addresses
+    patient.address.push(newAddress);
+
+    // Save the updated patient data
+    const updatedPatient = await patient.save();
+
+    res.json({ message: 'Address added successfully', patient: updatedPatient });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to add the address' });
+  }
+});
+
+// Retrieve the patient's addresses
+router.get('/getAddresses/:patientId', async (req, res) => {
+  const patientId = req.params.patientId;
+
+  try {
+    // Find the patient by their ID
+    const patient = await PatientModel.findById(patientId);
+
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found' });
+    }
+
+    const address = patient.address; // Retrieve the patient's addresses
+
+    res.json({ address });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to retrieve addresses' });
+  }
+});
+
+// Retrieve order details and status
+router.get('/getOrder/:orderId', async (req, res) => {
+  const orderId = req.params.orderId;
+
+  try {
+    // Find the order by its ID
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    // Return order details and status
+    res.json({ order });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to retrieve order details' });
+  }
+});
+
+// Cancel an order
+router.put('/cancelOrder/:orderId', async (req, res) => {
+  const orderId = req.params.orderId;
+
+  try {
+    // Find the order by its ID
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    // Update the order's status to "canceled"
+    order.status = 'canceled';
+
+    // Save the updated order data
+    await order.save();
+
+    res.json({ message: 'Order canceled successfully', order });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to cancel the order' });
+  }
+});
 
    module.exports = router;
