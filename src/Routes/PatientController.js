@@ -99,44 +99,50 @@ const getMedicine = async (req, res) => {
 router.post('/addToCart/:medicineId', async (req, res) => {
   try {
     const { medicineId } = req.params;
+    const quantity = parseInt(req.query.quantity); // Parse the quantity from the query string as an integer
+   // Find the medicine and existing cart item
+   const medicine = await MedicineModel.findById(medicineId);
+   const existingCartItem = await CartItem.findOne({ medicineId });
 
-    // Find the medicine and existing cart item
-    const medicine = await MedicineModel.findById(medicineId);
-    const existingCartItem = await CartItem.findOne({ medicineId });
+   if (!medicine) {
+     return res.status(404).json({ error: 'Medicine not found' });
+   }
 
-    if (!medicine) {
-      return res.status(404).json({ error: 'Medicine not found' });
-    }
+   if (existingCartItem) {
+     if (quantity <= 0) {
+       return res.status(400).json({ error: 'Invalid quantity selected' });
+     }
 
-    // Check if the item is already in the cart
-    if (existingCartItem) {
-      // Check if there's enough quantity in stock
-      if (medicine.Quantity - existingCartItem.quantity > 0) {
-        // If it exists, increment the quantity
-        existingCartItem.quantity += 1;
-        await existingCartItem.save();
-        // Decrement the medicine quantity
-        medicine.Quantity -= 1;
-        await medicine.save();
-        res.json(existingCartItem);
-      } else {
-        res.status(400).json({ error: 'Not enough stock available' });
-      }
-    } else {
-      // If not, create a new cart item
-      const newCartItem = new CartItem({ medicineId });
-      await newCartItem.save();
-      // Decrement the medicine quantity
-      medicine.Quantity -= 1;
-      await medicine.save();
-      res.json(newCartItem);
-    }
-  } catch (error) {
-    console.error('Error adding to cart:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+     // Check if there's enough quantity in stock
+     if (medicine.Quantity - existingCartItem.quantity >= quantity) {
+       // If it exists, update the quantity
+       existingCartItem.quantity += quantity;
+       await existingCartItem.save();
+       // Decrement the medicine quantity
+       medicine.Quantity -= quantity;
+       await medicine.save();
+       res.json(existingCartItem);
+     } else {
+       res.status(400).json({ error: 'Not enough stock available' });
+     }
+   } else {
+     if (quantity <= 0) {
+       return res.status(400).json({ error: 'Invalid quantity selected' });
+     }
+
+     // If not, create a new cart item
+     const newCartItem = new CartItem({ medicineId, quantity });
+     await newCartItem.save();
+     // Decrement the medicine quantity
+     medicine.Quantity -= quantity;
+     await medicine.save();
+     res.json(newCartItem);
+   }
+ } catch (error) {
+   console.error('Error adding to cart:', error);
+   res.status(500).json({ error: 'Internal server error' });
+ }
 });
-
 
 // Add this route handler to your Express app (app.js or your main application file)
 
