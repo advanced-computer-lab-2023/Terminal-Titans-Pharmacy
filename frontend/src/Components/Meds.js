@@ -49,32 +49,76 @@
 // export default Meds;
 
 // Meds.js (Meds component)
+// import React from 'react';
+// import { Link } from 'react-router-dom';
+
+// const Meds = ({ medicines }) => {
+//     return (
+//         <div className="Medcines">
+//             {medicines.map((medicine) => (
+//                 <div key={medicine.id} className="medicine">
+//                     {medicine.Picture && medicine.Picture.data && medicine.Picture.contentType && (
+//                          <img
+//                          src={`data:${medicine.Picture.contentType};base64,${arrayBufferToBase64(medicine.Picture.data.data)}`}
+//                          alt={medicine.Name}
+//                         />
+//                     )}
+//                     <div className="meds_info">
+//                         <p className="info_name">{medicine.Name}</p>
+//                         <p className="infooo">{medicine.MedicalUse.join(' ')}</p>
+//                         <p className="price">${medicine.Price}</p>
+//                         <Link to={`/medicine?medicineId=${medicine._id}`} className="info_buttom">
+//                             View
+//                         </Link>
+//                     </div>
+//                 </div>
+//             ))}
+//         </div>
+//     );
+// };
+
+// export default Meds;
+// Utility function to convert ArrayBuffer to Base64
 import React from 'react';
 import { Link } from 'react-router-dom';
+function arrayBufferToBase64(buffer) {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+
+  for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+  }
+
+  return btoa(binary);
+}
+
+// Your component code
+
 
 const Meds = ({ medicines }) => {
-    return (
-        <div className="Medcines">
-            {medicines.map((medicine) => (
-                <div key={medicine.id} className="medicine">
-                    {medicine.Picture && (
-                        <img
-                            src={`data:image/jpeg;base64,${medicine.Picture.data.toString('base64')}`}
-                            alt={medicine.Name}
-                        />
-                    )}
-                    <div className="meds_info">
-                        <p className="info_name">{medicine.Name}</p>
-                        <p className="infooo">{medicine.MedicalUse.join(' ')}</p>
-                        <p className="price">${medicine.Price}</p>
-                        <Link to={`/medicine?medicineId=${medicine._id}`} className="info_buttom">
-                            View
-                        </Link>
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
+  return (
+      <div className="Medcines">
+          {medicines.map((medicine) => (
+              <div key={medicine.id} className="medicine">
+                  {medicine.Picture && medicine.Picture.data && medicine.Picture.contentType && (
+                      <img
+                          src={`data:${medicine.Picture.contentType};base64,${arrayBufferToBase64(medicine.Picture.data.data)}`}
+                          alt={medicine.Name}
+                      />
+                  )}
+                  <div className="meds_info">
+                      <p className="info_name">{medicine.Name}</p>
+                      <p className="infooo">{medicine.MedicalUse.join(' ')}</p>
+                      <p className="price">${medicine.Price}</p>
+                      <Link to={`/medicine?medicineId=${medicine._id}`} className="info_buttom">
+                          View
+                      </Link>
+                  </div>
+              </div>
+          ))}
+      </div>
+  );
 };
 
 export default Meds;

@@ -96,52 +96,111 @@ const getMedicine = async (req, res) => {
   // Import required packages
 
 /// Add to cart route
+// router.post('/addToCart/:medicineId', async (req, res) => {
+//   try {
+//     const { medicineId } = req.params;
+//     const quantity = parseInt(req.body.quantity); // Parse the quantity from the query string as an integer
+//    // Find the medicine and existing cart item
+//    const medicine = await MedicineModel.findById(medicineId);
+//    console.log(medicineId);
+//    const existingCartItem = await CartItem.findOne({ medicineId });
+//    console.log(existingCartItem);
+//     console.log(quantity);
+//    if (!medicine) {
+//      return res.status(404).json({ error: 'Medicine not found' });
+//    }
+
+//    if (existingCartItem) {
+//      if (quantity <= 0) {
+//        return res.status(400).json({ error: 'Invalid quantity selected' });
+//      }
+
+//      // Check if there's enough quantity in stock
+//      console.log(existingCartItem.quantity);
+//      console.log(medicine.Quantity);
+//      if (medicine.Quantity - quantity >= 0) {
+//        // If it exists, update the quantity
+//        existingCartItem.quantity += quantity;
+//        await existingCartItem.save();
+//        // Decrement the medicine quantity
+//        medicine.Quantity -= quantity;
+//        console.log(medicine.Quantity);
+//        await medicine.save();
+//        res.json(existingCartItem);
+//      } else {
+//        res.status(400).json({ error: 'Not enough stock available' });
+//      }
+//    } else {
+//      if (quantity <= 0) {
+//        return res.status(400).json({ error: 'Invalid quantity selected' });
+//      }
+
+//      // If not, create a new cart item
+//      const newCartItem = new CartItem({ medicineId, quantity });
+//      await newCartItem.save();
+//      // Decrement the medicine quantity
+//      medicine.Quantity -= quantity;
+//      await medicine.save();
+//      res.json(newCartItem);
+//    }
+//  } catch (error) {
+//    console.error('Error adding to cart:', error);
+//    res.status(500).json({ error: 'Internal server error' });
+//  }
+// });
 router.post('/addToCart/:medicineId', async (req, res) => {
   try {
     const { medicineId } = req.params;
-    const quantity = parseInt(req.query.quantity); // Parse the quantity from the query string as an integer
-   // Find the medicine and existing cart item
-   const medicine = await MedicineModel.findById(medicineId);
-   const existingCartItem = await CartItem.findOne({ medicineId });
+    const quantity = parseInt(req.body.quantity); // Parse the quantity from the request body as an integer
 
-   if (!medicine) {
-     return res.status(404).json({ error: 'Medicine not found' });
-   }
+    // Find the medicine and existing cart item
+    const medicine = await MedicineModel.findById(medicineId);
+    const existingCartItem = await CartItem.findOne({ medicineId });
 
-   if (existingCartItem) {
-     if (quantity <= 0) {
-       return res.status(400).json({ error: 'Invalid quantity selected' });
-     }
+    if (!medicine) {
+      return res.status(404).json({ error: 'Medicine not found' });
+    }
 
-     // Check if there's enough quantity in stock
-     if (medicine.Quantity - existingCartItem.quantity >= quantity) {
-       // If it exists, update the quantity
-       existingCartItem.quantity += quantity;
-       await existingCartItem.save();
-       // Decrement the medicine quantity
-       medicine.Quantity -= quantity;
-       await medicine.save();
-       res.json(existingCartItem);
-     } else {
-       res.status(400).json({ error: 'Not enough stock available' });
-     }
-   } else {
-     if (quantity <= 0) {
-       return res.status(400).json({ error: 'Invalid quantity selected' });
-     }
+    if (existingCartItem) {
+      if (quantity <= 0) {
+        return res.status(400).json({ error: 'Invalid quantity selected' });
+      }
 
-     // If not, create a new cart item
-     const newCartItem = new CartItem({ medicineId, quantity });
-     await newCartItem.save();
-     // Decrement the medicine quantity
-     medicine.Quantity -= quantity;
-     await medicine.save();
-     res.json(newCartItem);
-   }
- } catch (error) {
-   console.error('Error adding to cart:', error);
-   res.status(500).json({ error: 'Internal server error' });
- }
+      // Check if there's enough quantity in stock
+      if (medicine.Quantity - quantity >= 0) {
+        // If it exists, update the quantity and calculate the new price
+        existingCartItem.quantity += quantity;
+        existingCartItem.price = existingCartItem.quantity * medicine.Price; // Calculate the new price
+        await existingCartItem.save();
+
+        // Decrement the medicine quantity
+        medicine.Quantity -= quantity;
+        await medicine.save();
+
+        res.json(existingCartItem);
+      } else {
+        res.status(400).json({ error: 'Not enough stock available' });
+      }
+    } else {
+      if (quantity <= 0) {
+        return res.status(400).json({ error: 'Invalid quantity selected' });
+      }
+
+      // If not, create a new cart item and calculate the price
+      const newCartItem = new CartItem({ medicineId, quantity });
+      newCartItem.price = newCartItem.quantity * medicine.Price; // Calculate the price
+      await newCartItem.save();
+
+      // Decrement the medicine quantity
+      medicine.Quantity -= quantity;
+      await medicine.save();
+
+      res.json(newCartItem);
+    }
+  } catch (error) {
+    console.error('Error adding to cart:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 // Add this route handler to your Express app (app.js or your main application file)
@@ -194,11 +253,27 @@ router.put('/updateCartItem/:cartItemId', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+router.get('/cart/total', async (req, res) => {
+  try {
+    // Use the aggregate pipeline to calculate the total price
+    const totalResult = await CartItem.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalPrice: { $sum: { $multiply: ['$price', '$quantity'] } }
+        }
+      }
+    ]);
 
-
-
-
-
+    // If there are results, send the total price; otherwise, set it to 0
+    const totalPrice = totalResult.length > 0 ? totalResult[0].totalPrice : 0;
+    console.log(totalPrice);
+    res.json({ totalPrice });
+  } catch (error) {
+    console.error('Error fetching total price:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 // Checkout and create an order
 router.post('/checkout', async (req, res) => {
   try {

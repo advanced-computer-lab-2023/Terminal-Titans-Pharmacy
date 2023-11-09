@@ -133,6 +133,17 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 import './Meds.css';
+function arrayBufferToBase64(buffer) {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+  
+    for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+  
+    return btoa(binary);
+  }
 
 const Meds2 = () => {
     const [medicines, setMedicines] = useState([]);
@@ -184,30 +195,36 @@ const Meds2 = () => {
 
     const handleAddToCart = async () => {
         try {
-            if (selectedQuantity > 0 && selectedQuantity <= medicine.Quantity) {
-                console.log('Medicine ID:', medicine._id);
-                const response = await axios.post(
-                    `http://localhost:8000/Patient/addToCart/${medicine._id}?quantity=${selectedQuantity}`
-                );
-    
-                if (response.status === 200) {
-                    const cartItem = response.data;
-                    console.log('Added to cart:', cartItem);
-    
-                    // Update the quantity based on the selected quantity using functional update
-                    setMedicines((prevMedicines) => {
-                        const updatedMedicines = [...prevMedicines];
-                        const index = updatedMedicines.findIndex((m) => m._id === medicine._id);
-                        if (index !== -1) {
-                            updatedMedicines[index].Quantity -= selectedQuantity;
-                        }
-                        return updatedMedicines;
-                    });
-                } else {
-                    console.error('Failed to add to cart');
-                }
-            } else {
+            // Validate selectedQuantity
+            const quantityToAdd = parseInt(selectedQuantity, 10);
+            if (isNaN(quantityToAdd) || quantityToAdd <= 0) {
                 console.error('Invalid quantity selected');
+                return;
+            }
+    
+            const response = await axios.post(
+                `http://localhost:8000/Patient/addToCart/${medicine._id}`,
+                { quantity: quantityToAdd }
+            );
+    
+            if (response.status === 200) {
+                const cartItem = response.data;
+                console.log('Added to cart:', cartItem);
+    
+                // Update the quantity based on the selected quantity using functional update
+                setMedicines((prevMedicines) => {
+                    const updatedMedicines = [...prevMedicines];
+                    const index = updatedMedicines.findIndex((m) => m._id === medicine._id);
+                    if (index !== -1) {
+                        updatedMedicines[index].Quantity -= quantityToAdd/2;
+                    }
+                    return updatedMedicines;
+                });
+    
+                // Reset the selected quantity to 1 after successful addition
+                setSelectedQuantity(1);
+            } else {
+                console.error('Failed to add to cart');
             }
         } catch (error) {
             console.error('Error adding to cart:', error);
@@ -218,9 +235,9 @@ const Meds2 = () => {
         <div className="meds">
             <div className="medscreen_left">
                 <div className="left_img">
-                    {medicine.Picture && (
+                    {medicine.Picture && medicine.Picture.data && medicine.Picture.contentType && (
                         <img
-                            src={`data:image/jpeg;base64,${medicine.Picture.data.toString('base64')}`}
+                            src={`data:${medicine.Picture.contentType};base64,${arrayBufferToBase64(medicine.Picture.data.data)}`}
                             alt={medicine.Name}
                         />
                     )}
