@@ -56,7 +56,7 @@ const CartItem = ({ item }) => {
   useEffect(() => {
     const fetchMedicines = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/Admin/getAllMedicine/');
+        const response = await axios.get('http://localhost:8000/Patient/getAllMedicine/');
         const medicines = response.data.Result;
 
         const matchedMedicine = medicines.find((med) => med._id === item.medicineId);
@@ -112,7 +112,7 @@ const CartItem = ({ item }) => {
   value={quantity}
   onChange={(e) => handleQuantityChange(e.target.value)}
 >
-  {[...Array(item.quantity).keys()].map((option) => (
+  {[...Array(medicine.Quantity).keys()].map((option) => (
     <option key={option + 1} value={option + 1}>
       {option + 1}
     </option>

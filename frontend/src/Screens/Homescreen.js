@@ -32,7 +32,7 @@ const Homescreen = () => {
     useEffect(() => {
         const getMedicines = async () => {
             try {
-                var response = await fetch(`http://localhost:8000/Admin/getAllMedicine/`);
+                var response = await fetch(`http://localhost:8000/Patient/getAllMedicine/`);
                 const jsonData = await response.json();
                 let result = jsonData.Result;
                 setMedicines(result);

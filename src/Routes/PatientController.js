@@ -167,19 +167,19 @@ router.post('/addToCart/:medicineId', async (req, res) => {
       }
 
       // Check if there's enough quantity in stock
-      if (medicine.Quantity - quantity >= 0) {
+      if (medicine.Quantity - existingCartItem.quantity >= quantity) {
         // If it exists, update the quantity and calculate the new price
         existingCartItem.quantity += quantity;
         existingCartItem.price = existingCartItem.quantity * medicine.Price; // Calculate the new price
         await existingCartItem.save();
 
         // Decrement the medicine quantity
-        medicine.Quantity -= quantity;
+       // medicine.Quantity -= quantity;
         await medicine.save();
 
         res.json(existingCartItem);
       } else {
-        res.status(400).json({ error: 'Not enough stock available' });
+        res.status(404).json({ message: "no stoke", success: false });
       }
     } else {
       if (quantity <= 0) {
@@ -192,7 +192,7 @@ router.post('/addToCart/:medicineId', async (req, res) => {
       await newCartItem.save();
 
       // Decrement the medicine quantity
-      medicine.Quantity -= quantity;
+    //  medicine.Quantity -= quantity;
       await medicine.save();
 
       res.json(newCartItem);
@@ -202,9 +202,47 @@ router.post('/addToCart/:medicineId', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+// router.get('/cartItemCount', async (req, res) => {
+//   try {
+//       // const userId = req.params.userId;
 
+//       // // Count the number of items in the user's cart
+//       // const itemCount = await Cart.countDocuments({ userId });
+//       const itemCount = await Cart.countDocuments();
+//       console.log(itemCount);
+//       res.json({ itemCount });
+//   } catch (error) {
+//       console.error('Error getting cart item count:', error);
+//       res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// });
+
+router.get('/cartItemCount', async (req, res) => {
+  try {
+    const cartItems = await CartItem.find();
+    const itemCount = cartItems.length;
+
+    console.log(itemCount);
+    res.json({ itemCount });
+  } catch (error) {
+    console.error('Error getting cart item count:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 // Add this route handler to your Express app (app.js or your main application file)
+const getListMed = async (req, res) => {
+  //retrieve all users from the database
+  try {
+    const meds = await MedicineModel.find();
+    res.status(200).json({ Result: meds, success: true });
+  }
 
+  catch (error) {
+    res.status(500).json({ message: "No Medicine listed", success: false })
+  }
+}
+
+router.get('/getAllMedicine', getListMed);
 // Delete an item from the cart
 router.delete('/deleteCartItem/:cartItemId', async (req, res) => {
   const cartItemId = req.params.cartItemId;
@@ -267,7 +305,7 @@ router.get('/cart/total', async (req, res) => {
 
     // If there are results, send the total price; otherwise, set it to 0
     const totalPrice = totalResult.length > 0 ? totalResult[0].totalPrice : 0;
-    console.log(totalPrice);
+    //console.log(totalPrice);
     res.json({ totalPrice });
   } catch (error) {
     console.error('Error fetching total price:', error);
