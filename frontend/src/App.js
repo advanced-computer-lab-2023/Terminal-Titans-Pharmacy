@@ -16,18 +16,20 @@ import Checkout from './Components/Checkout';
 import Login from './Screens/Login.js';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import PatientRegistrationForm from './Screens/RegisterPatientForm.js';
+import PharmacyRegistrationForm from './Screens/RegisterPharmacistForm';
 
 function App() {
   const signoutButtonFunc = () => {
     sessionStorage.removeItem('token');
-    window.location.href = '/';
+    window.location.href = '/Health-Plus';
   }
 
   return (
     <CartProvider>
       <Router>
         {
-          window.location.pathname == '/Health-Plus' || window.location.pathname == '/Health-Plus/registerPatient' || window.location.pathname == '/Health-Plus/registerDoctor' ?
+          window.location.pathname == '/Health-Plus' || window.location.pathname == '/Health-Plus/registerPharmacist' || window.location.pathname == '/Health-Plus/registerPatient' ?
             <></>
             : <div className="signoutButton">
               <Button variant="danger" onClick={signoutButtonFunc}>Sign Out</Button>
@@ -46,6 +48,9 @@ function App() {
         <main>
           <Routes basename="/Health-Plus">
             <Route path="/Health-Plus" element={<Login />} />
+            <Route path="/Health-Plus/registerPharmacist" element={<PharmacyRegistrationForm />} />
+            <Route path="/Health-Plus/registerPatient" element={<PatientRegistrationForm />} />
+
             <Route path="/patient" element={<Homescreen />} />
             <Route path="/medicine" element={<Meds2 />} />
             <Route path="/medicine/:medicineId" element={<Meds2 />} />

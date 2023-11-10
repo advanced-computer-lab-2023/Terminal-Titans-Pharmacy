@@ -153,7 +153,7 @@ router.get('/getAllMedicine', protect, async (req, res) => {
 //     res.status(500).json({ error: 'Internal server error' });
 //   }
 // });
-router.post('/addToCart', protect, async (req, res) => {
+router.post('/addToCart/:medicineId', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
   if (!exists || req.user.__t !== "Patient") {
     return res.status(500).json({
@@ -163,7 +163,7 @@ router.post('/addToCart', protect, async (req, res) => {
   }
   try {
     const userId = req.user._id; // Assuming req.user contains the user ID
-    const medicineId = req.body.medicineId;
+    const medicineId = req.params.medicineId;
     const quantity = req.body.quantity || 1; // Default to 1 if quantity is not provided
 
     // Check if the item is already in the cart for the specific user
@@ -178,22 +178,26 @@ router.post('/addToCart', protect, async (req, res) => {
 
     if (existingCartItem) {
       // If it exists, update the quantity and calculate the new price
-      existingCartItem.quantity += quantity;
-      existingCartItem.price = existingCartItem.quantity * medicine.Price; // Calculate the new price
+      if (medicine.Quantity - existingCartItem.quantity >= quantity) {
+        existingCartItem.quantity += quantity;
+      }else{
+        return res.status(400).json({ message: "no stoke", success: false });
+      }
+      existingCartItem.price = medicine.Price; // Calculate the new price
       await existingCartItem.save();
 
-      res.json(existingCartItem);
+      res.json({ existingCartItem, success: false });
     } else {
       // If not, create a new cart item and calculate the price
       const newCartItem = new CartItem({ userId, medicineId, quantity });
-      newCartItem.price = newCartItem.quantity * medicine.Price; // Calculate the price
+      newCartItem.price = medicine.Price; // Calculate the price
       await newCartItem.save();
 
-      res.json(newCartItem);
+      res.json({ newCartItem, success: false });
     }
   } catch (error) {
     console.error('Error adding to cart:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error', success: false });
   }
 });
 
@@ -251,21 +255,21 @@ router.get('/cartItemCount', protect, async (req, res) => {
 
 router.get('/cartinCheckOut', async (req, res) => {
   let exists = await PatientModel.findById(req.user);
-  if (!exists || req.user.__t!=="Patient") {
+  if (!exists || req.user.__t !== "Patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
     });
-  }  let pid=req.user._id//temp until login
-  const cartItems = await CartItem.find({userId:pid});
-  let list=[]
-  for(var x in cartItems){
-    const med=await MedicineModel.findById(cartItems[x].medicineId);
+  } let pid = req.user._id//temp until login
+  const cartItems = await CartItem.find({ userId: pid });
+  let list = []
+  for (var x in cartItems) {
+    const med = await MedicineModel.findById(cartItems[x].medicineId);
     list.push(med);
   }
-  Result={
-    cartItems:cartItems,
-    medInfo:list
+  Result = {
+    cartItems: cartItems,
+    medInfo: list
   }
   console.log(cartItems);
   res.json(Result);
@@ -402,15 +406,15 @@ router.post('/checkout', async (req, res) => {
         message: "Not authorized"
       });
     }
-    const patientId=req.user._id;
+    const patientId = req.user._id;
     // Get the items from the cart
-    const cartItems = await CartItem.find({userId: patientId});
+    const cartItems = await CartItem.find({ userId: patientId });
     console.log(cartItems);
 
     // Initialize variables for order creation
     let total = 0;
     const itemsForOrder = [];
-7
+    7
     // Calculate the total cost and construct the order
     for (const cartItem of cartItems) {
       const medicine = await MedicineModel.findById(cartItem.medicineId);
@@ -446,15 +450,15 @@ router.post('/checkout', async (req, res) => {
 
     // Create the order in the database
     const newOrder = new Order({
-      userId:patientId,
+      userId: patientId,
       items: itemsForOrder,
-      total:total,
+      total: total,
       address: req.body.address,
     });
     await newOrder.save();
 
     // Clear the cart by removing all cart items
-    await CartItem.deleteMany({userId: patientId});
+    await CartItem.deleteMany({ userId: patientId });
 
     res.json({ message: 'Checkout successful. Your order has been placed.' });
   } catch (error) {
@@ -467,15 +471,15 @@ router.post('/checkout', async (req, res) => {
 
 router.post('/addAddress', async (req, res) => {
   let exists = await PatientModel.findById(req.user);
-    if (!exists || req.user.__t != "Patient") {
-      return res.status(500).json({
-        success: false,
-        message: "Not authorized"
-      });
-    }
-    const patientId=req.user._id;//temp untill login
-  const newAddress=req.body.address;
- // const { patientId, newAddress} = req.body; // Assuming you send patientId and newAddress in the request body
+  if (!exists || req.user.__t != "Patient") {
+    return res.status(500).json({
+      success: false,
+      message: "Not authorized"
+    });
+  }
+  const patientId = req.user._id;//temp untill login
+  const newAddress = req.body.address;
+  // const { patientId, newAddress} = req.body; // Assuming you send patientId and newAddress in the request body
   console.log(newAddress);
   try {
     // Find the patient by their ID
@@ -504,11 +508,11 @@ router.post('/addAddress', async (req, res) => {
     patient.address.push(newAddress);
     console.log(patient.address);
     // Save the updated patient data
-   // const updatedPatient = await patient.save();
+    // const updatedPatient = await patient.save();
     const updatedPatient = await PatientModel.findOneAndUpdate({ _id: patientId },
       {
-          address: patient.address,
-          
+        address: patient.address,
+
       });
     res.json({ message: 'Address added successfully', patient: updatedPatient });
   } catch (error) {
@@ -521,13 +525,13 @@ router.post('/addAddress', async (req, res) => {
 // Retrieve the patient's addresses
 router.get('/getAddresses', async (req, res) => {
   let exists = await PatientModel.findById(req.user);
-    if (!exists || req.user.__t != "Patient") {
-      return res.status(500).json({
-        success: false,
-        message: "Not authorized"
-      });
-    }
-    const patientId = req.user._id;
+  if (!exists || req.user.__t != "Patient") {
+    return res.status(500).json({
+      success: false,
+      message: "Not authorized"
+    });
+  }
+  const patientId = req.user._id;
 
 
   try {

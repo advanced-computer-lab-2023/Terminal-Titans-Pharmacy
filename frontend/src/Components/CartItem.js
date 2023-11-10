@@ -57,7 +57,7 @@ const CartItem = ({ item }) => {
     const fetchMedicines = async () => {
       try {
         const response = await axios.get('http://localhost:8000/Patient/getAllMedicine/',{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}});
-        const medicines = response.data.Result;
+        const medicines = response.data.meds;
 
         const matchedMedicine = medicines.find((med) => med._id === item.medicineId);
 

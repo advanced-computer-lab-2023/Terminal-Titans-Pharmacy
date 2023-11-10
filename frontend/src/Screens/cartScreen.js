@@ -131,6 +131,7 @@ const CartScreen = () => {
     // Fetch cart items
     axios.get('http://localhost:8000/Patient/cart',{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}})
       .then((response) => {
+        console.log(response);
         updateCartItems(response.data);
       })
       .catch((error) => {
@@ -140,6 +141,7 @@ const CartScreen = () => {
     // Fetch total sum
     axios.get('http://localhost:8000/Patient/cart/total',{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}})
       .then((response) => {
+        console.log(response);
         setTotalSum(response.data.totalPrice); // Assuming the response structure has a key 'totalPrice'
       })
       .catch((error) => {

@@ -146,7 +146,7 @@ function arrayBufferToBase64(buffer) {
     return btoa(binary);
 }
 
-const Meds2 = () => {
+function Meds2() {
     const [medicines, setMedicines] = useState([]);
     const location = useLocation();
     const { medicineId } = useParams();
@@ -160,7 +160,7 @@ const Meds2 = () => {
 
         const fetchMedicines = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/Patient/getAllMedicine/',{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}}
+                const response = await axios.get('http://localhost:8000/Patient/getAllMedicine/', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } }
                 );
                 const jsonData = response.data.meds;
                 console.log(response);
@@ -201,7 +201,7 @@ const Meds2 = () => {
         try {
             // Validate selectedQuantity
             const quantityToAdd = parseInt(selectedQuantity, 10);
-            if (isNaN(quantityToAdd) || quantityToAdd <= 0) {
+            if (isNaN(quantityToAdd) || quantityToAdd <= 0 || quantityToAdd > medicine.Quantity) {
                 console.error('Invalid quantity selected');
                 setErrorMessage('Invalid quantity selected');
                 return;
@@ -210,13 +210,14 @@ const Meds2 = () => {
             const response = await axios.post(
                 `http://localhost:8000/Patient/addToCart/${medicine._id}`,
                 { quantity: quantityToAdd },
-                {headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}}
+                { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } }
             );
 
             if (response.status === 200) {
-                const cartItem = response.data.meds;
+                const cartItem = response.data;
                 console.log('Added to cart:', cartItem);
 
+                // Update the quantity based on the selected quantity using functional update
                 // Update the quantity based on the selected quantity using functional update
                 setMedicines((prevMedicines) => {
                     const updatedMedicines = [...prevMedicines];
@@ -230,13 +231,16 @@ const Meds2 = () => {
                 // Reset the selected quantity to 1 after successful addition
                 setSelectedQuantity(1);
 
+
+
                 // Clear any previous error message
                 setErrorMessage('');
+
             } else {
                 console.error('Failed to add to cart');
 
                 // Check if the error is related to no stock available
-                if (response.data.meds && response.data.message === 'no stoke') {
+                if (response.data.success != false) {
                     console.error('No stock available');
                     // Display an alert with the error message
                     window.alert('No stock available');

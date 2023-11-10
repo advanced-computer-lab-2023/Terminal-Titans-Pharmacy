@@ -77,7 +77,7 @@ function Login() {
 
             <a href="http://localhost:3000/Health-Plus/registerPatient">Register as a patient</a>
             <br />
-            <a href="http://localhost:3000/Health-Plus/registerDoctor">Register as a doctor</a>
+            <a href="http://localhost:3000/Health-Plus/registerPharmacist">Register as a pharmacist</a>
         </Form>
     );
 }
