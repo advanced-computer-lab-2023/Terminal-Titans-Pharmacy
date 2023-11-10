@@ -18,7 +18,7 @@ const upload = multer({ storage: storage });
 //search for medicine based on name
 router.get('/getMedicine', protect, async (req, res) => {
   let exists = await user.findById(req.user);
-  if (!exists) {
+  if (!exists || exists.__t !== 'Pharmacist') {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -164,7 +164,7 @@ router.post('/createPharmacist', upload.fields([{ name: "ID" }, { name: "Degree"
 router.post('/addMedicine', upload.single('photo'), protect, async (req, res) => {
   try {
     let exists = await user.findById(req.user);
-    if (!exists) {
+    if (!exists || exists.__t !== 'Pharmacist') {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
@@ -242,7 +242,7 @@ router.post('/addMedicine', upload.single('photo'), protect, async (req, res) =>
 router.put('/editMedicine', protect, async (req, res) => {
   try {
     let exists = await user.findById(req.user);
-    if (!exists) {
+    if (!exists || exists.__t !== 'Pharmacist') {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
@@ -274,7 +274,7 @@ router.put('/editMedicine', protect, async (req, res) => {
 router.get('/editMedicine', protect, async (req, res) => {
   try {
     let exists = await user.findById(req.user);
-    if (!exists) {
+    if (!exists || exists.__t !== 'Pharmacist') {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
@@ -307,7 +307,7 @@ router.get('/getinfoMeds', protect, async (req, res) => {
   //retrieve all users from the database
   try {
     let exists = await user.findById(req.user);
-    if (!exists) {
+    if (!exists || exists.__t !== 'Pharmacist') {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
@@ -330,7 +330,7 @@ router.get('/getinfoMeds', protect, async (req, res) => {
 router.get('/sellMedicine', protect, async (req, res) => {
   try {
     let exists = await user.findById(req.user);
-    if (!exists) {
+    if (!exists || exists.__t !== 'Pharmacist') {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
@@ -372,7 +372,7 @@ router.get('/sellMedicine', protect, async (req, res) => {
 router.get('/get-image/:id', protect, async (req, res) => {
   try {
     let exists = await user.findById(req.user);
-    if (!exists) {
+    if (!exists || exists.__t !== 'Pharmacist') {
       return res.status(500).json({
         success: false,
         message: "Not authorized"

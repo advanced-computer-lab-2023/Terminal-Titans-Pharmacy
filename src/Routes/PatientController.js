@@ -28,9 +28,9 @@ const createPatient = async (req, res) => {
   }
 }
 //filter 
-const filterMed = async (req, res) => {
+router.get('/filterMedical/:MedicalUse', protect, async (req, res) => {
   let exists = await adminModel.findById(req.user);
-  if (!exists) {
+  if (!exists || req.user.__t != "Patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -48,15 +48,16 @@ const filterMed = async (req, res) => {
 
   res.status(200).send({ Result: Medicines, success: true })
 
-}
-router.get('/filterMedical/:MedicalUse', protect, filterMed);
+});
 
 
 
 //search for medicine based on name
-const getMedicine = async (req, res) => {
+
+
+router.get('/getMedicine/:Name', protect, async (req, res) => {
   let exists = await adminModel.findById(req.user);
-  if (!exists) {
+  if (!exists || req.user.__t != "Patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -78,9 +79,7 @@ const getMedicine = async (req, res) => {
   catch (error) {
     res.status(500).json({ message: "Failed getMedicine", success: false })
   }
-}
-
-router.get('/getMedicine/:Name', protect, getMedicine);
+});
 
 //view a list of all available medicine pic,price,description
 // const viewInfo =async (req,res)=> {
@@ -90,7 +89,7 @@ router.get('/getMedicine/:Name', protect, getMedicine);
 router.get('/Admin/getAllMedicine', protect, async (req, res) => {
   try {
     let exists = await adminModel.findById(req.user);
-    if (!exists) {
+    if (!exists || req.user.__t != "Patient") {
       return res.status(500).json({
         success: false,
         message: "Not authorized"

@@ -117,11 +117,12 @@ router.get('/getMedicine/:Name', getMedicine);
 
 
 //view a list of all available medicines (including picture of medicine, price, description)
-const getListMed = async (req, res) => {
+
+router.get('/getAllMedicine', protect, async (req, res) => {
   //retrieve all users from the database
   try {
     let user = await adminModel.findById(req.user);
-    if (!user) {
+    if (!user || user.__t !== 'Admin') {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
@@ -135,9 +136,7 @@ const getListMed = async (req, res) => {
   catch (error) {
     res.status(500).json({ message: "No Medicine listed", success: false })
   }
-}
-
-router.get('/getAllMedicine', protect,getListMed);
+});
 //view a pharmacist's information
 
 
@@ -148,11 +147,12 @@ router.get('/getAllMedicine', protect,getListMed);
 
 
 
-const getPharmacist = async (req, res) => {
+
+router.get('/getPharmacist', protect, async (req, res) => {
   const Name = req.query.Name.toLowerCase();
   console.log(Name);
   let user = await adminModel.findById(req.user);
-  if (!user) {
+  if (!user || user.__t !== 'Admin') {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -172,14 +172,13 @@ const getPharmacist = async (req, res) => {
   catch (error) {
     res.status(500).json({ message: "Failed getPharmacist", success: false })
   }
-}
-
-router.get('/getPharmacist', protect,getPharmacist);
+});
 
 //view a patients's information
-const getPatient = async (req, res) => {
+
+router.get('/getPatient', protect, async (req, res) => {
   let user = await adminModel.findById(req.user);
-  if (!user) {
+  if (!user || user.__t !== 'Admin') {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -200,14 +199,12 @@ const getPatient = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Failed getPatient', success: false });
   }
-}
-
-router.get('/getPatient',protect,getPatient);
+});
 
 //filter 
-const filterMed = async (req, res) => {
+router.get('/filterMedical/:MedicalUse', protect, async (req, res) => {
   let user = await adminModel.findById(req.user);
-  if (!user) {
+  if (!user || user.__t !== 'Admin') {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -225,14 +222,13 @@ const filterMed = async (req, res) => {
 
   res.status(200).send({ Result: Medicines, success: true })
 
-}
-router.get('/filterMedical/:MedicalUse', protect,filterMed);
+});
 
 
-const viewReqPharm = async (req, res) => {
+router.get('/viewReqPharm', protect,async (req, res) => {
   try {
     let user = await adminModel.findById(req.user);
-    if (!user) {
+    if (!user || user.__t !== 'Admin') {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
@@ -244,13 +240,12 @@ const viewReqPharm = async (req, res) => {
   catch (error) {
     res.status(500).json({ message: "Failed view req pharms" })
   }
-}
-router.get('/viewReqPharm', viewReqPharm);
+});
 
 router.post('/Acceptance/:username', protect, async (req, res) => {
   try {
     let exists = await adminModel.findById(req.user);
-    if (!exists) {
+    if (!exists || exists.__t !== 'Admin') {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
@@ -258,23 +253,23 @@ router.post('/Acceptance/:username', protect, async (req, res) => {
     }
     const { username } = req.params
     console.log(username, req.params.username);
-    const user = await ReqPharmModel.findOne({ Username:username });
+    const user = await ReqPharmModel.findOne({ Username: username });
     console.log(user);
     if (user) {
       await ReqPharmModel.deleteOne(user);
 
-      const pharmacist= new phModel({
-          Username: user.Username,
-          Password:user.Password,
-          Name: user.Name,
-          Email: user.Email,
-          DateOfBirth : user.DateOfBirth,
-          HourlyRate: user.HourlyRate,
-          Affiliation : user.Affiliation,
-          EducationalBackground : user.EducationalBackground,
-          ID: user.ID,
-          Degree: user.Degree,
-          License: user.License
+      const pharmacist = new phModel({
+        Username: user.Username,
+        Password: user.Password,
+        Name: user.Name,
+        Email: user.Email,
+        DateOfBirth: user.DateOfBirth,
+        HourlyRate: user.HourlyRate,
+        Affiliation: user.Affiliation,
+        EducationalBackground: user.EducationalBackground,
+        ID: user.ID,
+        Degree: user.Degree,
+        License: user.License
       })
       await pharmacist.save();
       res.status(200).json({
@@ -300,14 +295,14 @@ router.post('/Acceptance/:username', protect, async (req, res) => {
 router.delete('/Rejection/:username', protect, async (req, res) => {
   try {
     let exists = await adminModel.findById(req.user);
-    if (!exists) {
+    if (!exists || exists.__t !== 'Admin') {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
       });
     }
     const { username } = req.params;
-    const user = await ReqPharmModel.findOne({Username: username });
+    const user = await ReqPharmModel.findOne({ Username: username });
     if (user) {
       await ReqPharmModel.deleteOne(user);
       res.status(200).json({
