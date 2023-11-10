@@ -129,7 +129,7 @@ const CartScreen = () => {
 
   useEffect(() => {
     // Fetch cart items
-    axios.get('http://localhost:8000/Patient/cart')
+    axios.get('http://localhost:8000/Patient/cart',{headers:{Authorization:'Bearer'+sessionStorage.getItem("token")}})
       .then((response) => {
         updateCartItems(response.data);
       })
@@ -138,7 +138,7 @@ const CartScreen = () => {
       });
 
     // Fetch total sum
-    axios.get('http://localhost:8000/Patient/cart/total')
+    axios.get('http://localhost:8000/Patient/cart/total',{headers:{Authorization:'Bearer'+sessionStorage.getItem("token")}})
       .then((response) => {
         setTotalSum(response.data.totalPrice); // Assuming the response structure has a key 'totalPrice'
       })

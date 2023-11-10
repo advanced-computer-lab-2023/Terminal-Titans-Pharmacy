@@ -160,7 +160,8 @@ const Meds2 = () => {
 
         const fetchMedicines = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/Patient/getAllMedicine/');
+                const response = await axios.get('http://localhost:8000/Patient/getAllMedicine/',{headers:{Authorization:'Bearer'+sessionStorage.getItem("token")}}
+                );
                 const jsonData = response.data.Result;
                 setMedicines(jsonData);
             } catch (error) {
@@ -207,7 +208,8 @@ const Meds2 = () => {
 
             const response = await axios.post(
                 `http://localhost:8000/Patient/addToCart/${medicine._id}`,
-                { quantity: quantityToAdd }
+                { quantity: quantityToAdd },
+                {headers:{Authorization:'Bearer'+sessionStorage.getItem("token")}}
             );
 
             if (response.status === 200) {

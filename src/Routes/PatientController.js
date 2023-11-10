@@ -86,9 +86,9 @@ router.get('/getMedicine/:Name', protect, async (req, res) => {
 //  const pic = req.query.Picture;
 //  const price = req.query.Price;
 
-router.get('/Admin/getAllMedicine', protect, async (req, res) => {
+router.get('/getAllMedicine', protect, async (req, res) => {
   try {
-    let exists = await adminModel.findById(req.user);
+    let exists = await PatientModel.findById(req.user);
     if (!exists || req.user.__t != "Patient") {
       return res.status(500).json({
         success: false,
@@ -96,7 +96,7 @@ router.get('/Admin/getAllMedicine', protect, async (req, res) => {
       });
     }
     // Make a request to your medicine data source
-    const response = await fetch('http://localhost:8000/Admin/getAllMedicine/'); // Replace with your actual API endpoint
+    const response = await fetch('http://localhost:8000/Patient/getAllMedicine/'); // Replace with your actual API endpoint
     const data = await response.json();
 
     if (!data.success) {
@@ -117,62 +117,106 @@ router.get('/Admin/getAllMedicine', protect, async (req, res) => {
 // Import required packages
 
 // Add a medicine to the cart
+// router.post('/addToCart', protect, async (req, res) => {
+//   let exists = await PatientModel.findById(req.user);
+//   if (!exists) {
+//     return res.status(500).json({
+//       success: false,
+//       message: "Not authorized"
+//     });
+//   }
+//   try {
+//     const medicineId = req.body.medicineId;
+
+//     // Check if the item is already in the cart
+//     const existingCartItem = await CartItem.findOne({ medicineId });
+
+//     if (existingCartItem) {
+//       if (quantity <= 0) {
+//         return res.status(400).json({ error: 'Invalid quantity selected' });
+//       }
+
+//       // Check if there's enough quantity in stock
+//       if (medicine.Quantity - existingCartItem.quantity >= quantity) {
+//         // If it exists, update the quantity and calculate the new price
+//         existingCartItem.quantity += quantity;
+//         existingCartItem.price = existingCartItem.quantity * medicine.Price; // Calculate the new price
+//         await existingCartItem.save();
+
+//         // Decrement the medicine quantity
+//         // medicine.Quantity -= quantity;
+//         await medicine.save();
+
+//         res.json(existingCartItem);
+//       } else {
+//         res.status(404).json({ message: "no stoke", success: false });
+//       }
+//     } else {
+//       if (quantity <= 0) {
+//         return res.status(400).json({ error: 'Invalid quantity selected' });
+//       }
+
+//       // If not, create a new cart item and calculate the price
+//       const newCartItem = new CartItem({ medicineId, quantity });
+//       newCartItem.price = newCartItem.quantity * medicine.Price; // Calculate the price
+//       await newCartItem.save();
+
+//       // Decrement the medicine quantity
+//       //  medicine.Quantity -= quantity;
+//       await medicine.save();
+
+//       res.json(newCartItem);
+//     }
+//   }
+//   catch (error) {
+//     console.error('Error adding to cart:', error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
 router.post('/addToCart', protect, async (req, res) => {
-  let exists = await adminModel.findById(req.user);
-  if (!exists) {
+    let exists = await PatientModel.findById(req.user);
+  if (!exists || req.user.__t!=="Patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
     });
   }
   try {
+    const userId = req.user._id; // Assuming req.user contains the user ID
     const medicineId = req.body.medicineId;
+    const quantity = req.body.quantity || 1; // Default to 1 if quantity is not provided
 
-    // Check if the item is already in the cart
-    const existingCartItem = await CartItem.findOne({ medicineId });
+    // Check if the item is already in the cart for the specific user
+    const existingCartItem = await CartItem.findOne({ userId, medicineId });
+
+    // Retrieve medicine details
+    const medicine = await MedicineModel.findById(medicineId);
+
+    if (!medicine) {
+      return res.status(404).json({ message: 'Medicine not found', success: false });
+    }
 
     if (existingCartItem) {
-      if (quantity <= 0) {
-        return res.status(400).json({ error: 'Invalid quantity selected' });
-      }
+      // If it exists, update the quantity and calculate the new price
+      existingCartItem.quantity += quantity;
+      existingCartItem.price = existingCartItem.quantity * medicine.Price; // Calculate the new price
+      await existingCartItem.save();
 
-      // Check if there's enough quantity in stock
-      if (medicine.Quantity - existingCartItem.quantity >= quantity) {
-        // If it exists, update the quantity and calculate the new price
-        existingCartItem.quantity += quantity;
-        existingCartItem.price = existingCartItem.quantity * medicine.Price; // Calculate the new price
-        await existingCartItem.save();
-
-        // Decrement the medicine quantity
-        // medicine.Quantity -= quantity;
-        await medicine.save();
-
-        res.json(existingCartItem);
-      } else {
-        res.status(404).json({ message: "no stoke", success: false });
-      }
+      res.json(existingCartItem);
     } else {
-      if (quantity <= 0) {
-        return res.status(400).json({ error: 'Invalid quantity selected' });
-      }
-
       // If not, create a new cart item and calculate the price
-      const newCartItem = new CartItem({ medicineId, quantity });
+      const newCartItem = new CartItem({ userId, medicineId, quantity });
       newCartItem.price = newCartItem.quantity * medicine.Price; // Calculate the price
       await newCartItem.save();
 
-      // Decrement the medicine quantity
-      //  medicine.Quantity -= quantity;
-      await medicine.save();
-
       res.json(newCartItem);
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Error adding to cart:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 // router.get('/cartItemCount', async (req, res) => {
 //   try {
 //       // const userId = req.params.userId;
@@ -188,9 +232,18 @@ router.post('/addToCart', protect, async (req, res) => {
 //   }
 // });
 
-router.get('/cartItemCount', async (req, res) => {
+router.get('/cartItemCount',protect, async (req, res) => {
+  let exists = await PatientModel.findById(req.user);
+  if (!exists || req.user.__t!=="Patient") {
+    return res.status(500).json({
+      success: false,
+      message: "Not authorized"
+    });
+  }
   try {
-    const cartItems = await CartItem.find();
+    // Assuming you have a field named userId in the CartItem model
+    const cartItems = await CartItem.find({ userId: req.user._id });
+
     const itemCount = cartItems.length;
 
     console.log(itemCount);
@@ -200,6 +253,7 @@ router.get('/cartItemCount', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 // Add this route handler to your Express app (app.js or your main application file)
 const getListMed = async (req, res) => {
   //retrieve all users from the database
@@ -215,9 +269,9 @@ const getListMed = async (req, res) => {
 
 router.get('/getAllMedicine', getListMed);
 // Delete an item from the cart
-router.delete('/deleteCartItem/:cartItemId', async (req, res) => {
-  let exists = await adminModel.findById(req.user);
-  if (!exists) {
+router.delete('/deleteCartItem/:cartItemId',protect, async (req, res) => {
+  let exists = await PatientModel.findById(req.user);
+  if (!exists || req.user.__t!=="Patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -227,7 +281,7 @@ router.delete('/deleteCartItem/:cartItemId', async (req, res) => {
 
   try {
     // Find the cart item by its unique ID and remove it
-    const deletedCartItem = await CartItem.findByIdAndRemove(cartItemId);
+    const deletedCartItem = await CartItem.findByIdAndRemove({_id: cartItemId, userId: req.user._id});
 
     if (!deletedCartItem) {
       return res.status(404).json({ error: 'Cart item not found' });
@@ -241,22 +295,22 @@ router.delete('/deleteCartItem/:cartItemId', async (req, res) => {
 });
 
 // View the cart
-router.get('/cart', async (req, res) => {
-  let exists = await adminModel.findById(req.user);
+router.get('/cart',protect, async (req, res) => {
+  let exists = await PatientModel.findById(req.user);
   if (!exists) {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
     });
   }
-  const cartItems = await CartItem.find();
+  const cartItems = await CartItem.find({userId: req.user._id});
   res.json(cartItems);
 });
 
 // Update the quantity of an item in the cart
-router.put('/updateCartItem/:cartItemId', async (req, res) => {
-  let exists = await adminModel.findById(req.user);
-  if (!exists) {
+router.put('/updateCartItem/:cartItemId',protect, async (req, res) => {
+  let exists = await PatientModel.findById(req.user);
+  if (!exists || req.user.__t!=="Patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -267,7 +321,7 @@ router.put('/updateCartItem/:cartItemId', async (req, res) => {
 
   try {
     // Find the cart item by its unique ID
-    const cartItem = await CartItem.findById(cartItemId);
+    const cartItem = await CartItem.findOne({_id: cartItemId, userId: req.user._id});
 
     if (!cartItem) {
       return res.status(404).json({ error: 'Cart item not found' });
@@ -283,10 +337,22 @@ router.put('/updateCartItem/:cartItemId', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-router.get('/cart/total', async (req, res) => {
+router.get('/cart/total',protect, async (req, res) => {
+  let exists = await PatientModel.findById(req.user);
+  if (!exists || req.user.__t!=="Patient") {
+    return res.status(500).json({
+      success: false,
+      message: "Not authorized"
+    });
+  }
   try {
-    // Use the aggregate pipeline to calculate the total price
+    // Use the aggregate pipeline to calculate the total price for the specific user
     const totalResult = await CartItem.aggregate([
+      {
+        $match: {
+          userId: req.user._id // Match the user ID
+        }
+      },
       {
         $group: {
           _id: null,
@@ -297,11 +363,30 @@ router.get('/cart/total', async (req, res) => {
 
     // If there are results, send the total price; otherwise, set it to 0
     const totalPrice = totalResult.length > 0 ? totalResult[0].totalPrice : 0;
-    //console.log(totalPrice);
     res.json({ totalPrice });
   } catch (error) {
     console.error('Error fetching total price:', error);
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+router.get('/getAllMedicine', protect, async (req, res) => {
+  //retrieve all users from the database
+  try {
+    let user = await adminModel.findById(req.user);
+    if (!user || user.__t !== 'Admin') {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+
+    const meds = await MedicineModel.find();
+    res.status(200).json({ Result: meds, success: true });
+  }
+
+  catch (error) {
+    res.status(500).json({ message: "No Medicine listed", success: false })
   }
 });
 // Checkout and create an order

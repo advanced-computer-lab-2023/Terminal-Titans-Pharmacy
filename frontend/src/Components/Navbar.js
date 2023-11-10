@@ -222,7 +222,7 @@ const Navbar = ({ click }) => {
   useEffect(() => {
     const fetchCartItemCount = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/Patient/cartItemCount');
+        const response = await axios.get('http://localhost:8000/Patient/cartItemCount',{headers:{Authorization:'Bearer'+sessionStorage.getItem("token")}});
         if (response.status === 200) {
           setCartItemCount(response.data.itemCount);
         } else {
