@@ -63,7 +63,9 @@ router.post('/patient', async (req, res) => {
 
         newPatient.save();
 
-        return res.status(200).json({ message: "You have registered", success: true, Result: newPatient })
+        let token = generateToken(newPatient._id)
+
+        return res.status(200).json({ message: "You have registered", success: true, token })
     }
     catch (error) {
         return res.status(400).json({ message: error.message, success: false })
@@ -113,7 +115,8 @@ router.post('/pharmacist', async (req, res) => {
 
         NewPharmacist.save();
 
-        return res.status(200).json({ message: "You have registered", success: true, Result: NewPharmacist })
+
+        return res.status(200).json({ message: "You have registered", success: true, NewPharmacist })
     }
     catch (error) {
         return res.status(400).json({ message: error.message, success: false })
@@ -135,6 +138,10 @@ router.post('/login', async (req, res) => {
     console.log(password);
     if (user && (await bcrypt.compare(password, user.Password))) {
         // generate token
+        if(user.__t === 'ReqPharmacist'){
+            return res.status(400).json({ message: 'Please wait for admin approval', success: false })
+        }
+
         res.status(200).json({
             Result:
             {

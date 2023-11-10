@@ -120,6 +120,14 @@ router.get('/getMedicine/:Name', getMedicine);
 const getListMed = async (req, res) => {
   //retrieve all users from the database
   try {
+    let user = await adminModel.findById(req.user);
+    if (!user) {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+
     const meds = await MedicineModel.find();
     res.status(200).json({ Result: meds, success: true });
   }
@@ -129,7 +137,7 @@ const getListMed = async (req, res) => {
   }
 }
 
-router.get('/getAllMedicine', getListMed);
+router.get('/getAllMedicine', protect,getListMed);
 //view a pharmacist's information
 
 
@@ -143,6 +151,13 @@ router.get('/getAllMedicine', getListMed);
 const getPharmacist = async (req, res) => {
   const Name = req.query.Name.toLowerCase();
   console.log(Name);
+  let user = await adminModel.findById(req.user);
+  if (!user) {
+    return res.status(500).json({
+      success: false,
+      message: "Not authorized"
+    });
+  }
   if (!Name) {
     return res.status(400).send({ message: 'user not filled ', success: false });
   }
@@ -159,10 +174,17 @@ const getPharmacist = async (req, res) => {
   }
 }
 
-router.get('/getPharmacist', getPharmacist);
+router.get('/getPharmacist', protect,getPharmacist);
 
 //view a patients's information
 const getPatient = async (req, res) => {
+  let user = await adminModel.findById(req.user);
+  if (!user) {
+    return res.status(500).json({
+      success: false,
+      message: "Not authorized"
+    });
+  }
   const Name = req.query.Name.toLowerCase();
   if (!Name) {
     return res.status(400).send({ message: 'user not filled', success: false });
@@ -179,10 +201,18 @@ const getPatient = async (req, res) => {
     res.status(500).json({ message: 'Failed getPatient', success: false });
   }
 }
-router.get('/getPatient', getPatient);
+
+router.get('/getPatient',protect,getPatient);
 
 //filter 
 const filterMed = async (req, res) => {
+  let user = await adminModel.findById(req.user);
+  if (!user) {
+    return res.status(500).json({
+      success: false,
+      message: "Not authorized"
+    });
+  }
   const MedicalUse = req.params.MedicalUse.toLowerCase();
   if (!MedicalUse) {
     return res.status(400).send({ message: 'Please fill the input', success: false });
@@ -196,11 +226,18 @@ const filterMed = async (req, res) => {
   res.status(200).send({ Result: Medicines, success: true })
 
 }
-router.get('/filterMedical/:MedicalUse', filterMed);
+router.get('/filterMedical/:MedicalUse', protect,filterMed);
 
 
 const viewReqPharm = async (req, res) => {
   try {
+    let user = await adminModel.findById(req.user);
+    if (!user) {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
     const pharms = await ReqPharmModel.find();
     res.status(200).json({ Result: pharms, success: true });
   }
@@ -212,6 +249,13 @@ router.get('/viewReqPharm', viewReqPharm);
 
 router.post('/Acceptance/:username', protect, async (req, res) => {
   try {
+    let exists = await adminModel.findById(req.user);
+    if (!exists) {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
     const { username } = req.params
     console.log(username, req.params.username);
     const user = await ReqPharmModel.findOne({ Username:username });
@@ -255,6 +299,13 @@ router.post('/Acceptance/:username', protect, async (req, res) => {
 
 router.delete('/Rejection/:username', protect, async (req, res) => {
   try {
+    let exists = await adminModel.findById(req.user);
+    if (!exists) {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
     const { username } = req.params;
     const user = await ReqPharmModel.findOne({Username: username });
     if (user) {

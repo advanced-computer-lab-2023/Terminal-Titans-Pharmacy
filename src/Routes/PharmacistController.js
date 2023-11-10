@@ -1,6 +1,7 @@
 const adminModel = require('../Models/Admin');
 const PharmacistModel = require('../Models/Pharmacist.js');
 const admincontroller = require('./Adminph.js');
+const user = require('../Models/user.js');
 const { default: mongoose } = require('mongoose');
 const MedicineModel = require('../Models/Medicine.js');
 //const {getMedicine} = require("./Adminph.js");
@@ -8,13 +9,21 @@ const express = require('express');
 const multer = require('multer');
 const router = express.Router();
 const AdminController = require('./Adminph');
+const protect = require('../middleware/authMiddleware.js');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 
 
 //search for medicine based on name
-const getMedicine = async (req, res) => {
+router.get('/getMedicine', protect, async (req, res) => {
+  let exists = await user.findById(req.user);
+  if (!exists) {
+    return res.status(500).json({
+      success: false,
+      message: "Not authorized"
+    });
+  }
   const Name = req.query.Name.toLowerCase();
   if (!Name) {
     return res.status(400).send({ message: 'Please fill the input', success: false });
@@ -31,13 +40,11 @@ const getMedicine = async (req, res) => {
   catch (error) {
     res.status(500).json({ message: "Failed getMedicine", success: false })
   }
-}
-
-router.get('/getMedicine', getMedicine);
+});
 
 //add another pharmacist with a set username and password
 
-router.post('/createPharmacist', upload.fields([{name: "ID"},{name:"Degree"},{name:"License"}]), async (req, res) => {
+router.post('/createPharmacist', upload.fields([{ name: "ID" }, { name: "Degree" }, { name: "License" }]), async (req, res) => {
   try {
     // Wait for the upload.single('ID') middleware to finish
     // await upload.single('ID')(req, res, async () => {
@@ -154,8 +161,15 @@ router.post('/createPharmacist', upload.fields([{name: "ID"},{name:"Degree"},{na
 
 //  }
 
-router.post('/addMedicine', upload.single('photo'), async (req, res) => {
+router.post('/addMedicine', upload.single('photo'), protect, async (req, res) => {
   try {
+    let exists = await user.findById(req.user);
+    if (!exists) {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
     // Get the ActiveIngredients and MedicalUse inputs
     console.log(req);
     const Name = req.body.Name;
@@ -225,8 +239,15 @@ router.post('/addMedicine', upload.single('photo'), async (req, res) => {
 
 
 
-const editMedicine = async (req, res) => {
+router.put('/editMedicine', protect, async (req, res) => {
   try {
+    let exists = await user.findById(req.user);
+    if (!exists) {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
     const medicineName = req.query.medicineName;
     const newPrice = req.query.newPrice;
     const newIngredients = req.query.newIngredients;
@@ -247,10 +268,18 @@ const editMedicine = async (req, res) => {
   catch (error) {
     res.status(500).json({ error: "Cannot do this" })
   }
-}
+});
 
-router.get('/editMedicine', async (req, res) => {
+
+router.get('/editMedicine', protect, async (req, res) => {
   try {
+    let exists = await user.findById(req.user);
+    if (!exists) {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
     const medicineName = req.query.medicineName;
     const newPrice = req.query.newPrice;
     const newIngredients = req.query.newIngredients;
@@ -272,11 +301,18 @@ router.get('/editMedicine', async (req, res) => {
   }
 });
 
-router.put('/editMedicine', editMedicine);
 
-const getListMed = async (req, res) => {
+
+router.get('/getinfoMeds', protect, async (req, res) => {
   //retrieve all users from the database
   try {
+    let exists = await user.findById(req.user);
+    if (!exists) {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
     const meds = await MedicineModel.find().select({
       Name: 1,
       Quantity: 1,
@@ -288,11 +324,18 @@ const getListMed = async (req, res) => {
   catch (error) {
     res.status(500).json({ message: "No Medicine listed", success: false })
   }
-}
-router.get('/getinfoMeds', getListMed)
+})
+
 //SELL MEDICINE 
-router.get('/sellMedicine', async (req, res) => {
+router.get('/sellMedicine', protect, async (req, res) => {
   try {
+    let exists = await user.findById(req.user);
+    if (!exists) {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
     let medicineName = req.query.medicineName.toLowerCase();
     let medcheck = await MedicineModel.findOne({ Name: medicineName });
 
@@ -326,8 +369,15 @@ router.get('/sellMedicine', async (req, res) => {
 
 
 
-router.get('/get-image/:id', async (req, res) => {
+router.get('/get-image/:id', protect, async (req, res) => {
   try {
+    let exists = await user.findById(req.user);
+    if (!exists) {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
     const medicine = await MedicineModel.findById(req.params.id);
     if (!medicine) {
       return res.status(404).send('Medicine not found');
