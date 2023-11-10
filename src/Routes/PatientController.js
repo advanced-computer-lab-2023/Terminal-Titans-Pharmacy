@@ -126,10 +126,11 @@ router.post('/addToCart', protect, async (req, res) => {
       message: "Not authorized"
     });
   }
-  const medicineId = req.body.medicineId;
+  try {
+    const medicineId = req.body.medicineId;
 
-  // Check if the item is already in the cart
-  const existingCartItem = await CartItem.findOne({ medicineId });
+    // Check if the item is already in the cart
+    const existingCartItem = await CartItem.findOne({ medicineId });
 
     if (existingCartItem) {
       if (quantity <= 0) {
@@ -144,7 +145,7 @@ router.post('/addToCart', protect, async (req, res) => {
         await existingCartItem.save();
 
         // Decrement the medicine quantity
-       // medicine.Quantity -= quantity;
+        // medicine.Quantity -= quantity;
         await medicine.save();
 
         res.json(existingCartItem);
@@ -162,12 +163,13 @@ router.post('/addToCart', protect, async (req, res) => {
       await newCartItem.save();
 
       // Decrement the medicine quantity
-    //  medicine.Quantity -= quantity;
+      //  medicine.Quantity -= quantity;
       await medicine.save();
 
       res.json(newCartItem);
     }
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error adding to cart:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
