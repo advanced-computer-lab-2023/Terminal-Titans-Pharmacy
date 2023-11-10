@@ -9,6 +9,10 @@ import Backdrop from './Components/backdrop';
 import Homescreen from './Screens/Homescreen';
 import Meds2 from './Screens/Meds';
 import CartScreen from './Screens/cartScreen';
+import Checckout from './Components/Checkout';
+import OrderDetails from './Components/orderDetails';
+import Address from './Components/addAddress';
+import Checkout from './Components/Checkout';
 import Login from './Screens/Login.js';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -46,6 +50,8 @@ function App() {
             <Route path="/medicine" element={<Meds2 />} />
             <Route path="/medicine/:medicineId" element={<Meds2 />} />
             {/* Pass cartItems to CartScreen */}
+            <Route path="/checkout" element={<Checkout />} />
+
             <Route path="/cart" element={<CartScreen />} />
 
           </Routes>
