@@ -138,12 +138,12 @@ const Homescreen = () => {
   useEffect(() => {
     const getMedicines = async () => {
       try {
-        const response = await fetch('http://localhost:8000/Patient/getAllMedicine',{headers:{Authorization:'Bearer'+sessionStorage.getItem("token")}});
+        const response = await fetch('http://localhost:8000/Patient/getAllMedicine/',{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}});
         const jsonData = await response.json();
 
         // Check if jsonData.Result is an array
-        if (Array.isArray(jsonData.Result)) {
-          setMedicines(jsonData.Result);
+        if (Array.isArray(jsonData.meds)) {
+          setMedicines(jsonData.meds);
         } else {
           console.error('Invalid data format. Expected an array.');
         }

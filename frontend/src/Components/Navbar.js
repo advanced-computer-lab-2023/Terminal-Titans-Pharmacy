@@ -222,7 +222,7 @@ const Navbar = ({ click }) => {
   useEffect(() => {
     const fetchCartItemCount = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/Patient/cartItemCount',{headers:{Authorization:'Bearer'+sessionStorage.getItem("token")}});
+        const response = await axios.get('http://localhost:8000/Patient/cartItemCount',{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}});
         if (response.status === 200) {
           setCartItemCount(response.data.itemCount);
         } else {
@@ -237,10 +237,10 @@ const Navbar = ({ click }) => {
     fetchCartItemCount();
 
     // Poll for updates every 5 seconds (adjust the interval as needed)
-    const intervalId = setInterval(fetchCartItemCount, 1000);
+    // const intervalId = setInterval(fetchCartItemCount, 1000);
 
     // Cleanup interval on component unmount
-    return () => clearInterval(intervalId);
+    // return () => clearInterval(intervalId);
   }, []); // Runs once on mount
 
   return (

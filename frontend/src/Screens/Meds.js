@@ -160,9 +160,10 @@ const Meds2 = () => {
 
         const fetchMedicines = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/Patient/getAllMedicine/',{headers:{Authorization:'Bearer'+sessionStorage.getItem("token")}}
+                const response = await axios.get('http://localhost:8000/Patient/getAllMedicine/',{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}}
                 );
-                const jsonData = response.data.Result;
+                const jsonData = response.data.meds;
+                console.log(response);
                 setMedicines(jsonData);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -209,11 +210,11 @@ const Meds2 = () => {
             const response = await axios.post(
                 `http://localhost:8000/Patient/addToCart/${medicine._id}`,
                 { quantity: quantityToAdd },
-                {headers:{Authorization:'Bearer'+sessionStorage.getItem("token")}}
+                {headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}}
             );
 
             if (response.status === 200) {
-                const cartItem = response.data;
+                const cartItem = response.data.meds;
                 console.log('Added to cart:', cartItem);
 
                 // Update the quantity based on the selected quantity using functional update
@@ -235,7 +236,7 @@ const Meds2 = () => {
                 console.error('Failed to add to cart');
 
                 // Check if the error is related to no stock available
-                if (response.data && response.data.message === 'no stoke') {
+                if (response.data.meds && response.data.message === 'no stoke') {
                     console.error('No stock available');
                     // Display an alert with the error message
                     window.alert('No stock available');

@@ -10,23 +10,7 @@ const router = express.Router();
 const app = express();
 app.use(express.urlencoded({ extended: false }))
 
-//add another patient with a set username and password
-const createPatient = async (req, res) => {
-  try {
-    const { Username, Gender, Name, Email, Password, HourlyRate, Affiliation, EducationalBackground, Position } = req.body;
-    const userexist = await PatientModel.findOne({ Username });
-    if (userexist) {
-      res.status(400);
-      throw new Error("Username already exist");
-    }
-    const Patient = new PatientModel({ Username, Gender, Name, Email, Password, HourlyRate, Affiliation, EducationalBackground, Position });
-    const NewPatient = await Patient.save();
-    res.status(201).json(NewPatient);
-  }
-  catch (error) {
-    res.status(500).json({ error: 'Failed OP', success: false })
-  }
-}
+
 //filter 
 router.get('/filterMedical/:MedicalUse', protect, async (req, res) => {
   let exists = await adminModel.findById(req.user);
@@ -95,19 +79,15 @@ router.get('/getAllMedicine', protect, async (req, res) => {
         message: "Not authorized"
       });
     }
-    // Make a request to your medicine data source
-    const response = await fetch('http://localhost:8000/Patient/getAllMedicine/'); // Replace with your actual API endpoint
-    const data = await response.json();
 
-    if (!data.success) {
-      return res.status(400).json({ success: false, message: data.message });
-    }
+    const meds = await MedicineModel.find();
 
-    const medicines = data.Result.filter((medicine) => medicine.Picture);
-    res.status(200).json({ success: true, Result: medicines });
+
+    // const medicines = data.Result.filter((medicine) => medicine.Picture);
+    res.status(200).json({ success: true, meds });
   } catch (error) {
     console.error('Error fetching medicine data:', error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
@@ -174,8 +154,8 @@ router.get('/getAllMedicine', protect, async (req, res) => {
 //   }
 // });
 router.post('/addToCart', protect, async (req, res) => {
-    let exists = await PatientModel.findById(req.user);
-  if (!exists || req.user.__t!=="Patient") {
+  let exists = await PatientModel.findById(req.user);
+  if (!exists || req.user.__t !== "Patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -232,9 +212,9 @@ router.post('/addToCart', protect, async (req, res) => {
 //   }
 // });
 
-router.get('/cartItemCount',protect, async (req, res) => {
+router.get('/cartItemCount', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
-  if (!exists || req.user.__t!=="Patient") {
+  if (!exists || req.user.__t !== "Patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -255,23 +235,23 @@ router.get('/cartItemCount',protect, async (req, res) => {
 });
 
 // Add this route handler to your Express app (app.js or your main application file)
-const getListMed = async (req, res) => {
-  //retrieve all users from the database
-  try {
-    const meds = await MedicineModel.find();
-    res.status(200).json({ Result: meds, success: true });
-  }
+// const getListMed = async (req, res) => {
+//   //retrieve all users from the database
+//   try {
+//     const meds = await MedicineModel.find();
+//     res.status(200).json({ Result: meds, success: true });
+//   }
 
-  catch (error) {
-    res.status(500).json({ message: "No Medicine listed", success: false })
-  }
-}
+//   catch (error) {
+//     res.status(500).json({ message: "No Medicine listed", success: false })
+//   }
+// }
 
-router.get('/getAllMedicine', getListMed);
+// router.get('/getAllMedicine', getListMed);
 // Delete an item from the cart
-router.delete('/deleteCartItem/:cartItemId',protect, async (req, res) => {
+router.delete('/deleteCartItem/:cartItemId', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
-  if (!exists || req.user.__t!=="Patient") {
+  if (!exists || req.user.__t !== "Patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -281,7 +261,7 @@ router.delete('/deleteCartItem/:cartItemId',protect, async (req, res) => {
 
   try {
     // Find the cart item by its unique ID and remove it
-    const deletedCartItem = await CartItem.findByIdAndRemove({_id: cartItemId, userId: req.user._id});
+    const deletedCartItem = await CartItem.findByIdAndRemove({ _id: cartItemId, userId: req.user._id });
 
     if (!deletedCartItem) {
       return res.status(404).json({ error: 'Cart item not found' });
@@ -295,22 +275,22 @@ router.delete('/deleteCartItem/:cartItemId',protect, async (req, res) => {
 });
 
 // View the cart
-router.get('/cart',protect, async (req, res) => {
+router.get('/cart', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
-  if (!exists) {
+  if (!exists || req.user.__t !== "Patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
     });
   }
-  const cartItems = await CartItem.find({userId: req.user._id});
+  const cartItems = await CartItem.find({ userId: req.user._id });
   res.json(cartItems);
 });
 
 // Update the quantity of an item in the cart
-router.put('/updateCartItem/:cartItemId',protect, async (req, res) => {
+router.put('/updateCartItem/:cartItemId', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
-  if (!exists || req.user.__t!=="Patient") {
+  if (!exists || req.user.__t !== "Patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -321,7 +301,7 @@ router.put('/updateCartItem/:cartItemId',protect, async (req, res) => {
 
   try {
     // Find the cart item by its unique ID
-    const cartItem = await CartItem.findOne({_id: cartItemId, userId: req.user._id});
+    const cartItem = await CartItem.findOne({ _id: cartItemId, userId: req.user._id });
 
     if (!cartItem) {
       return res.status(404).json({ error: 'Cart item not found' });
@@ -337,9 +317,9 @@ router.put('/updateCartItem/:cartItemId',protect, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-router.get('/cart/total',protect, async (req, res) => {
+router.get('/cart/total', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
-  if (!exists || req.user.__t!=="Patient") {
+  if (!exists || req.user.__t !== "Patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
