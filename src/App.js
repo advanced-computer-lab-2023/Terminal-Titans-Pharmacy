@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const multer = require("multer");
 mongoose.set('strictQuery', false);
 require("dotenv").config();
+const jwt = require('jsonwebtoken');
+
 // const {createAdmin, deleteAdmin, getMedicine, getListMed, getPharmacist, getPatient} = require("./Routes/Adminph");
 const MongoURI = process.env.MONGO_URI;
 //App variables
