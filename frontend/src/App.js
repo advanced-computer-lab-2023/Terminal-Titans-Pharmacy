@@ -11,7 +11,6 @@ import Checckout from './Components/Checkout';
 import OrderDetails from './Screens/OrderDetails.js';
 import Address from './Components/addAddress';
 import Checkout from './Components/Checkout';
-import Login from './Screens/Login.js';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import PatientRegistrationForm from './Screens/RegisterPatientForm.js';
