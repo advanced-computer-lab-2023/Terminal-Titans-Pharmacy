@@ -34,7 +34,7 @@ function Login() {
                 }
                 else {
                     // go to patient page
-                    window.location.pathname = '/Health-Plus/Patient';
+                    window.location.pathname = '/Health-Plus/patient';
                 }
             }
             else {

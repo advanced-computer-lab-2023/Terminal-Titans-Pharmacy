@@ -10,7 +10,7 @@ import Homescreen from './Screens/Homescreen';
 import Meds2 from './Screens/Meds';
 import CartScreen from './Screens/cartScreen';
 import Checckout from './Components/Checkout';
-import OrderDetails from './Components/orderDetails';
+import OrderDetails from './Screens/OrderDetails.js';
 import Address from './Components/addAddress';
 import Checkout from './Components/Checkout';
 import Login from './Screens/Login.js';
@@ -18,6 +18,7 @@ import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import PatientRegistrationForm from './Screens/RegisterPatientForm.js';
 import PharmacyRegistrationForm from './Screens/RegisterPharmacistForm';
+import OrderScreen from './Screens/orderScreen';
 
 function App() {
   const signoutButtonFunc = () => {
@@ -51,6 +52,8 @@ function App() {
             <Route path="/Health-Plus/registerPharmacist" element={<PharmacyRegistrationForm />} />
             <Route path="/Health-Plus/registerPatient" element={<PatientRegistrationForm />} />
 
+            <Route path="/orderDetails" element={<OrderScreen />} />
+            <Route path="/orderDetails/:orderId" element={<OrderDetails />} />
             <Route path="/patient" element={<Homescreen />} />
             <Route path="/medicine" element={<Meds2 />} />
             <Route path="/medicine/:medicineId" element={<Meds2 />} />
