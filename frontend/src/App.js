@@ -4,8 +4,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './Components/CartContext'; // Import the CartProvider
 import Navbar from './Components/Navbar';
-import Sidedrawer from './Components/sidedrawer';
-import Backdrop from './Components/backdrop';
 import Homescreen from './Screens/Homescreen';
 import Meds2 from './Screens/Meds';
 import CartScreen from './Screens/cartScreen';
@@ -21,10 +19,10 @@ import PharmacyRegistrationForm from './Screens/RegisterPharmacistForm';
 import OrderScreen from './Screens/orderScreen';
 
 function App() {
-  const signoutButtonFunc = () => {
-    sessionStorage.removeItem('token');
-    window.location.href = '/Health-Plus';
-  }
+  // const signoutButtonFunc = () => {
+  //   sessionStorage.removeItem('token');
+  //   window.location.href = '/Health-Plus';
+  // }
 
   return (
     <CartProvider>
@@ -32,12 +30,8 @@ function App() {
         {
           window.location.pathname == '/Health-Plus' || window.location.pathname == '/Health-Plus/registerPharmacist' || window.location.pathname == '/Health-Plus/registerPatient' ?
             <></>
-            : <div className="signoutButton">
-              <Button variant="danger" onClick={signoutButtonFunc}>Sign Out</Button>
-              <Navbar />
-              <Sidedrawer />
-              <Backdrop />
-            </div>
+            : 
+              <Navbar/>
         }
         {/* Navbar */}
         
