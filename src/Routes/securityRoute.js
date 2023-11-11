@@ -141,8 +141,11 @@ router.post('/pharmacist', upload.fields([{ name: "ID" }, { name: "Degree" }, { 
 
 
 router.post('/login', async (req, res) => {
+    console.log(req.body);
     const { username, password } = req.body
 
+    console.log(username);
+    console.log(password);
     if (!username || !password) {
         res.status(400).json({ message: 'Please fill all fields', success: false })
         return;

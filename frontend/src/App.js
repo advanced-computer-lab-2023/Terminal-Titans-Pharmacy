@@ -17,6 +17,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import PatientRegistrationForm from './Screens/RegisterPatientForm.js';
 import PharmacyRegistrationForm from './Screens/RegisterPharmacistForm';
 import OrderScreen from './Screens/orderScreen';
+import SignIn from './Screens/SignIn';
 
 function App() {
   // const signoutButtonFunc = () => {
@@ -42,7 +43,7 @@ function App() {
 
         <main>
           <Routes basename="/Health-Plus">
-            <Route path="/Health-Plus" element={<Login />} />
+            <Route path="/Health-Plus" element={<SignIn />} />
             <Route path="/Health-Plus/registerPharmacist" element={<PharmacyRegistrationForm />} />
             <Route path="/Health-Plus/registerPatient" element={<PatientRegistrationForm />} />
 
