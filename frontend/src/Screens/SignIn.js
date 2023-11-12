@@ -122,7 +122,7 @@ export default function SignIn() {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/Health-Plus/register" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>

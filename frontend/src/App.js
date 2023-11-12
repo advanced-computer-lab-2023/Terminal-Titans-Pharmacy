@@ -13,8 +13,7 @@ import Address from './Components/addAddress';
 import Checkout from './Components/Checkout';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import PatientRegistrationForm from './Screens/RegisterPatientForm.js';
-import PharmacyRegistrationForm from './Screens/RegisterPharmacistForm';
+import Register from './Screens/Register';
 import OrderScreen from './Screens/orderScreen';
 import SignIn from './Screens/SignIn';
 
@@ -43,8 +42,9 @@ function App() {
         <main>
           <Routes basename="/Health-Plus">
             <Route path="/Health-Plus" element={<SignIn />} />
-            <Route path="/Health-Plus/registerPharmacist" element={<PharmacyRegistrationForm />} />
-            <Route path="/Health-Plus/registerPatient" element={<PatientRegistrationForm />} />
+            <Route path="/Health-Plus/register" element={<Register />} />
+            {/* <Route path="/Health-Plus/registerPharmacist" element={<PharmacyRegistrationForm />} />
+            <Route path="/Health-Plus/registerPatient" element={<PatientRegistrationForm />} /> */}
 
             <Route path="/orderDetails" element={<OrderScreen />} />
             <Route path="/orderDetails/:orderId" element={<OrderDetails />} />
