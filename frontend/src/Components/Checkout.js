@@ -4,6 +4,8 @@ import Address from './addAddress';
 import OrderDetails from './orderDetails';
 import { finalAddress } from './addAddress';
 import {total} from './orderDetails';
+import '../Styles/orderDetails.css';
+
 function payment(){
   
 }
@@ -37,8 +39,8 @@ function Checkout() {
         ))}
       </div>
       <div className="btn-container" style={{ textAlign: 'right' }}>
-              <button className="btn" onClick={() => handleCircleClick(selectedStep+1)}>Next</button>
-            </div>
+        <button className="btn" style={{ backgroundColor: '#000000',color:'#ffffff' }} onClick={() => handleCircleClick(selectedStep + 1)}>Next</button>
+      </div>
       <div className="content">
         {steps.map((step, index) => (
           selectedStep === index && step

@@ -20,7 +20,6 @@
     border-radius: 50%;
     display:inline-block;
     position: relative;
-    right: 170px;
   }
   .dot2 {
     height: 10px;
@@ -30,7 +29,6 @@
     border-radius: 50%;
     display:inline-block;
     position: relative;
-    right: 170px;
   }
   .card-content {
     margin-bottom: 20px;
