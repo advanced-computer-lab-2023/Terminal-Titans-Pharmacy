@@ -171,17 +171,18 @@ router.post('/addMedicine', upload.single('photo'), protect, async (req, res) =>
       });
     }
     // Get the ActiveIngredients and MedicalUse inputs
-    console.log(req);
     const Name = req.body.Name;
     const Price = req.body.Price;
     const Quantity = req.body.Quantity;
     const ActiveIngredients = req.body.ActiveIngredients;
     const MedicalUse = req.body.MedicalUse;
     const Sales = 0;
+    const overTheCounter = req.body.OverTheCounter;
+    console.log(req.body.OverTheCounter);
 
-    console.log(req.file.buffer)
 
     // Split the ActiveIngredients and MedicalUse inputs into arrays
+    console.log(ActiveIngredients);
     const ActiveIngredientsArray = ActiveIngredients.split(',');
     const MedicalUseArray = MedicalUse.split(',');
 
@@ -199,7 +200,7 @@ router.post('/addMedicine', upload.single('photo'), protect, async (req, res) =>
     }
     const medicineExists = await MedicineModel.findOne({ Name });
     if (medicineExists) {
-      res.status(500);
+      res.status(400);
       throw new Error("Medicine already exists");
     }
 
@@ -207,23 +208,19 @@ router.post('/addMedicine', upload.single('photo'), protect, async (req, res) =>
     if (!req.file) {
       return res.status(400).send('No file uploaded.');
     }
-
-
-
-
-
     // Update the medicine object with the split ActiveIngredients and MedicalUse values
     const medicine = new MedicineModel({
       Name: req.body.Name,
       Price: req.body.Price,
       Quantity: req.body.Quantity,
-      Sales,
+      Sales:Sales,
       ActiveIngredients: SplitActiveIngredients,
       MedicalUse: SplitMedicalUse,
       Picture: {
         data: req.file.buffer,
         contentType: req.file.mimetype
-      }
+      },
+      OverTheCounter: req.body.OverTheCounter,
     });
 
     // Save the medicine object to the database
@@ -232,8 +229,9 @@ router.post('/addMedicine', upload.single('photo'), protect, async (req, res) =>
     // Return the new medicine object to the client
     res.status(201).json({ Result: "Medicine added ", success: true });
   } catch (error) {
+    console.log(error.message);
     // Handle any errors
-    res.status(500).json({ error: error.message, success: false });
+    res.status(400).json({ error: error.message, success: false });
   }
 });
 

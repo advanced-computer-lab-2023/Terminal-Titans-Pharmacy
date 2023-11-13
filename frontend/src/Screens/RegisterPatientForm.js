@@ -63,7 +63,7 @@ function PatientRegistrationForm() {
             'emergencyRel':emergencyRel
         }
         axios.post('http://localhost:8000/security/patient/', data).then((response) => {
-            console.log(response.data);
+            console.log(response);
             if (response.data.success) {
                 sessionStorage.setItem('token', response.data.token);
                 window.location.pathname = '/Health-Plus/patient';

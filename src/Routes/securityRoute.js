@@ -82,8 +82,8 @@ router.post('/patient', async (req, res) => {
 router.post('/pharmacist', upload.fields([{ name: "ID" }, { name: "Degree" }, { name: "License" }]), async (req, res) => {
     if (!req.body.username || !req.body.dateOfBirth || !req.body.password
         || !req.body.name || !req.body.email || !req.body.hourlyRate
-        || !req.body.affiliation || !req.body.education || !req.files.ID[0] || !req.files.Degree[0]
-        || !req.files.License[0]) {
+        || !req.body.affiliation || !req.body.education || !req.files?.ID[0] || !req.files?.Degree[0]
+        || !req.files?.License[0]) {
         return res.status(400).json({ message: 'You have to complete all the fields', success: false })
     }
     if (req.body.username.includes(' ')) {

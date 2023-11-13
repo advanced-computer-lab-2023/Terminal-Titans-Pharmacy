@@ -7,6 +7,7 @@ import Navbar from './Components/Navbar';
 import Homescreen from './Screens/Homescreen';
 import Meds2 from './Screens/Meds';
 import CartScreen from './Screens/cartScreen';
+import ForgotPassword from "./Screens/ForgotPassword";
 import Checckout from './Components/Checkout';
 import OrderDetails from './Screens/OrderDetails.js';
 import Address from './Components/addAddress';
@@ -16,6 +17,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Register from './Screens/Register';
 import OrderScreen from './Screens/orderScreen';
 import SignIn from './Screens/SignIn';
+import PharmacistScreen from './Screens/pharmacistScreen';
+import AdminPage from './Screens/AdminScreen';
 
 function App() {
   // const signoutButtonFunc = () => {
@@ -29,24 +32,24 @@ function App() {
         {
           window.location.pathname == '/Health-Plus' || window.location.pathname == '/Health-Plus/registerPharmacist' || window.location.pathname == '/Health-Plus/registerPatient' ?
             <></>
-            : 
-              <Navbar/>
+            :
+            <Navbar />
         }
         {/* Navbar */}
-        
+
         {/* Backdrop */}
-        
+
         {/* Backdrop */}
-        
+
 
         <main>
           <Routes basename="/Health-Plus">
+            <Route path="/forgotPassword" element={<ForgotPassword />} />
             <Route path="/Health-Plus" element={<SignIn />} />
             <Route path="/Health-Plus/register" element={<Register />} />
-            {/* <Route path="/Health-Plus/registerPharmacist" element={<PharmacyRegistrationForm />} />
-            <Route path="/Health-Plus/registerPatient" element={<PatientRegistrationForm />} /> */}
-
+            <Route path="/Health-Plus/admin" element={<AdminPage />} />
             <Route path="/orderDetails" element={<OrderScreen />} />
+            <Route path="/Health-Plus/pharmacistScreen" element={<PharmacistScreen />} />
             <Route path="/orderDetails/:orderId" element={<OrderDetails />} />
             <Route path="/patient" element={<Homescreen />} />
             <Route path="/medicine" element={<Meds2 />} />

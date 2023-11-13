@@ -290,7 +290,7 @@ router.get('/cartinCheckOut', async (req, res) => {
     cartItems: cartItems,
     medInfo: list
   }
-  console.log(cartItems);
+  // console.log(cartItems);
   res.json(Result);
 });
 

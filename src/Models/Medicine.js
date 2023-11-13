@@ -31,7 +31,11 @@ const MedicineSchema = new Schema({
     data: Buffer,
     contentType:String,
     required: false
-  }
+  },
+  OverTheCounter: {
+    type: Boolean,
+    required: true
+  },
 }, { timestamps: true });
 
 const Medicine = mongoose.model('Medicine', MedicineSchema);

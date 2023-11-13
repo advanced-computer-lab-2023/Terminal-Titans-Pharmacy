@@ -134,13 +134,21 @@ function PharmacyRegistrationForm() {
     formData.append('ID', iD)
     formData.append('Degree', degree);
     formData.append('License', license);
+
     // formData.append('speciality', speciality);
     // Make a POST request to your backend register route
-    axios.post('http://localhost:8000/security/pharmacist/', formData)
+    axios.post('http://localhost:8000/security/pharmacist', formData).then((response) => {
+      console.log(response);
+      alert("success "+response.data.success)
+    }
+    )
       .catch(error => {
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        console.log(error);
+        console.log(error.message);
+        if(error?.response?.data?.message)
+          alert(error?.response?.data?.message);
+        else
+          alert(error.message);
       });
   }
   return (

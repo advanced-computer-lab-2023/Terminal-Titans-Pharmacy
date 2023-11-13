@@ -38,13 +38,13 @@ const Navbar1 = ({ click }) => {
     };
 
     // Fetch initially
-    fetchCartItemCount();
+    // fetchCartItemCount();
 
     // Poll for updates every 5 seconds (adjust the interval as needed)
-    const intervalId = setInterval(fetchCartItemCount, 1000);
+    // const intervalId = setInterval(fetchCartItemCount, 1000);
 
     // Cleanup interval on component unmount
-    return () => clearInterval(intervalId);
+    // return () => clearInterval(intervalId);
   }, []); // Runs once on mount
 
   return (

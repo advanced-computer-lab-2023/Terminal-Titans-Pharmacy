@@ -45,12 +45,13 @@ export default function SignIn() {
             console.log(response);
             if (response.data.success) {
                 sessionStorage.setItem('token', response.data.Result.token);
-                if (response.data.type === 'Admin') {
+                if (response.data.Result.type === 'Admin') {
                     // go to admin page
-                    
+                    window.location.pathname = '/Health-Plus/admin';
                 }
-                else if (response.data.type === 'Doctor') {
+                else if (response.data.Result.type === 'Pharmacist') {
                     // go to doctor page
+                    window.location.pathname = '/Health-Plus/pharmacistScreen';
                 }
                 else {
                     // go to patient page
@@ -117,7 +118,7 @@ export default function SignIn() {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2">
+                <Link href="/forgotPassword" variant="body2">
                   Forgot password?
                 </Link>
               </Grid>

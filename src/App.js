@@ -70,7 +70,7 @@ app.get('/Patient', (req, res) => {
   res.render('PatientPage.ejs')
 })
 app.get('/Pharma', (req, res) => {
-  res.render('PharmacistPage.ejs')
+  res.render('D:/Semester 7/ACL/Project/Terminal-Titans-Pharmacy/src/views/PharmacistPage.ejs')
 })
 app.set('view engine', 'ejs');
 

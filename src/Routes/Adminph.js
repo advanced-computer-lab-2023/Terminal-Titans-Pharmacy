@@ -272,9 +272,11 @@ router.post('/Acceptance/:username', protect, async (req, res) => {
         License: user.License
       })
       await pharmacist.save();
+      let myResult = await ReqPharmModel.find();
       res.status(200).json({
         success: true,
-        message: "Pharmacist accepted successfully"
+        message: "Pharmacist accepted successfully",
+        Result:myResult
       });
     }
     else {
@@ -305,9 +307,11 @@ router.delete('/Rejection/:username', protect, async (req, res) => {
     const user = await ReqPharmModel.findOne({ Username: username });
     if (user) {
       await ReqPharmModel.deleteOne(user);
+      let myResult = await ReqPharmModel.find();
       res.status(200).json({
         success: true,
-        message: "Pharmacist rejected successfully"
+        message: "Pharmacist rejected successfully",
+        Result:myResult
       });
     }
     else {
