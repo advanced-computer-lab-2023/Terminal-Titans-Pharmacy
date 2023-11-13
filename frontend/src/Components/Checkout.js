@@ -4,6 +4,9 @@ import Address from './addAddress';
 import OrderDetails from './orderDetails';
 import { finalAddress } from './addAddress';
 import {total} from './orderDetails';
+function payment(){
+  
+}
 
 function Checkout() {
   const [selectedStep, setSelectedStep] = useState(0);

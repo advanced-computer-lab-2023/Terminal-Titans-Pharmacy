@@ -253,7 +253,7 @@ router.get('/cartItemCount', protect, async (req, res) => {
 
 // router.get('/getAllMedicine', getListMed);
 
-router.get('/cartinCheckOut', async (req, res) => {
+router.get('/cartinCheckOut',protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
   if (!exists || req.user.__t !== "Patient") {
     return res.status(500).json({
@@ -414,7 +414,7 @@ router.post('/checkout', async (req, res) => {
     // Initialize variables for order creation
     let total = 0;
     const itemsForOrder = [];
-    7
+    
     // Calculate the total cost and construct the order
     for (const cartItem of cartItems) {
       const medicine = await MedicineModel.findById(cartItem.medicineId);
