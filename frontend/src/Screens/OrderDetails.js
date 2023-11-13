@@ -58,40 +58,45 @@ const OrderScreen = () => {
     }
 
     return (
-        <Container className='d-flex justify-content-around'>
-            {medicines.map((item) => (
-                <Card style={{ width: '18rem' }}>
-                    {item.Picture && item.Picture.data && item.Picture.contentType && (
-                        <Card.Img variant="top" src={`data:${item.Picture.contentType};base64,${arrayBufferToBase64(
-                            item.Picture.data.data
-                        )}`} />
-                    )}
-                    <Card.Body>
-                        <Card.Title>{item.Name}</Card.Title>
-                        <Card.Text>
-                            Active Ingredients
-                            <ul>
-                                {item.ActiveIngredients &&
-                                    item.ActiveIngredients.map((ingredient, index) => (
-                                        <li key={index}>{ingredient}</li>
-                                    ))}
-                            </ul>
-                        </Card.Text>
-                    </Card.Body>
-                    <ListGroup className="list-group-flush">
-                        <ListGroup.Item>Medical Use
-                            <ul>
-                                {item.MedicalUse &&
-                                    item.MedicalUse.map((medicalUse, index) => (
-                                        <li key={index}>{medicalUse}</li>
-                                    ))}
-                            </ul>
-                        </ListGroup.Item>
-                        <ListGroup.Item>Price: {item.Price}</ListGroup.Item>
-                    </ListGroup>
-                </Card>
-            ))}
-        </Container>
+        <div>
+            <div className='d-flex justify-content-between'>
+                <div>Order {sessionStorage.getItem('orderNumber')}</div>
+            </div>
+            <Container className='d-flex justify-content-around'>
+                {medicines.map((item) => (
+                    <Card style={{ width: '18rem' }}>
+                        {item?.Picture && item?.Picture.data && item?.Picture.contentType && (
+                            <Card.Img variant="top" src={`data:${item?.Picture.contentType};base64,${arrayBufferToBase64(
+                                item?.Picture.data.data
+                            )}`} />
+                        )}
+                        <Card.Body>
+                            <Card.Title>{item.Name}</Card.Title>
+                            <Card.Text>
+                                Active Ingredients
+                                <ul>
+                                    {item.ActiveIngredients &&
+                                        item.ActiveIngredients.map((ingredient, index) => (
+                                            <li key={index}>{ingredient}</li>
+                                        ))}
+                                </ul>
+                            </Card.Text>
+                        </Card.Body>
+                        <ListGroup className="list-group-flush">
+                            <ListGroup.Item>Medical Use
+                                <ul>
+                                    {item.MedicalUse &&
+                                        item.MedicalUse.map((medicalUse, index) => (
+                                            <li key={index}>{medicalUse}</li>
+                                        ))}
+                                </ul>
+                            </ListGroup.Item>
+                            <ListGroup.Item>Price: {item.Price}</ListGroup.Item>
+                        </ListGroup>
+                    </Card>
+                ))}
+            </Container>
+        </div>
     );
 }
 

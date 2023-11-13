@@ -23,6 +23,7 @@ const OrderScreen = () => {
                     }
                     response.data.order[i].totalPrice = totalPrice;
                 }
+                console.log(response.data.order);
                 updateOrderItems(response.data.order);
             } catch (error) {
                 console.error('Error fetching cart items:', error);
@@ -32,7 +33,7 @@ const OrderScreen = () => {
         fetchOrders();
     }, []); // Remove updateOrderItems from the dependency array to prevent unnecessary re-renders
 
-    const viewOrder = (id) => {
+    const viewOrder = (id,index) => {
         window.location.href = `/orderDetails/${id}`;
     }
 
@@ -59,29 +60,35 @@ const OrderScreen = () => {
 
     return (
         <div>
-            {orderItems.map((item, index) => (
-                <Card key={item._id} border="secondary" style={{ width: '18rem', marginBottom: '20px' }}>
-                    <Card.Header>{item._id}</Card.Header>
-                    <Card.Body>
-                        <Card.Title>Order {index + 1}</Card.Title>
-                        {/* Display other information from the item */}
-                        <Card.Subtitle className="mb-2 text-muted">{item.status}</Card.Subtitle>
-                        <Card.Text>
-                            <ListGroup>
+            <div className="d-flex justify-content-evenly flex-wrap">
+                {orderItems.map((item, index) => (
+                    <Card key={item._id} border="secondary" style={{ width: '18rem', marginBottom: '20px' }}>
+                        <Card.Header>{item._id}</Card.Header>
+                        <Card.Body>
+                            <Card.Title>Order {index + 1}</Card.Title>
+                            {/* Display other information from the item */}
+                            <Card.Subtitle className="mb-2 text-muted">{item.status}</Card.Subtitle>
+                            <Card.Text>
+                                <ListGroup>
                                 <ListGroup.Item action href="#link1">
-                                    Total Price: ${item.totalPrice}
-                                </ListGroup.Item>
-                                <ListGroup.Item action href="#link2" disabled>
-                                    Total Quantity: {item.total}
-                                </ListGroup.Item>
-                            </ListGroup>
-                        </Card.Text>
-                        {/* Add additional content as needed */}
-                        <Card.Link style={{ cursor: 'pointer' }} onClick={() => viewOrder(item._id)}>View</Card.Link>
-                        <Card.Link style={{ cursor: 'pointer' }} onClick={() => cancelOrder(item._id)}>Cancel</Card.Link>
-                    </Card.Body>
-                </Card>
-            ))}
+                                        Address: {item.address}
+                                    </ListGroup.Item>
+                                    <ListGroup.Item action href="#link1">
+                                        Total Price: ${item.totalPrice}
+                                    </ListGroup.Item>
+                                    <ListGroup.Item action href="#link2" disabled>
+                                        Total Quantity: {item.total}
+                                    </ListGroup.Item>
+                                </ListGroup>
+                            </Card.Text>
+                            {/* Add additional content as needed */}
+                            <Card.Link style={{ cursor: 'pointer' }} onClick={() => viewOrder(item._id,index)}>View</Card.Link>
+                            <Card.Link style={{ cursor: 'pointer' }} onClick={() => cancelOrder(item._id)}>Cancel</Card.Link>
+                        </Card.Body>
+                    </Card>
+                ))}
+            </div>
+
         </div>
     );
 };
