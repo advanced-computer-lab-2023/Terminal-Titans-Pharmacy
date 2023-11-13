@@ -1,8 +1,7 @@
 
-import "./CartItem.css"
+import '../Styles/orderDetails.css';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link, useLocation, useParams } from 'react-router-dom';
 
 let total = 0;
 function arrayBufferToBase64(buffer) {
@@ -34,7 +33,6 @@ const OrderDetails = ({ item }) => {
       (res) => {
         const medicine = res.data
         console.log(medicine)
-        console.log(medicine[0])
         setCart(medicine)
 
       }
@@ -81,7 +79,9 @@ const OrderDetails = ({ item }) => {
     );
   }
   elements.push(
+    
     <div>
+      <hr></hr>
       <div className="cartitem">
         Total:
         <p className="Cart_quantity"></p>

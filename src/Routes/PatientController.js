@@ -272,7 +272,7 @@ router.get('/cartItemCount', protect, async (req, res) => {
 
 // router.get('/getAllMedicine', getListMed);
 
-router.get('/cartinCheckOut', async (req, res) => {
+router.get('/cartinCheckOut',protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
   if (!exists || req.user.__t !== "Patient") {
     return res.status(500).json({
@@ -290,7 +290,7 @@ router.get('/cartinCheckOut', async (req, res) => {
     cartItems: cartItems,
     medInfo: list
   }
-  // console.log(cartItems);
+  console.log(cartItems);
   res.json(Result);
 });
 
@@ -416,7 +416,7 @@ router.get('/getAllMedicine', protect, async (req, res) => {
   }
 });
 // Checkout and create an order
-router.post('/checkout', async (req, res) => {
+router.post('/checkout',protect, async (req, res) => {
   try {
     let exists = await PatientModel.findById(req.user);
     if (!exists || req.user.__t != "Patient") {
@@ -433,7 +433,7 @@ router.post('/checkout', async (req, res) => {
     // Initialize variables for order creation
     let total = 0;
     const itemsForOrder = [];
-    7
+    
     // Calculate the total cost and construct the order
     for (const cartItem of cartItems) {
       const medicine = await MedicineModel.findById(cartItem.medicineId);
@@ -488,7 +488,7 @@ router.post('/checkout', async (req, res) => {
 
 // Add a new delivery address for a patient
 
-router.post('/addAddress', async (req, res) => {
+router.post('/addAddress', protect,async (req, res) => {
   let exists = await PatientModel.findById(req.user);
   if (!exists || req.user.__t != "Patient") {
     return res.status(500).json({
@@ -542,7 +542,7 @@ router.post('/addAddress', async (req, res) => {
 
 
 // Retrieve the patient's addresses
-router.get('/getAddresses', async (req, res) => {
+router.get('/getAddresses',protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
   if (!exists || req.user.__t != "Patient") {
     return res.status(500).json({
@@ -661,5 +661,23 @@ router.put('/cancelOrder/:orderId', protect,async (req, res) => {
     res.status(500).json({ error: 'Failed to cancel the order' });
   }
 });
+
+async function getOrderDetails(pid) {
+    
+    const cartItems = await CartItem.find({ userId: pid });
+    let list = []
+    for (var x in cartItems) {
+      const med = await MedicineModel.findById(cartItems[x].medicineId);
+      medInfo={
+        id:med._id,
+        name:med.Name,
+        price:med.Price,
+        quantity:cartItems[x].quantity
+      }
+      list.push(medInfo);
+    }
+    return list
+  
+}
 
 module.exports = router;
