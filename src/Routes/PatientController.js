@@ -70,6 +70,27 @@ router.get('/getMedicine/:Name', protect, async (req, res) => {
   }
 });
 
+router.get('/getAllMedicine2', protect, async (req, res) => {
+  try {
+    let exists = await PatientModel.findById(req.user);
+    if (!exists || req.user.__t != "Patient") {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+
+    const meds = await MedicineModel.find({ OverTheCounter: true });
+
+    // Add a new property 'isOverTheCounter' to each medicine object
+
+    res.status(200).json({ success: true, meds});
+  } catch (error) {
+    console.error('Error fetching medicine data:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 //view a list of all available medicine pic,price,description
 // const viewInfo =async (req,res)=> {
 //  const pic = req.query.Picture;
@@ -87,7 +108,7 @@ router.get('/getAllMedicine', protect, async (req, res) => {
 
     const meds = await MedicineModel.find();
 
-
+    
     // const medicines = data.Result.filter((medicine) => medicine.Picture);
     res.status(200).json({ success: true, meds });
   } catch (error) {

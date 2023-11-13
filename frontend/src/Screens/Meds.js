@@ -30,7 +30,7 @@ function Meds2() {
 
         const fetchMedicines = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/Patient/getAllMedicine/', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } }
+                const response = await axios.get('http://localhost:8000/Patient/getAllMedicine2/', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } }
                 );
                 const jsonData = response.data.meds;
                 console.log(response);

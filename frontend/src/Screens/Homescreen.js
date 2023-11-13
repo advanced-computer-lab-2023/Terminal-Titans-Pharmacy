@@ -138,7 +138,7 @@ const Homescreen = () => {
   useEffect(() => {
     const getMedicines = async () => {
       try {
-        const response = await fetch('http://localhost:8000/Patient/getAllMedicine/',{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}});
+        const response = await fetch('http://localhost:8000/Patient/getAllMedicine2/',{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}});
         const jsonData = await response.json();
 
         // Check if jsonData.Result is an array
