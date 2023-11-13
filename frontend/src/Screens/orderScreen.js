@@ -15,13 +15,13 @@ const OrderScreen = () => {
                     headers: { Authorization: 'Bearer ' + sessionStorage.getItem('token') },
                 });
                 console.log(response);
-                let totalPrice = 0;
                 let totalQuantity = 0;
                 for (let i = 0; i < response.data.order.length; i++) {
                     for (let j = 0; j < response.data.order[i].items.length; j++) {
-                        totalPrice += response.data.order[i].items[j].price;
+                        totalQuantity += response.data.order[i].items[j].quantity;
                     }
-                    response.data.order[i].totalPrice = totalPrice;
+                    response.data.order[i].totalQuantity = totalQuantity;
+                    totalQuantity = 0;
                 }
                 console.log(response.data.order);
                 updateOrderItems(response.data.order);
@@ -74,10 +74,10 @@ const OrderScreen = () => {
                                         Address: {item.address}
                                     </ListGroup.Item>
                                     <ListGroup.Item action href="#link1">
-                                        Total Price: ${item.totalPrice}
+                                        Total Price: ${item.total}
                                     </ListGroup.Item>
                                     <ListGroup.Item action href="#link2" disabled>
-                                        Total Quantity: {item.total}
+                                        Total Quantity: {item.totalQuantity}
                                     </ListGroup.Item>
                                 </ListGroup>
                             </Card.Text>

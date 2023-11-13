@@ -504,7 +504,7 @@ router.get('/checkout/:id/:address/:paymentMethod', async (req, res) => {
       total: total,
       address: req.params.address,
       paymentMethod:req.params.paymentMethod,
-      status:'out for delievery'
+      status:'processing'
     });
     await newOrder.save();
   }
@@ -684,7 +684,7 @@ router.put('/cancelOrder/:orderId', protect,async (req, res) => {
     }
     console.log(order);
     // Update the order's status to "canceled"
-    if(order.status !== 'delivered' || order.status !== 'returned' || order.status !== 'refunded' || order.status !== 'failed' || order.status !== 'completed')
+    if(order.status !== 'out for delievery' || order.status !== 'delivered' || order.status !== 'returned' || order.status !== 'refunded' || order.status !== 'failed' || order.status !== 'completed')
       order.status = 'canceled';
 
     // Save the updated order data
