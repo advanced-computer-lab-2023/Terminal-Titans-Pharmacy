@@ -5,10 +5,15 @@ const Order = require("../Models/Orders.js");
 const express = require('express');
 const protect = require("../middleware/authMiddleware.js");
 const router = express.Router();
+const stripe= require('stripe')
+
+
 
 //App variables
 const app = express();
 app.use(express.urlencoded({ extended: false }))
+const stripeInstance = stripe('sk_test_51OAmglE5rOvAFcqVk714zBO64pgCArV8MfP0BWTnycXGzLnWqkX5cP37OvMffUIDt6DdoKif93x9PfiC39XvkhJr00LuYVmMyv');
+//const stripe = require('stripe')(s);
 
 
 //filter 
@@ -65,6 +70,27 @@ router.get('/getMedicine/:Name', protect, async (req, res) => {
   }
 });
 
+router.get('/getAllMedicine2', protect, async (req, res) => {
+  try {
+    let exists = await PatientModel.findById(req.user);
+    if (!exists || req.user.__t != "Patient") {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+
+    const meds = await MedicineModel.find({ OverTheCounter: true });
+
+    // Add a new property 'isOverTheCounter' to each medicine object
+
+    res.status(200).json({ success: true, meds});
+  } catch (error) {
+    console.error('Error fetching medicine data:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 //view a list of all available medicine pic,price,description
 // const viewInfo =async (req,res)=> {
 //  const pic = req.query.Picture;
@@ -82,7 +108,7 @@ router.get('/getAllMedicine', protect, async (req, res) => {
 
     const meds = await MedicineModel.find();
 
-
+    
     // const medicines = data.Result.filter((medicine) => medicine.Picture);
     res.status(200).json({ success: true, meds });
   } catch (error) {
@@ -426,6 +452,7 @@ router.post('/checkout',protect, async (req, res) => {
       });
     }
     const patientId = req.user._id;
+
     // Get the items from the cart
     const cartItems = await CartItem.find({ userId: patientId });
     console.log(cartItems);
@@ -466,13 +493,15 @@ router.post('/checkout',protect, async (req, res) => {
 
     // Debugging: Output the 'total' value after setting it
     console.log('Total after setting:', total);
-
+    console.log( req.body.address)
     // Create the order in the database
     const newOrder = new Order({
       userId: patientId,
       items: itemsForOrder,
       total: total,
       address: req.body.address,
+      paymentMethod:req.body.paymentMethod,
+      status:'out for delievery'
     });
     await newOrder.save();
 
@@ -671,13 +700,102 @@ async function getOrderDetails(pid) {
       medInfo={
         id:med._id,
         name:med.Name,
-        price:med.Price,
+        price:med.Price*100*cartItems[x].quantity,
         quantity:cartItems[x].quantity
       }
       list.push(medInfo);
     }
-    return list
+      return list
   
 }
+
+
+const processCardPayment = async (req, res,pid) => {
+  try {
+    let orderDetails=await getOrderDetails(pid);
+    console.log(orderDetails)
+    const session =await stripeInstance.checkout.sessions.create({
+
+      payment_method_types: ["card"],
+      mode: "payment",
+      line_items: orderDetails.map(item => {
+        return {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: item.name,
+            },
+            unit_amount: item.price,
+          },
+          quantity: item.quantity,
+        }
+      }),
+      success_url: `http://localhost:3000/success`,
+      cancel_url: `http://localhost:3000/cancel`,
+    })
+    res.json({ url: session.url })
+  } catch (e) {
+    console.error('Error processing card payment', e.message);
+    return false;
+    //res.status(500).json({ error: e.message })
+  }
+};
+
+const processWalletPayment = async (req,res,userId) => {
+  let orderDetails=await getOrderDetails(userId);
+  var total=0;
+  console.log(orderDetails);
+for(var x in orderDetails){
+  total+=orderDetails[x].price;
+  console.log(total);
+}
+total=total/100;
+  const user = await PatientModel.findById(userId);
+  user.Wallet = user.Wallet - total;
+  console.log(user)
+  console.log('lineee')
+  console.log(total);
+  if (user.Wallet < 0) {
+      console.error('Insufficient funds in wallet');
+      let result = res.status(400).send({ hello: 'Insufficient funds' });
+      console.log(result);
+      return result;
+  }
+  try {
+      await PatientModel.findByIdAndUpdate(userId, user);
+      return res.status(200).send({ message: 'Wallet payment succcessfull' });
+  } catch (e) {
+      console.error('Error processing wallet payment', e.message);
+      return res.status(500).json({ error: e.message });
+  }
+};
+
+router.post('/payment' ,protect, async (req,res) => {
+  let exists = await PatientModel.findById(req.user);
+  if (!exists || req.user.__t != "Patient") {
+    return res.status(500).json({
+      success: false,
+      message: "Not authorized"
+    });
+  }
+  let userId=exists._id
+  let paymentMethod = req.body.paymentMethod;
+  try {
+    if (paymentMethod === "wallet") {
+      
+      return await processWalletPayment(req,res,userId);
+  } else {
+    if (paymentMethod === "card") 
+          return await processCardPayment(req,res,userId);
+    else
+    return res.status(200).send({ message: 'COD succcessfull' });    
+
+  }
+  } catch (e) {
+      console.error('Error processing payment', e.message);
+      return false;
+  }
+});
+
 
 module.exports = router;

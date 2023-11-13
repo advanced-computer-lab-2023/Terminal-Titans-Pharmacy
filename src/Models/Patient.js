@@ -45,6 +45,10 @@ const PatientSchema = new Schema({
     address: {
       type : Array,
       required: false
+    },
+    Wallet: {
+      type: Number,
+      default: 0
     }
 
   }, { timestamps: true });

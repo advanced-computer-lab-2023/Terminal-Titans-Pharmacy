@@ -6,7 +6,7 @@ var finalAddress;
 function Address() {
   const [addresses, setAddresses] = useState([]);
   const [address, setAddress] = useState('');
-  const [selectedAddress, setselectedAddress] = useState(0);
+  const [selectedAddress, setselectedAddress] = useState(-1);
 
 
 
@@ -55,6 +55,8 @@ function Address() {
       .then(response => response.json())
       .then(data => setAddresses(data))
       .catch(error => console.error('Error fetching addresses: ', error));
+      
+      console.log(finalAddress)
   }, []);
   console.log(Array.isArray(addresses.address));
 

@@ -5,6 +5,7 @@ import OrderDetails from './orderDetails';
 import { finalAddress } from './addAddress';
 import {total} from './orderDetails';
 import '../Styles/orderDetails.css';
+import Payment from './paymentMethod';
 
 function payment(){
   
@@ -16,7 +17,7 @@ function Checkout() {
   let steps = [
    <OrderDetails/>,
     <Address/>,
-    "Step 3: Payment"
+    <Payment/>
   ];
 
   const handleCircleClick = (index) => {

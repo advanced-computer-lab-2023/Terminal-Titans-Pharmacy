@@ -19,6 +19,9 @@ import OrderScreen from './Screens/orderScreen';
 import SignIn from './Screens/SignIn';
 import PharmacistScreen from './Screens/pharmacistScreen';
 import AdminPage from './Screens/AdminScreen';
+import Success from './Components/success';
+import Cancel from './Components/cancel';
+import PaymentPage from './Components/paymentMethod';
 
 function App() {
   // const signoutButtonFunc = () => {
@@ -56,7 +59,9 @@ function App() {
             <Route path="/medicine/:medicineId" element={<Meds2 />} />
             {/* Pass cartItems to CartScreen */}
             <Route path="/checkout" element={<Checkout />} />
-
+            <Route path="/success" element={<Success />} />
+            <Route path="/cancel" element={<Cancel />} />
+            <Route path="/payment" element={<PaymentPage />} />
             <Route path="/cart" element={<CartScreen />} />
 
           </Routes>

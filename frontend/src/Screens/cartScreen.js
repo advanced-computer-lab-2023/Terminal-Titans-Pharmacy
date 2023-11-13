@@ -163,7 +163,7 @@ const CartScreen = () => {
           <p>${totalSum}</p>
         </div>
         <div>
-          <button>Checkout</button>
+          <button onClick={() => window.location.pathname='./checkout'}>Checkout</button>
         </div>
       </div>
     </div>

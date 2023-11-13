@@ -54,11 +54,12 @@ const OrderDetails = ({ item }) => {
     </div>
   )
   console.log(cart.medInfo);
+  total = 0;
   for (let i in cart.medInfo) {
-    console.log(i)
+    console.log(cart.cartItems[i].price)
     let medicine = cart.medInfo[i];
     total += cart.cartItems[i].price;
-
+console.log(cart)
     elements.push(
       <div key={i}>
         <div className="cartitem">
@@ -70,6 +71,7 @@ const OrderDetails = ({ item }) => {
               />
             )}
           </div>
+          
           <p>{medicine.Name}</p>
           <p className="Cart_price">${medicine.Price}</p>
           <p className="Cart_quantity">{cart.cartItems[i].quantity}</p>
@@ -78,6 +80,7 @@ const OrderDetails = ({ item }) => {
       </div>
     );
   }
+  console.log(total)
   elements.push(
     
     <div>
@@ -92,7 +95,7 @@ const OrderDetails = ({ item }) => {
 
     </div>
   )
-  console.log(elements);
+  
   return <div>{elements}</div>;
   // return (
 
