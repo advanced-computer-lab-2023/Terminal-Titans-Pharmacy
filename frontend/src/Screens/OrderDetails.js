@@ -46,7 +46,8 @@ const OrderScreen = () => {
                 console.log(orderList[i]);
                 await axios.get(`http://localhost:8000/Patient/getMedicineById/${orderList[i].medicineId}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } })
                     .then((response) => {
-                        const jsonData = response.data.meds;
+                        let jsonData = response.data.meds;
+                        jsonData.Quantity = orderList[i].quantity;
                         console.log(jsonData);
                         res.push(jsonData);
                     })
@@ -92,6 +93,7 @@ const OrderScreen = () => {
                                 </ul>
                             </ListGroup.Item>
                             <ListGroup.Item>Price: {item.Price}</ListGroup.Item>
+                            <ListGroup.Item>Quantity: {item.Quantity}</ListGroup.Item>
                         </ListGroup>
                     </Card>
                 ))}
