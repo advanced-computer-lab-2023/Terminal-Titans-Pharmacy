@@ -10,18 +10,7 @@ const patientModel = require('../Models/Patient.js');
 const userModel = require('../Models/user.js');
 const reqPharmacist = require('../Models/requestedPharmacist.js');
 const validator = require('email-validator');
-
-
-
-
-router.get('/patient', (req, res) => {
-    res.render('patientRegistration', { message: "" });
-})
-
-router.get('/pharmacist', (req, res) => {
-    res.render('pharmacistRegistration', { message: "" });
-
-})
+const protect = require('../middleware/authMiddleware.js');
 
 
 router.post('/patient', async (req, res) => {
@@ -184,5 +173,141 @@ const generateToken = (id) => {
         expiresIn: '30d',
     })
 }
+
+router.post('/changePassword',protect, async(req,res)=>{
+    //const oldPass=req.user.Password;
+    const oldPassEntered=req.body.oldPassword;
+    const newPass=req.body.password;
+    try{
+    const user=await userModel.findOne({_id:req.user._id});
+    const oldPass=user.Password;    
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPass, salt)
+    console.log(oldPassEntered)
+   
+        const isMatch = await bcrypt.compare(oldPassEntered, oldPass);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Invalid password', success: false })
+        }
+        const updatedUser = await userModel.findOneAndUpdate({ _id: req.user._id },
+            {
+                Password: hashedPassword,
+            });
+        res.status(200).json({ Result: updatedUser, success: true })
+    }
+    catch (err) {
+        res.status(400).json({ message: err.message, success: false })
+    }
+});
+
+router.post('/sendOTP', async (req, res) => {
+    const email = req.body.email
+    const user = await userModel.findOne({ Email: email })
+    console.log(user)
+    if (user) {
+        const otp = Math.floor(100000 + Math.random() * 900000);
+        const newOtp = new otpModel({
+            userId: user._id,
+            otp: otp
+        });
+        newOtp.save();
+        console.log("OTP: ", otp);
+
+        try {
+            const mailResponse = await mailSender(
+                email,
+                "Verification Email",
+                `<h1>Please confirm your OTP</h1>
+                 <p>Here is your OTP code: ${otp}</p>`
+            );
+            if (mailResponse) {
+                console.log("Email sent successfully: ", mailResponse);
+                res.status(200).json({ message: 'Email sent', success: true })
+            }
+            else {
+                res.status(400).json({ message: 'Error sending email', success: false });
+            }
+        } catch (error) {
+            res.status(500).json({ message: 'Error sending email', success: false })
+        }
+    }
+    else {
+        res.status(400).json({ message: 'Email not found', success: false })
+
+    }
+
+})
+router.post('/verifyOTP', async (req, res) => {
+    try {
+        const email = req.body.email
+        const user = await userModel.findOne({ Email: email })
+        console.log(user)
+        const response = await otpModel.find({ userId: user._id }).sort({ createdAt: -1 }).limit(1);
+        if (response.length === 0 || req.body.otp !== response[0].otp) {
+            return res.status(400).json({
+                success: false,
+                message: 'The OTP is not valid',
+            });
+        }
+        else {
+            console.log("OTP is valid");
+            const updateOtp = await otpModel.findOneAndUpdate({ _id: response[0]._id },
+                {
+                    isVerified: true,
+                });
+            res.status(200).json({ Result: updateOtp, success: true });
+        }
+    } catch (error) {
+        res.status(400).json({ message: 'Error verifying OTP', success: false })
+    }
+
+})
+router.post('/forgotPassword',async (req, res) => {
+    const  email  = req.body.email
+    let user = await userModel.findOne({ Email: email })
+    console.log('here')
+    try{
+    const newPass=req.body.password;
+    
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt)
+        console.log(hashedPassword)
+    const updatedUser = await userModel.findOneAndUpdate({ _id: user._id },
+        {
+            Password: hashedPassword,
+        });
+        console.log(updatedUser)
+        
+        res.status(200).json({ Result: updatedUser, success: true })
+    } catch (error) {
+        res.status(400).json({ message: 'Error changing password', success: false })
+    }
+
+
+});
+const mailSender = async (email, title, body) => {
+    try {
+        let transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
+            auth: {
+                user: process.env.MAIL_USER,
+                pass: process.env.MAIL_PASS,
+            }
+        });
+        // Send emails to users
+        let info = await transporter.sendMail({
+            from: 'Terminal Titans',
+            to: email,
+            subject: title,
+            html: body,
+        });
+        console.log("Email info: ", info);
+        return info;
+    } catch (error) {
+        console.log(error.message);
+    }
+};
 
 module.exports = router;
