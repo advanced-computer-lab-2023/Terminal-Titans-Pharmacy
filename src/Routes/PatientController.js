@@ -442,16 +442,19 @@ router.get('/getAllMedicine', protect, async (req, res) => {
   }
 });
 // Checkout and create an order
-router.post('/checkout',protect, async (req, res) => {
+router.get('/checkout/:id/:address/:paymentMethod', async (req, res) => {
   try {
-    let exists = await PatientModel.findById(req.user);
-    if (!exists || req.user.__t != "Patient") {
-      return res.status(500).json({
-        success: false,
-        message: "Not authorized"
-      });
-    }
-    const patientId = req.user._id;
+    console.log('checkouttt')
+    console.log(req.params)
+    // let exists = await PatientModel.findById(req.user);
+    // if (!exists || req.user.__t != "Patient") {
+    //   return res.status(500).json({
+    //     success: false,
+    //     message: "Not authorized"
+    //   });
+    // }
+    console.log(req.params)
+    const patientId = req.params.id;
 
     // Get the items from the cart
     const cartItems = await CartItem.find({ userId: patientId });
@@ -493,22 +496,27 @@ router.post('/checkout',protect, async (req, res) => {
 
     // Debugging: Output the 'total' value after setting it
     console.log('Total after setting:', total);
-    console.log( req.body.address)
+    if(total>0){
     // Create the order in the database
     const newOrder = new Order({
       userId: patientId,
       items: itemsForOrder,
       total: total,
-      address: req.body.address,
-      paymentMethod:req.body.paymentMethod,
+      address: req.params.address,
+      paymentMethod:req.params.paymentMethod,
       status:'out for delievery'
     });
     await newOrder.save();
+  }
 
     // Clear the cart by removing all cart items
-    await CartItem.deleteMany({ userId: patientId });
 
-    res.json({ message: 'Checkout successful. Your order has been placed.' });
+    await CartItem.deleteMany({ userId: patientId });
+    console.log('right before redirect')
+    if(req.params.paymentMethod==='Card')
+    return res.redirect('http://localhost:3000/patient')
+  else
+   res.status(200).json({ message: 'Checkout successful. Your order has been placed.' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Checkout failed. Server error.' });
@@ -710,10 +718,11 @@ async function getOrderDetails(pid) {
 }
 
 
-const processCardPayment = async (req, res,pid) => {
+const processCardPayment = async (req, res,pid,address) => {
+  const paymentMethod = 'Card';
   try {
     let orderDetails=await getOrderDetails(pid);
-    console.log(orderDetails)
+    console.log(address)
     const session =await stripeInstance.checkout.sessions.create({
 
       payment_method_types: ["card"],
@@ -730,10 +739,14 @@ const processCardPayment = async (req, res,pid) => {
           quantity: item.quantity,
         }
       }),
-      success_url: `http://localhost:3000/success`,
+      success_url: `http://localhost:8000/patient/checkout/${pid}/${encodeURIComponent(address)}/${encodeURIComponent(paymentMethod)}`,
       cancel_url: `http://localhost:3000/cancel`,
     })
-    res.json({ url: session.url })
+   
+
+    // Handle the response as needed
+    
+    return res.json({ url: session.url});
   } catch (e) {
     console.error('Error processing card payment', e.message);
     return false;
@@ -741,7 +754,8 @@ const processCardPayment = async (req, res,pid) => {
   }
 };
 
-const processWalletPayment = async (req,res,userId) => {
+const processWalletPayment = async (req,res,userId,address) => {
+  const paymentMethod = 'Wallet';
   let orderDetails=await getOrderDetails(userId);
   var total=0;
   console.log(orderDetails);
@@ -752,9 +766,6 @@ for(var x in orderDetails){
 total=total/100;
   const user = await PatientModel.findById(userId);
   user.Wallet = user.Wallet - total;
-  console.log(user)
-  console.log('lineee')
-  console.log(total);
   if (user.Wallet < 0) {
       console.error('Insufficient funds in wallet');
       let result = res.status(400).send({ hello: 'Insufficient funds' });
@@ -763,7 +774,11 @@ total=total/100;
   }
   try {
       await PatientModel.findByIdAndUpdate(userId, user);
-      return res.status(200).send({ message: 'Wallet payment succcessfull' });
+      var response = await fetch(`http://localhost:8000/patient/checkout/${userId}/${encodeURIComponent(address)}/${encodeURIComponent(paymentMethod)}`);
+
+    console.log(response.status)
+    if(response.status===200)
+    return res.status(200).json({ message: 'Checkout successful. Your order has been placed.' });
   } catch (e) {
       console.error('Error processing wallet payment', e.message);
       return res.status(500).json({ error: e.message });
@@ -771,6 +786,10 @@ total=total/100;
 };
 
 router.post('/payment' ,protect, async (req,res) => {
+  console.log('kkk')
+  
+
+    
   let exists = await PatientModel.findById(req.user);
   if (!exists || req.user.__t != "Patient") {
     return res.status(500).json({
@@ -783,15 +802,26 @@ router.post('/payment' ,protect, async (req,res) => {
   try {
     if (paymentMethod === "wallet") {
       
-      return await processWalletPayment(req,res,userId);
+      let respone= await processWalletPayment(req,res,userId,req.body.address);
+      console.log(response)
+      return response
   } else {
-    if (paymentMethod === "card") 
-          return await processCardPayment(req,res,userId);
-    else
-    return res.status(200).send({ message: 'COD succcessfull' });    
+    if (paymentMethod === "card"){ 
+         const response= await processCardPayment(req,res,userId,req.body.address);
+         console.log('card')
+         //console.log(response);
 
+          }
+       
+    else
+    console.log("COD")
+    var response= await fetch(`http://localhost:8000/patient/checkout/${userId}/${encodeURIComponent(req.body.address)}/${encodeURIComponent(paymentMethod)}`);
+    if(response.status===200)
+    return res.status(200).json({ message: 'Checkout successful. Your order has been placed.' });
   }
-  } catch (e) {
+  }
+
+   catch (e) {
       console.error('Error processing payment', e.message);
       return false;
   }

@@ -1,18 +1,20 @@
 import "../Styles/LoginForm.css";
 import axios from 'axios';
+import { finalAddress } from "./addAddress";
 import React, { useState, useEffect } from 'react';
 let Method='COD';
 const PaymentPage = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const handlePayment = async (paymentMethod) => {
-    console.log(paymentMethod);
+    console.log(finalAddress);
     Method=paymentMethod;
     try {
       const response = await axios.post(
         `http://localhost:8000/Patient/payment/`,
         {
           paymentMethod: paymentMethod,
+          address: finalAddress,
           
         },
         {
@@ -29,7 +31,7 @@ const PaymentPage = () => {
           const url = response.data.url;
           window.location = url;
         }else{
-            window.location ='/success'
+             window.location ='/patient'
           setErrorMessage("Success");
         }
       } else {
