@@ -40,7 +40,7 @@ router.get('/filterMedical/:MedicalUse', protect, async (req, res) => {
 
 
 router.get('/getMedicine/:Name', protect, async (req, res) => {
-  let exists = await adminModel.findById(req.user);
+  let exists = await PatientModel.findById(req.user);
   if (!exists || req.user.__t != "Patient") {
     return res.status(500).json({
       success: false,
@@ -91,6 +91,25 @@ router.get('/getAllMedicine', protect, async (req, res) => {
   }
 });
 
+router.get('/getMedicineById/:id', protect, async (req, res) => {
+  try {
+    let exists = await PatientModel.findById(req.user);
+    if (!exists || req.user.__t != "Patient") {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+    const id = req.params.id;
+    const meds = await MedicineModel.findById(id);
+
+    // const medicines = data.Result.filter((medicine) => medicine.Picture);
+    res.status(200).json({ success: true, meds });
+  } catch (error) {
+    console.error('Error fetching medicine data:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 // }
 // router.get('/viewAvailableMedicines', viewInfo);
@@ -552,12 +571,48 @@ router.get('/getAddresses', async (req, res) => {
 });
 
 // Retrieve order details and status
-router.get('/getOrder/:orderId', async (req, res) => {
+router.get('/getOrder', protect,async (req, res) => {
+  const user = await PatientModel.findById(req.user);
+  if (!user || user.__t !== 'Patient') {
+    return res.status(500).json({
+      success: false,
+      message: "Not authorized"
+    });
+  }
+
+  // const orderId = req.params.orderId;
+
+  try {
+    // Find the order by its ID
+    // const order = await Order.find({_id:orderId,userId:req.user._id});
+    const order = await Order.find({userId:req.user._id});
+
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    // Return order details and status
+    res.json({ order });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to retrieve order details' });
+  }
+});
+
+router.get('/getOrder/:orderId', protect,async (req, res) => {
+  const user = await PatientModel.findById(req.user);
+  if (!user || user.__t !== 'Patient') {
+    return res.status(500).json({
+      success: false,
+      message: "Not authorized"
+    });
+  }
+
   const orderId = req.params.orderId;
 
   try {
     // Find the order by its ID
-    const order = await Order.findById(orderId);
+    const order = await Order.findOne({_id:orderId,userId:req.user._id});
 
     if (!order) {
       return res.status(404).json({ error: 'Order not found' });
@@ -572,24 +627,35 @@ router.get('/getOrder/:orderId', async (req, res) => {
 });
 
 // Cancel an order
-router.put('/cancelOrder/:orderId', async (req, res) => {
+router.put('/cancelOrder/:orderId', protect,async (req, res) => {
+  console.log(req);
+  const user = await PatientModel.findById(req.user);
+  if (!user || user.__t !== 'Patient') {
+    return res.status(500).json({
+      success: false,
+      message: "Not authorized"
+    });
+  }
   const orderId = req.params.orderId;
 
   try {
     // Find the order by its ID
-    const order = await Order.findById(orderId);
+    let order = await Order.findOne({_id:orderId,userId:req.user._id});
 
     if (!order) {
       return res.status(404).json({ error: 'Order not found' });
     }
-
+    console.log(order);
     // Update the order's status to "canceled"
-    order.status = 'canceled';
+    if(order.status !== 'delivered' || order.status !== 'returned' || order.status !== 'refunded' || order.status !== 'failed' || order.status !== 'completed')
+      order.status = 'canceled';
 
     // Save the updated order data
     await order.save();
 
-    res.json({ message: 'Order canceled successfully', order });
+    let myOrders = await Order.find({userId:req.user._id});
+
+    res.json({ message: 'Order canceled successfully', myOrders });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to cancel the order' });
