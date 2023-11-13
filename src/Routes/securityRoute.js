@@ -11,7 +11,7 @@ const userModel = require('../Models/user.js');
 const reqPharmacist = require('../Models/requestedPharmacist.js');
 const validator = require('email-validator');
 const protect = require('../middleware/authMiddleware.js');
-
+const otpModel = require('../Models/otpModel.js');
 
 router.post('/patient', async (req, res) => {
     if (!req.body.username || !req.body.dateOfBirth || !req.body.password
