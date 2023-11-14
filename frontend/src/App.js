@@ -22,6 +22,7 @@ import AdminPage from './Screens/AdminScreen';
 import Success from './Components/success';
 import Cancel from './Components/cancel';
 import PaymentPage from './Components/paymentMethod';
+import ViewReqPharmDoc from './Components/viewReqPharmDoc.js';
 
 function App() {
   // const signoutButtonFunc = () => {
@@ -62,6 +63,7 @@ function App() {
             <Route path="/success" element={<Success />} />
             <Route path="/cancel" element={<Cancel />} />
             <Route path="/payment" element={<PaymentPage />} />
+            <Route path="/Health-Plus/viewReqPharmcDoc" element={<ViewReqPharmDoc />} />
             <Route path="/cart" element={<CartScreen />} />
 
           </Routes>

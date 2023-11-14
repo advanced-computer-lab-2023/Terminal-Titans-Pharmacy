@@ -76,6 +76,7 @@ const AcceptRejectPharmacist = () => {
                     <th>Affiliation</th>
                     <th>Education</th>
                     <th>Affiliation</th>
+                    <th>View Doc</th>
                     <th>Accept</th>
                     <th>Reject</th>
                 </tr>
@@ -92,6 +93,7 @@ const AcceptRejectPharmacist = () => {
                             <td>{pharmacist.Affiliation}</td>
                             <td>{pharmacist.EducationalBackground}</td>
                             <td>{pharmacist.Affiliation}</td>
+                            <td><button type="button" className="btn btn-success"  onClick={() => window.location.href=`viewReqPharmcDoc?Id=${pharmacist._id}`}>view Doc</button></td>
                             <td><button type="button" className="btn btn-success" onClick={(event) => { acceptPharmacist(pharmacist.Username) }}>Accept</button></td>
                             <td><button type="button" className="btn btn-danger" onClick={(event) => { rejectPharmacist(pharmacist.Username) }}>Reject</button></td>
                         </React.Fragment>
