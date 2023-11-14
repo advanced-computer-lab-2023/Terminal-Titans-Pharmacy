@@ -458,7 +458,7 @@ router.get('/checkout/:id/:address/:paymentMethod', async (req, res) => {
 
     // Get the items from the cart
     const cartItems = await CartItem.find({ userId: patientId });
-    console.log(cartItems);
+    //console.log(cartItems);
 
     // Initialize variables for order creation
     let total = 0;
@@ -814,7 +814,6 @@ router.post('/payment' ,protect, async (req,res) => {
           }
        
     else
-    console.log("COD")
     var response= await fetch(`http://localhost:8000/patient/checkout/${userId}/${encodeURIComponent(req.body.address)}/${encodeURIComponent(paymentMethod)}`);
     if(response.status===200)
     return res.status(200).json({ message: 'Checkout successful. Your order has been placed.' });
