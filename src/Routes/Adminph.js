@@ -5,6 +5,7 @@ const patientModel = require('../Models/Patient.js');
 const MedicineModel = require('../Models/Medicine.js');
 const ReqPharmModel = require('../Models/requestedPharmacist.js');
 const userModel = require('../Models/user.js')
+const OrderModel = require("../Models/Orders.js");
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
@@ -14,14 +15,15 @@ const bcrypt = require('bcryptjs');
 const app = express();
 app.use(express.urlencoded({ extended: false }))
 
-router.post('/createAdmin', async (req, res) => {
-  // const exist = await adminModel.findById(req.user);
-  // if (!exist) {
-  //   return res.status(500).json({
-  //     success: false,
-  //     message: "You are not an admin"
-  //   });
-  // }
+router.post('/createAdmin',protect, async (req, res) => {
+    let exists = await adminModel.findById(req.user);
+    if (!exists || req.user.__t != "Admin") {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+    
   const Username = req.body.Username.toLowerCase();
   const Pass = req.body.Pass;
   const Position = 'Admin';
@@ -51,6 +53,7 @@ router.post('/createAdmin', async (req, res) => {
 });
 
 const deleteAdmin = async (req, res) => {
+  
   const Username = req.query.Username.toLowerCase();
   if (!Username) {
     return res.status(400).send({ message: 'user not filled' });
@@ -329,4 +332,85 @@ router.delete('/Rejection/:username', protect, async (req, res) => {
   }
 })
 
+router.get('/totalSalesReport/:chosenMonth', protect, async (req, res) => {
+  try {
+    // Check if the user is authorized (Pharmacist)
+    let exists = await adminModel.findById(req.user);
+    if (!exists || exists.__t !== 'Pharmacist') {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+
+    // Get the chosen month from the route parameters
+    const chosenMonth = req.params.chosenMonth;
+
+    // Validate the chosenMonth parameter
+    if (!chosenMonth || isNaN(chosenMonth) || parseInt(chosenMonth) < 1 || parseInt(chosenMonth) > 12) {
+      return res.status(400).json({ message: 'Please provide a valid month (1-12)', success: false });
+    }
+
+    // Perform a query to get the total sales for the chosen month from the Orders model
+    const totalSales = await OrderModel.aggregate([
+      {
+        $match: {
+          $expr: {
+            $eq: [{ $month: '$createdAt' }, parseInt(chosenMonth)]
+          }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: '$total' },
+          medicinesSold: {
+            $push: {
+              $map: {
+                input: '$items',
+                as: 'item',
+                in: {
+                  medicine: '$$item.medicineId',
+                  quantity: '$$item.quantity',
+                  price: '$$item.price' // Include the price in the response
+                }
+              }
+            }
+          }
+        }
+      }
+    ]);
+
+    // Check if there are any results
+    if (totalSales.length === 0) {
+      return res.status(404).json({ message: 'No sales for the chosen month', success: false });
+    }
+
+    // Flatten the medicinesSold array and resolve medicine details
+    const medicinesSold = totalSales[0].medicinesSold.flat();
+    const medicinesDetails = await resolveMedicineDetails(medicinesSold);
+
+    // Return the total sales, total quantity sold, and medicine details for the chosen month
+    res.status(200).json({ Result: { totalSales: totalSales[0].totalSales, totalQuantitySold: totalSales[0].totalQuantitySold, medicinesSold: medicinesDetails }, success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error retrieving total sales report", success: false });
+  }
+});
+
+// Helper function to resolve medicine details
+async function resolveMedicineDetails(medicinesSold) {
+  const medicineDetails = [];
+  for (const item of medicinesSold) {
+    const medicine = await MedicineModel.findById(item.medicine);
+    if (medicine) {
+      medicineDetails.push({
+        medicineName: medicine.Name,
+        quantitySold: item.quantity,
+        price: item.price
+      });
+    }
+  }
+  return medicineDetails;
+}
 module.exports = router;

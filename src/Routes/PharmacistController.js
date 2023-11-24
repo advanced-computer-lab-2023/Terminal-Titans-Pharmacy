@@ -4,7 +4,7 @@ const admincontroller = require('./Adminph.js');
 const user = require('../Models/user.js');
 const { default: mongoose } = require('mongoose');
 const MedicineModel = require('../Models/Medicine.js');
-//const {getMedicine} = require("./Adminph.js");
+const OrderModel = require("../Models/Orders.js");
 const express = require('express');
 const multer = require('multer');
 const router = express.Router();
@@ -221,6 +221,7 @@ router.post('/addMedicine', upload.single('photo'), protect, async (req, res) =>
         contentType: req.file.mimetype
       },
       OverTheCounter: req.body.OverTheCounter,
+      Archived: false,
     });
 
     // Save the medicine object to the database
@@ -388,6 +389,260 @@ router.get('/get-image/:id', protect, async (req, res) => {
     res.status(500).send('Error retrieving the image.');
   }
 });
+//archive a medicine 
+router.put('/archiveMedicine/:id', protect, async (req, res) => {
+  try {
+    let exists = await user.findById(req.user);
+    if (!exists || exists.__t !== 'Pharmacist') {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
 
-// module.exports = { addMedicine };
+    const medicineId = req.params.id;
+    const updatedMedicine = await MedicineModel.findByIdAndUpdate(
+      {_id: medicineId},
+      { Archived: true },
+      { new: true }
+    );
+
+    if (!updatedMedicine) {
+      return res.status(404).json({ error: 'Medicine not found' });
+    }
+
+    res.status(200).json(updatedMedicine);
+  } catch (error) {
+    res.status(500).json({ error: "Cannot archive medicine" });
+  }
+});
+
+
+// unarchived medicine
+router.put('/unarchiveMedicine/:id', protect, async (req, res) => {
+  try {
+    let exists = await user.findById(req.user);
+    if (!exists || exists.__t !== 'Pharmacist') {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+
+    const medicineId = req.params.id;
+    const updatedMedicine = await MedicineModel.findByIdAndUpdate(
+      medicineId,
+      { Archived: false },
+      { new: true }
+    );
+
+    if (!updatedMedicine) {
+      return res.status(404).json({ error: 'Medicine not found' });
+    }
+
+    res.status(200).json(updatedMedicine);
+  } catch (error) {
+    res.status(500).json({ error: "Cannot unarchive medicine" });
+  }
+});
+
+// view total sales report based on chosen month
+// Route to get the total sales report for a chosen month
+router.get('/totalSalesReport/:chosenMonth', protect, async (req, res) => {
+  try {
+    // Check if the user is authorized (Pharmacist)
+    let exists = await user.findById(req.user);
+    if (!exists || exists.__t !== 'Pharmacist') {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+
+    // Get the chosen month from the route parameters
+    const chosenMonth = req.params.chosenMonth;
+
+    // Validate the chosenMonth parameter
+    if (!chosenMonth || isNaN(chosenMonth) || parseInt(chosenMonth) < 1 || parseInt(chosenMonth) > 12) {
+      return res.status(400).json({ message: 'Please provide a valid month (1-12)', success: false });
+    }
+
+    // Perform a query to get the total sales for the chosen month from the Orders model
+    const totalSales = await OrderModel.aggregate([
+      {
+        $match: {
+          $expr: {
+            $eq: [{ $month: '$createdAt' }, parseInt(chosenMonth)]
+          }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: '$total' },
+          medicinesSold: {
+            $push: {
+              $map: {
+                input: '$items',
+                as: 'item',
+                in: {
+                  medicine: '$$item.medicineId',
+                  quantity: '$$item.quantity',
+                  price: '$$item.price' // Include the price in the response
+                }
+              }
+            }
+          }
+        }
+      }
+    ]);
+
+    // Check if there are any results
+    if (totalSales.length === 0) {
+      return res.status(404).json({ message: 'No sales for the chosen month', success: false });
+    }
+
+    // Flatten the medicinesSold array and resolve medicine details
+    const medicinesSold = totalSales[0].medicinesSold.flat();
+    const medicinesDetails = await resolveMedicineDetails(medicinesSold);
+
+    // Return the total sales, total quantity sold, and medicine details for the chosen month
+    res.status(200).json({ Result: { totalSales: totalSales[0].totalSales, totalQuantitySold: totalSales[0].totalQuantitySold, medicinesSold: medicinesDetails }, success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error retrieving total sales report", success: false });
+  }
+});
+
+// Helper function to resolve medicine details
+async function resolveMedicineDetails(medicinesSold) {
+  const medicineDetails = [];
+  for (const item of medicinesSold) {
+    const medicine = await MedicineModel.findById(item.medicine);
+    if (medicine) {
+      medicineDetails.push({
+        medicineName: medicine.Name,
+        quantitySold: item.quantity,
+        price: item.price
+      });
+    }
+  }
+  return medicineDetails;
+}
+
+//filter sales report based on chosen medicine/date
+// Filter sales report based on chosen medicine or date
+router.get('/filterSalesReport/:medicineName/:chosenDate', protect, async (req, res) => {
+  try {
+    // Check if the user is authorized (Pharmacist)
+    let exists = await user.findById(req.user);
+    if (!exists || exists.__t !== 'Pharmacist') {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+
+    // Get the parameters from the route params
+    const medicineName = req.params.medicineName;
+    const chosenDate = req.params.chosenDate;
+
+    // Validate the parameters
+    if ((!medicineName && !chosenDate) || (chosenDate && isNaN(Date.parse(chosenDate)))) {
+      return res.status(400).json({ message: 'Please provide a valid medicineName or chosenDate', success: false });
+    }
+
+    // Prepare the match object based on the provided parameters
+    const match = {};
+    if (medicineName) {
+      const medicine = await MedicineModel.findOne({ Name: medicineName });
+      if (medicine) {
+        match['items.medicineId'] = medicine._id;
+      } else {
+        // If medicineName is provided but not found, return no sales
+        return res.status(404).json({ message: 'No sales for the provided medicineName', success: false });
+      }
+    }
+    if (chosenDate) {
+      match['createdAt'] = {
+        $gte: new Date(chosenDate),
+        $lt: new Date(new Date(chosenDate).setDate(new Date(chosenDate).getDate() + 1)) // Next day to include all sales on the chosen date
+      };
+    }
+
+    // Perform a query to get the filtered sales report from the Orders model
+    const salesReport = await OrderModel.aggregate([
+      {
+        $match: match
+      },
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: '$total' },
+          medicinesSold: {
+            $push: {
+              $map: {
+                input: '$items',
+                as: 'item',
+                in: {
+                  medicine: '$$item.medicineId',
+                  quantity: '$$item.quantity',
+                  price: '$$item.price' // Include the price in the response
+                }
+              }
+            }
+          }
+        }
+      }
+    ]);
+
+    // Check if there are any results
+    if (salesReport.length === 0) {
+      return res.status(404).json({ message: 'No sales for the provided criteria', success: false });
+    }
+
+    // Flatten the medicinesSold array and resolve medicine details
+    const medicinesSold = salesReport[0].medicinesSold.flat();
+    const medicinesDetails = await resolveMedicineDetails(medicinesSold);
+
+    // Return the filtered sales report, total sales, and medicine details
+    res.status(200).json({ Result: { filteredSalesReport: salesReport[0], medicinesSold: medicinesDetails }, success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error retrieving filtered sales report", success: false });
+  }
+});
+
+//view the amount in my wallet
+router.get('/viewWalletBalance', protect, async (req, res) => {
+  try {
+    // Check if the user is authorized
+    let exists = await user.findById(req.user);
+    if (!exists || exists.__t !== 'Pharmacist') {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+
+    // Find the pharmacist for the logged-in user
+    const pharmacist = await PharmacistModel.findOne({ _id: req.user });
+
+    // Check if the pharmacist exists
+    if (!pharmacist) {
+      return res.status(404).json({ message: 'Pharmacist not found', success: false });
+    }
+
+    // Access the wallet balance directly from the pharmacist model
+    const walletBalance = pharmacist.Wallet;
+
+    // Return the wallet balance
+    res.status(200).json({ Result: { balance: walletBalance }, success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error retrieving wallet balance", success: false });
+  }
+});
+
+
 module.exports = router;

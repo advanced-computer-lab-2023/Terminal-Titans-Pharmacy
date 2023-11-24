@@ -36,6 +36,10 @@ const MedicineSchema = new Schema({
     type: Boolean,
     required: true
   },
+  Archived: {
+    type: Boolean,
+    default: false,
+  },
 }, { timestamps: true });
 
 const Medicine = mongoose.model('Medicine', MedicineSchema);

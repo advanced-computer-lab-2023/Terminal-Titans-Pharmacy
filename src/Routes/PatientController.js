@@ -80,7 +80,7 @@ router.get('/getAllMedicine2', protect, async (req, res) => {
       });
     }
 
-    const meds = await MedicineModel.find({ OverTheCounter: true });
+    const meds = await MedicineModel.find({ OverTheCounter: true , Archived: false});
 
     // Add a new property 'isOverTheCounter' to each medicine object
 
@@ -825,6 +825,50 @@ router.post('/payment' ,protect, async (req,res) => {
       return false;
   }
 });
+
+// Add a route to view the patient's wallet balance and refund details
+router.get('/viewWallet', protect, async (req, res) => {
+  try {
+    let exists = await PatientModel.findById(req.user);
+    if (!exists || req.user.__t !== "Patient") {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+
+    const patient = await PatientModel.findById(req.user._id);
+
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found' });
+    }
+
+    let walletBalance = patient.Wallet || 0;
+
+    // Retrieve refund details for canceled orders that are not COD
+    const canceledOrders = await Order.find({
+      userId: req.user._id,
+      status: 'canceled',
+      paymentMethod: { $ne: 'COD' }
+    });
+
+    let totalRefund = 0;
+
+    for (const order of canceledOrders) {
+      totalRefund += order.total;
+    }
+
+    walletBalance += totalRefund;
+    res.status(200).json({
+      walletBalance,
+      totalRefund
+    });
+  } catch (error) {
+    console.error('Error fetching wallet details:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 
 
 module.exports = router;

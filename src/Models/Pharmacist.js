@@ -47,6 +47,10 @@ const PharmacistSchema = new Schema({
       data: Buffer,
       contentType:String,
       required: false
+    },
+    Wallet: {
+      type: Number,
+      default: 0
     }
 
   }, { timestamps: true });
