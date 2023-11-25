@@ -16,9 +16,9 @@ const stripeInstance = stripe('sk_test_51OAmglE5rOvAFcqVk714zBO64pgCArV8MfP0BWTn
 //const stripe = require('stripe')(s);
 
 
-//filter 
+//filter based on medical use
 router.get('/filterMedical/:MedicalUse', protect, async (req, res) => {
-  let exists = await adminModel.findById(req.user);
+  let exists = await PatientModel.findById(req.user);
   if (!exists || req.user.__t != "Patient") {
     return res.status(500).json({
       success: false,
@@ -42,8 +42,6 @@ router.get('/filterMedical/:MedicalUse', protect, async (req, res) => {
 
 
 //search for medicine based on name
-
-
 router.get('/getMedicine/:Name', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
   if (!exists || req.user.__t != "Patient") {
@@ -70,6 +68,7 @@ router.get('/getMedicine/:Name', protect, async (req, res) => {
   }
 });
 
+//get all medicine over the counter and not archived
 router.get('/getAllMedicine2', protect, async (req, res) => {
   try {
     let exists = await PatientModel.findById(req.user);
@@ -91,11 +90,7 @@ router.get('/getAllMedicine2', protect, async (req, res) => {
   }
 });
 
-//view a list of all available medicine pic,price,description
-// const viewInfo =async (req,res)=> {
-//  const pic = req.query.Picture;
-//  const price = req.query.Price;
-
+//old get all medicine
 router.get('/getAllMedicine', protect, async (req, res) => {
   try {
     let exists = await PatientModel.findById(req.user);
@@ -117,6 +112,7 @@ router.get('/getAllMedicine', protect, async (req, res) => {
   }
 });
 
+//get medicine by id
 router.get('/getMedicineById/:id', protect, async (req, res) => {
   try {
     let exists = await PatientModel.findById(req.user);
@@ -198,6 +194,8 @@ router.get('/getMedicineById/:id', protect, async (req, res) => {
 //     res.status(500).json({ error: 'Internal server error' });
 //   }
 // });
+
+// Add a medicine to the cart
 router.post('/addToCart/:medicineId', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
   if (!exists || req.user.__t !== "Patient") {
@@ -261,6 +259,7 @@ router.post('/addToCart/:medicineId', protect, async (req, res) => {
 //   }
 // });
 
+// Retrieve the number of items in the cart to help in the frontend
 router.get('/cartItemCount', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
   if (!exists || req.user.__t !== "Patient") {
@@ -298,6 +297,7 @@ router.get('/cartItemCount', protect, async (req, res) => {
 
 // router.get('/getAllMedicine', getListMed);
 
+// View the cart
 router.get('/cartinCheckOut',protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
   if (!exists || req.user.__t !== "Patient") {
@@ -422,25 +422,27 @@ router.get('/cart/total', protect, async (req, res) => {
   }
 });
 
-router.get('/getAllMedicine', protect, async (req, res) => {
-  //retrieve all users from the database
-  try {
-    let user = await adminModel.findById(req.user);
-    if (!user || user.__t !== 'Admin') {
-      return res.status(500).json({
-        success: false,
-        message: "Not authorized"
-      });
-    }
+// router.get('/getAllMedicine', protect, async (req, res) => {
+//   //retrieve all users from the database
+//   try {
+//     let user = await adminModel.findById(req.user);
+//     if (!user || user.__t !== 'Admin') {
+//       return res.status(500).json({
+//         success: false,
+//         message: "Not authorized"
+//       });
+//     }
 
-    const meds = await MedicineModel.find();
-    res.status(200).json({ Result: meds, success: true });
-  }
+//     const meds = await MedicineModel.find();
+//     res.status(200).json({ Result: meds, success: true });
+//   }
 
-  catch (error) {
-    res.status(500).json({ message: "No Medicine listed", success: false })
-  }
-});
+//   catch (error) {
+//     res.status(500).json({ message: "No Medicine listed", success: false })
+//   }
+// });
+
+
 // Checkout and create an order
 router.get('/checkout/:id/:address/:paymentMethod', async (req, res) => {
   try {
@@ -524,7 +526,6 @@ router.get('/checkout/:id/:address/:paymentMethod', async (req, res) => {
 });
 
 // Add a new delivery address for a patient
-
 router.post('/addAddress', protect,async (req, res) => {
   let exists = await PatientModel.findById(req.user);
   if (!exists || req.user.__t != "Patient") {
@@ -636,6 +637,7 @@ router.get('/getOrder', protect,async (req, res) => {
   }
 });
 
+// Retrieve a certain order details and status
 router.get('/getOrder/:orderId', protect,async (req, res) => {
   const user = await PatientModel.findById(req.user);
   if (!user || user.__t !== 'Patient') {
@@ -716,7 +718,6 @@ async function getOrderDetails(pid) {
       return list
   
 }
-
 
 const processCardPayment = async (req, res,pid,address) => {
   const paymentMethod = 'Card';

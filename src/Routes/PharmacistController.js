@@ -14,7 +14,6 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 
-
 //search for medicine based on name
 router.get('/getMedicine', protect, async (req, res) => {
   let exists = await user.findById(req.user);
@@ -44,62 +43,64 @@ router.get('/getMedicine', protect, async (req, res) => {
 
 //add another pharmacist with a set username and password
 
-router.post('/createPharmacist', upload.fields([{ name: "ID" }, { name: "Degree" }, { name: "License" }]), async (req, res) => {
-  try {
-    // Wait for the upload.single('ID') middleware to finish
-    // await upload.single('ID')(req, res, async () => {
-    //   if (!req.file) {
-    //     return res.status(400).send('No file uploaded.');
-    //   }
+// router.post('/createPharmacist', upload.fields([{ name: "ID" }, { name: "Degree" }, { name: "License" }]),protect, async (req, res) => {
+//   let exists = await user.findById(req.user);
+//   if (!exists || exists.__t !== 'Pharmacist') {
+//     return res.status(500).json({
+//       success: false,
+//       message: "Not authorized"
+//     });
+//   }
+//   try {
 
-    // Process the form data and save the pharmacist to the database
-    const Username = req.body.Username;
-    const Name = req.body.Name;
-    const Email = req.body.Email;
-    const Password = req.body.Password;
-    const DateOfBirth = req.body.DateOfBirth;
-    const HourlyRate = req.body.HourlyRate;
-    const Affiliation = req.body.Affiliation;
-    const EducationalBackground = req.body.EducationalBackground;
-    const Position = req.body.Position;
+//     // Process the form data and save the pharmacist to the database
+//     const Username = req.body.Username;
+//     const Name = req.body.Name;
+//     const Email = req.body.Email;
+//     const Password = req.body.Password;
+//     const DateOfBirth = req.body.DateOfBirth;
+//     const HourlyRate = req.body.HourlyRate;
+//     const Affiliation = req.body.Affiliation;
+//     const EducationalBackground = req.body.EducationalBackground;
+//     const Position = req.body.Position;
 
-    const userExist = await PharmacistModel.findOne({ Username });
-    if (userExist) {
-      res.status(400);
-      throw new Error('Username already exists');
-    }
-    const pharmacist = new PharmacistModel({
-      Username,
-      Name,
-      Email,
-      Password,
-      DateOfBirth,
-      HourlyRate,
-      Affiliation,
-      EducationalBackground,
-      Position,
-      ID: {
-        data: req.files.ID[0].buffer,
-        contentType: req.files.ID[0].mimetype,
-      },
-      Degree: {
-        data: req.files.Degree[0].buffer,
-        contentType: req.files.Degree[0].mimetype,
-      },
-      License: {
-        data: req.files.License[0].buffer,
-        contentType: req.files.License[0].mimetype,
-      },
-    });
+//     const userExist = await PharmacistModel.findOne({ Username });
+//     if (userExist) {
+//       res.status(400);
+//       throw new Error('Username already exists');
+//     }
+//     const pharmacist = new PharmacistModel({
+//       Username,
+//       Name,
+//       Email,
+//       Password,
+//       DateOfBirth,
+//       HourlyRate,
+//       Affiliation,
+//       EducationalBackground,
+//       Position,
+//       ID: {
+//         data: req.files.ID[0].buffer,
+//         contentType: req.files.ID[0].mimetype,
+//       },
+//       Degree: {
+//         data: req.files.Degree[0].buffer,
+//         contentType: req.files.Degree[0].mimetype,
+//       },
+//       License: {
+//         data: req.files.License[0].buffer,
+//         contentType: req.files.License[0].mimetype,
+//       },
+//     });
 
-    const newPharmacist = await pharmacist.save();
+//     const newPharmacist = await pharmacist.save();
 
-    res.status(201).json({ Result: newPharmacist, success: true });
-  } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ error: 'Failed OP', success: false });
-  }
-});
+//     res.status(201).json({ Result: newPharmacist, success: true });
+//   } catch (error) {
+//     console.log(error.message);
+//     res.status(500).json({ error: 'Failed OP', success: false });
+//   }
+// });
 
 // ,async(req,res)=>{
 //   try{
@@ -237,7 +238,7 @@ router.post('/addMedicine', upload.single('photo'), protect, async (req, res) =>
 });
 
 
-
+//edit medicine using name w ingredients w price w quantity
 router.put('/editMedicine', protect, async (req, res) => {
   try {
     let exists = await user.findById(req.user);
@@ -269,7 +270,7 @@ router.put('/editMedicine', protect, async (req, res) => {
   }
 });
 
-
+//for ejs
 router.get('/editMedicine', protect, async (req, res) => {
   try {
     let exists = await user.findById(req.user);
@@ -301,7 +302,7 @@ router.get('/editMedicine', protect, async (req, res) => {
 });
 
 
-
+//view the quantity and sales of a medicine
 router.get('/getinfoMeds', protect, async (req, res) => {
   //retrieve all users from the database
   try {
@@ -326,69 +327,70 @@ router.get('/getinfoMeds', protect, async (req, res) => {
 })
 
 //SELL MEDICINE 
-router.get('/sellMedicine', protect, async (req, res) => {
-  try {
-    let exists = await user.findById(req.user);
-    if (!exists || exists.__t !== 'Pharmacist') {
-      return res.status(500).json({
-        success: false,
-        message: "Not authorized"
-      });
-    }
-    let medicineName = req.query.medicineName.toLowerCase();
-    let medcheck = await MedicineModel.findOne({ Name: medicineName });
+// router.get('/sellMedicine', protect, async (req, res) => {
+//   try {
+//     let exists = await user.findById(req.user);
+//     if (!exists || exists.__t !== 'Pharmacist') {
+//       return res.status(500).json({
+//         success: false,
+//         message: "Not authorized"
+//       });
+//     }
+//     let medicineName = req.query.medicineName.toLowerCase();
+//     let medcheck = await MedicineModel.findOne({ Name: medicineName });
 
-    if (!medcheck) {
-      res.status(404).json({ message: "Medicine doesn't exist", success: false });
-      return;
-    }
+//     if (!medcheck) {
+//       res.status(404).json({ message: "Medicine doesn't exist", success: false });
+//       return;
+//     }
 
-    if (medcheck.Quantity === 0) {
-      res.status(500).json({ message: "Medicine out of stock", success: false });
-      return;
-    }
-    let updateFields = {};
-    updateFields.Quantity = --medcheck.Quantity;
-    updateFields.Sales = ++medcheck.Sales;
-    medcheck = await MedicineModel.findOneAndUpdate(
-      { Name: medicineName },
-      updateFields,
-      { new: true }
-    );
-    console.log(medcheck.Name);
-    console.log(medcheck.Quantity--);
-    console.log(medcheck.Sales++);
+//     if (medcheck.Quantity === 0) {
+//       res.status(500).json({ message: "Medicine out of stock", success: false });
+//       return;
+//     }
+//     let updateFields = {};
+//     updateFields.Quantity = --medcheck.Quantity;
+//     updateFields.Sales = ++medcheck.Sales;
+//     medcheck = await MedicineModel.findOneAndUpdate(
+//       { Name: medicineName },
+//       updateFields,
+//       { new: true }
+//     );
+//     console.log(medcheck.Name);
+//     console.log(medcheck.Quantity--);
+//     console.log(medcheck.Sales++);
 
-    res.status(200).json({ message: "Medicine sold successfully", success: true });
-  }
-  catch (error) {
-    res.status(500).json({ message: "Error in selling medicine", success: false });
-  }
-});
+//     res.status(200).json({ message: "Medicine sold successfully", success: true });
+//   }
+//   catch (error) {
+//     res.status(500).json({ message: "Error in selling medicine", success: false });
+//   }
+// });
 
 
+// 7assab kalam paula ejs 
+// router.get('/get-image/:id', protect, async (req, res) => {
+//   try {
+//     let exists = await user.findById(req.user);
+//     if (!exists || exists.__t !== 'Pharmacist') {
+//       return res.status(500).json({
+//         success: false,
+//         message: "Not authorized"
+//       });
+//     }
+//     const medicine = await MedicineModel.findById(req.params.id);
+//     if (!medicine) {
+//       return res.status(404).send('Medicine not found');
+//     }
+//     console.log(medicine.Picture.contentType);
+//     res.set('Content-Type', medicine.Picture.contentType);
+//     res.send(medicine.Picture.data);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send('Error retrieving the image.');
+//   }
+// });
 
-router.get('/get-image/:id', protect, async (req, res) => {
-  try {
-    let exists = await user.findById(req.user);
-    if (!exists || exists.__t !== 'Pharmacist') {
-      return res.status(500).json({
-        success: false,
-        message: "Not authorized"
-      });
-    }
-    const medicine = await MedicineModel.findById(req.params.id);
-    if (!medicine) {
-      return res.status(404).send('Medicine not found');
-    }
-    console.log(medicine.Picture.contentType);
-    res.set('Content-Type', medicine.Picture.contentType);
-    res.send(medicine.Picture.data);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error retrieving the image.');
-  }
-});
 //archive a medicine 
 router.put('/archiveMedicine/:id', protect, async (req, res) => {
   try {
@@ -531,7 +533,6 @@ async function resolveMedicineDetails(medicinesSold) {
 }
 
 //filter sales report based on chosen medicine/date
-// Filter sales report based on chosen medicine or date
 router.get('/filterSalesReport/:medicineName/:chosenDate', protect, async (req, res) => {
   try {
     // Check if the user is authorized (Pharmacist)

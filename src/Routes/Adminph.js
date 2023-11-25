@@ -4,7 +4,7 @@ const phModel = require('../Models/Pharmacist.js');
 const patientModel = require('../Models/Patient.js');
 const MedicineModel = require('../Models/Medicine.js');
 const ReqPharmModel = require('../Models/requestedPharmacist.js');
-const userModel = require('../Models/user.js')
+const userModel = require('../Models/user.js');
 const OrderModel = require("../Models/Orders.js");
 const express = require('express');
 const router = express.Router();
@@ -14,7 +14,8 @@ const bcrypt = require('bcryptjs');
 //App variables
 const app = express();
 app.use(express.urlencoded({ extended: false }))
-
+//continue from here
+//create a another admin account
 router.post('/createAdmin',protect, async (req, res) => {
     let exists = await adminModel.findById(req.user);
     if (!exists || req.user.__t != "Admin") {
@@ -51,9 +52,15 @@ router.post('/createAdmin',protect, async (req, res) => {
     res.status(500).json({ message: error.message, success: false });
   }
 });
-
+//delete an pharmacist/patient account
 const deleteAdmin = async (req, res) => {
-  
+  let exists = await adminModel.findById(req.user);
+    if (!exists || req.user.__t != "Admin") {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
   const Username = req.query.Username.toLowerCase();
   if (!Username) {
     return res.status(400).send({ message: 'user not filled' });
@@ -72,7 +79,7 @@ const deleteAdmin = async (req, res) => {
     res.status(500).json({ message: 'Failed to delete user', success: false });
   }
 };
-router.get('/deleteAdmin', async (req, res) => {
+router.get('/deleteAdmin',protect, async (req, res) => {
   // Handle GET requests.
   const Username = req.query.Username.toLowerCase();
 
@@ -97,6 +104,13 @@ router.delete('/deleteAdmin', deleteAdmin);
 
 //search for medicine based on name
 const getMedicine = async (req, res) => {
+  let exists = await adminModel.findById(req.user);
+    if (!exists || req.user.__t != "Admin") {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
   const Name = req.params.Name.toLowerCase();
   console.log(Name)
   if (!Name) {
@@ -116,7 +130,7 @@ const getMedicine = async (req, res) => {
   }
 }
 
-router.get('/getMedicine/:Name', getMedicine);
+router.get('/getMedicine/:Name',protect, getMedicine);
 
 
 //view a list of all available medicines (including picture of medicine, price, description)
@@ -125,7 +139,7 @@ router.get('/getAllMedicine', protect, async (req, res) => {
   //retrieve all users from the database
   try {
     let user = await adminModel.findById(req.user);
-    if (!user || user.__t !== 'Admin') {
+    if (!user || user.__t !== "Admin") {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
@@ -140,22 +154,14 @@ router.get('/getAllMedicine', protect, async (req, res) => {
     res.status(500).json({ message: "No Medicine listed", success: false })
   }
 });
+
 //view a pharmacist's information
-
-
-
-
-
-
-
-
-
 
 router.get('/getPharmacist', protect, async (req, res) => {
   const Name = req.query.Name.toLowerCase();
   console.log(Name);
   let user = await adminModel.findById(req.user);
-  if (!user || user.__t !== 'Admin') {
+  if (!user || user.__t !== "Admin") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -181,7 +187,7 @@ router.get('/getPharmacist', protect, async (req, res) => {
 
 router.get('/getPatient', protect, async (req, res) => {
   let user = await adminModel.findById(req.user);
-  if (!user || user.__t !== 'Admin') {
+  if (!user || user.__t !== "Admin") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -204,10 +210,10 @@ router.get('/getPatient', protect, async (req, res) => {
   }
 });
 
-//filter 
+//filter based on medical use
 router.get('/filterMedical/:MedicalUse', protect, async (req, res) => {
   let user = await adminModel.findById(req.user);
-  if (!user || user.__t !== 'Admin') {
+  if (!user || user.__t !== "Admin") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -227,11 +233,11 @@ router.get('/filterMedical/:MedicalUse', protect, async (req, res) => {
 
 });
 
-
+//view a list of all requested pharmacists
 router.get('/viewReqPharm', protect,async (req, res) => {
   try {
     let user = await adminModel.findById(req.user);
-    if (!user || user.__t !== 'Admin') {
+    if (!user || user.__t !== "Admin") {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
@@ -245,10 +251,11 @@ router.get('/viewReqPharm', protect,async (req, res) => {
   }
 });
 
+//accept a requested pharmacist
 router.post('/Acceptance/:username', protect, async (req, res) => {
   try {
     let exists = await adminModel.findById(req.user);
-    if (!exists || exists.__t !== 'Admin') {
+    if (!exists || exists.__t !== "Admin") {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
@@ -297,10 +304,11 @@ router.post('/Acceptance/:username', protect, async (req, res) => {
   }
 })
 
+//reject a requested pharmacist
 router.delete('/Rejection/:username', protect, async (req, res) => {
   try {
     let exists = await adminModel.findById(req.user);
-    if (!exists || exists.__t !== 'Admin') {
+    if (!exists || exists.__t !== "Admin") {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
@@ -332,11 +340,12 @@ router.delete('/Rejection/:username', protect, async (req, res) => {
   }
 })
 
+//total sales report for a chosen month
 router.get('/totalSalesReport/:chosenMonth', protect, async (req, res) => {
   try {
     // Check if the user is authorized (Pharmacist)
     let exists = await adminModel.findById(req.user);
-    if (!exists || exists.__t !== 'Pharmacist') {
+    if (!exists || exists.__t !== "Admin") {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
