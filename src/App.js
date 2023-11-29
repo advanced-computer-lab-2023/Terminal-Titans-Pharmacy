@@ -1,78 +1,87 @@
-// App.js
-import './App.css';
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { CartProvider } from './Components/CartContext'; // Import the CartProvider
-import Navbar from './Components/Navbar';
-import Homescreen from './Screens/Homescreen';
-import Meds2 from './Screens/Meds';
-import CartScreen from './Screens/cartScreen';
-import ForgotPassword from "./Screens/ForgotPassword";
-import Checckout from './Components/Checkout';
-import OrderDetails from './Screens/OrderDetails.js';
-import Address from './Components/addAddress';
-import Checkout from './Components/Checkout';
-import Button from 'react-bootstrap/Button';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Register from './Screens/Register';
-import OrderScreen from './Screens/orderScreen';
-import SignIn from './Screens/SignIn';
-import PharmacistScreen from './Screens/pharmacistScreen';
-import AdminPage from './Screens/AdminScreen';
-import Success from './Components/success';
-import Cancel from './Components/cancel';
-import PaymentPage from './Components/paymentMethod';
-import ViewReqPharmDoc from './Components/viewReqPharmDoc.js';
-import NewMed from "./Screens/newmedPage.jsx";
+// External variables
+const express = require("express");
+const mongoose = require('mongoose');
+const multer = require("multer");
+mongoose.set('strictQuery', false);
+require("dotenv").config();
+const jwt = require('jsonwebtoken');
 
-function App() {
-  // const signoutButtonFunc = () => {
-  //   sessionStorage.removeItem('token');
-  //   window.location.href = '/Health-Plus';
-  // }
+// const {createAdmin, deleteAdmin, getMedicine, getListMed, getPharmacist, getPatient} = require("./Routes/Adminph");
+const MongoURI = process.env.MONGO_URI;
+//App variables
+const app = express();
+const port = process.env.PORT || "8000";
 
-  return (
-    <CartProvider>
-      <Router>
-        {/* {
-          window.location.pathname == '/Health-Plus' || window.location.pathname == '/Health-Plus/registerPharmacist'  ||window.location.pathname=='/Health-Plus/pharmacistScreen' || window.location.pathname == '/Health-Plus/registerPatient' ?
-            <></>
-            :
-            <Navbar />
-        } */}
-        {/* Navbar */}
+const Admin = require('./Routes/Adminph.js');
+const Patient = require('./Routes/PatientController.js');
+const Pharmacist = require('./Routes/PharmacistController.js');
+const securityModule=require('./Routes/securityRoute.js')
 
-        {/* Backdrop */}
-
-        {/* Backdrop */}
+const ejs = require('ejs');
+// #Importing the userController
 
 
-        <main>
-          <Routes basename="/Health-Plus">
-            <Route path="/forgotPassword" element={<ForgotPassword />} />
-            <Route path="/Health-Plus" element={<SignIn />} />
-            <Route path="/Health-Plus/register" element={<Register />} />
-            <Route path="/Health-Plus/admin" element={<AdminPage />} />
-            <Route path="/orderDetails" element={<OrderScreen />} />
-            <Route path="/Health-Plus/pharmacistScreen" element={<PharmacistScreen />} />
-            <Route path="/orderDetails/:orderId" element={<OrderDetails />} />
-            <Route path="/patient" element={<Homescreen />} />
-            <Route path="/medicine" element={<Meds2 />} />
-            <Route path="/medicine/:medicineId" element={<Meds2 />} />
-            <Route path="/newMed" element={<NewMed/>}/>
-            {/* Pass cartItems to CartScreen */}
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/success" element={<Success />} />
-            <Route path="/cancel" element={<Cancel />} />
-            <Route path="/payment" element={<PaymentPage />} />
-            <Route path="/Health-Plus/viewReqPharmcDoc" element={<ViewReqPharmDoc />} />
-            <Route path="/cart" element={<CartScreen />} />
+// configurations
+// Mongo DB
+mongoose.connect(MongoURI)
+  .then(() => {
+    console.log("MongoDB is now connected!")
+    // Starting server
+    app.listen(port, () => {
+      console.log(`Listening to requests on http://localhost:${port}`);
+    })
+  })
+  .catch(err => console.log(err));
+/*
+                                                    Start of your code
+*/
 
-          </Routes>
-        </main>
-      </Router>
-    </CartProvider>
-  );
+
+
+app.get("/home", (req, res) => {
+  res.status(200).send("You have everything installed!");
 }
+);
 
-export default App;
+app.get("", (req, res) => {
+  res.render('Home.ejs')
+}
+);
+
+
+
+//view engine
+
+
+// #Routing to userController here
+const cors = require('cors');
+app.use(cors());
+app.use(express.json())
+app.use(express.urlencoded({extended: false}))
+app.use('/Admin', Admin);
+app.use('/Patient',Patient);
+app.use('/Pharma', Pharmacist);
+app.use('/security',securityModule)
+
+app.get('/Admin', (req, res) => {
+  res.render('AdminPage.ejs')
+})
+app.get('/Patient', (req, res) => {
+  res.render('PatientPage.ejs')
+})
+app.get('/Pharma', (req, res) => {
+  res.render('D:/Semester 7/ACL/Project/Terminal-Titans-Pharmacy/src/views/PharmacistPage.ejs')
+})
+app.set('view engine', 'ejs');
+
+// app.post("/createAdmin",createAdmin);
+// app.get("/getMedicine", getMedicine);
+// app.delete("/deleteAdmin", deleteAdmin);
+// app.get("/getListMed", getListMed);
+// app.get("/getPharmacist", getPharmacist);
+// app.get("/getPatient", getPatient);
+
+
+/*
+                                                    End of your code
+*/
