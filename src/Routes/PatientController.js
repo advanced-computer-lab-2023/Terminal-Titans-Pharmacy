@@ -15,29 +15,67 @@ app.use(express.urlencoded({ extended: false }))
 const stripeInstance = stripe('sk_test_51OAmglE5rOvAFcqVk714zBO64pgCArV8MfP0BWTnycXGzLnWqkX5cP37OvMffUIDt6DdoKif93x9PfiC39XvkhJr00LuYVmMyv');
 //const stripe = require('stripe')(s);
 
-
-//filter based on medical use
 router.get('/filterMedical/:MedicalUse', protect, async (req, res) => {
-  let exists = await PatientModel.findById(req.user);
-  if (!exists || req.user.__t != "Patient") {
-    return res.status(500).json({
-      success: false,
-      message: "Not authorized"
+  try {
+    const exists = await PatientModel.findById(req.user);
+    if (!exists || req.user.__t !== 'Patient') {
+      return res.status(500).json({
+        success: false,
+        message: 'Not authorized',
+      });
+    }
+
+    const medicalUse = req.params.MedicalUse.toLowerCase();
+    console.log(medicalUse);
+
+    if (!medicalUse) {
+      return res.status(400).send({ message: 'Please fill the input', success: false });
+    }
+
+    const filteredMedicines = await MedicineModel.find({
+      MedicalUse: medicalUse,
+      OverTheCounter: true,
+      Archived: false,
     });
-  }
-  const MedicalUse = req.params.MedicalUse.toLowerCase();
-  if (!MedicalUse) {
-    return res.status(400).send({ message: 'Please fill the input', success: false });
-  }
 
-  const Medicines = await MedicineModel.find({ MedicalUse });
-  if (!Medicines.length) {
-    return res.status(400).send({ message: 'No medicines found with the specified medical use.', success: false });
+    if (!filteredMedicines.length) {
+      return res.status(400).send({
+        message: 'No medicines found with the specified medical use and conditions.',
+        success: false,
+      });
+    }
+
+    console.log(filteredMedicines);
+    res.status(200).send({ Result: filteredMedicines, success: true });
+  } catch (error) {
+    console.error('Error filtering medicine data:', error);
+    res.status(500).json({ success: false, message: error.message });
   }
-
-  res.status(200).send({ Result: Medicines, success: true })
-
 });
+
+// //filter based on medical use
+// router.get('/filterMedical/:MedicalUse', protect, async (req, res) => {
+//   let exists = await PatientModel.findById(req.user);
+//   if (!exists || req.user.__t != "Patient") {
+//     return res.status(500).json({
+//       success: false,
+//       message: "Not authorized"
+//     });
+//   }
+//   const MedicalUse = req.params.MedicalUse.toLowerCase();
+//   console.log(MedicalUse);
+//   if (!MedicalUse) {
+//     return res.status(400).send({ message: 'Please fill the input', success: false });
+//   }
+
+//   const Medicines = await MedicineModel.find({ MedicalUse });
+//   if (!Medicines.length) {
+//     return res.status(400).send({ message: 'No medicines found with the specified medical use.', success: false });
+//   }
+//   console.log(Medicines);
+//   res.status(200).send({ Result: Medicines, success: true })
+
+// });
 
 
 
@@ -51,12 +89,14 @@ router.get('/getMedicine/:Name', protect, async (req, res) => {
     });
   }
   const Name = req.params.Name.toLowerCase();
+  console.log(Name);
   if (!Name) {
     return res.status(400).send({ message: 'Please fill the input', success: false });
   }
   try {
     // const Name = req.body;
-    const Medicines = await MedicineModel.findOne({ Name });
+    const Medicines = await MedicineModel.findOne({ Name , OverTheCounter: true , Archived: false });
+    console.log(Medicines);
     if (!Medicines) {
       return (res.status(400).send({ message: "No Medicine with this name", success: false }));
     }
@@ -132,6 +172,36 @@ router.get('/getMedicineById/:id', protect, async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 });
+
+router.get('/getAllMedicalUses', protect, async (req, res) => {
+  try {
+    let exists = await PatientModel.findById(req.user);
+    if (!exists || req.user.__t !== 'Patient') {
+      return res.status(500).json({
+        success: false,
+        message: 'Not authorized',
+      });
+    }
+
+    const medicines = await MedicineModel.find({Archived:false, OverTheCounter: true});
+
+    // Extract unique medical uses using Set
+    const medicalUsesSet = new Set();
+    medicines.forEach((medicine) => {
+      medicine.MedicalUse.forEach((use) => {
+        medicalUsesSet.add(use);
+      });
+    });
+
+    const medicalUses = Array.from(medicalUsesSet);
+
+    res.status(200).json({ success: true, medicalUses });
+  } catch (error) {
+    console.error('Error fetching medical uses:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 
 // }
 // router.get('/viewAvailableMedicines', viewInfo);

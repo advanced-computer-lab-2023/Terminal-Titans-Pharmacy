@@ -1,6 +1,7 @@
 // App.js
 import './App.css';
 import React from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './Components/CartContext'; // Import the CartProvider
 import Navbar from './Components/Navbar';
@@ -29,6 +30,15 @@ function App() {
   //   sessionStorage.removeItem('token');
   //   window.location.href = '/Health-Plus';
   // }
+  const [filteredAndSearchedMedicines, setFilteredAndSearchedMedicines] = useState([]);
+
+  const handleSearch = (result) => {
+    setFilteredAndSearchedMedicines(result);
+  };
+
+  const handleFilter = (result) => {
+    setFilteredAndSearchedMedicines(result);
+  };
 
   return (
     <CartProvider>
@@ -37,7 +47,7 @@ function App() {
           window.location.pathname == '/Health-Plus' || window.location.pathname == '/Health-Plus/registerPharmacist' || window.location.pathname == '/Health-Plus/registerPatient' ?
             <></>
             :
-            <Navbar />
+            <Navbar onSearch={handleSearch} onFilter={handleFilter} />
         }
         {/* Navbar */}
 
@@ -55,7 +65,8 @@ function App() {
             <Route path="/orderDetails" element={<OrderScreen />} />
             <Route path="/Health-Plus/pharmacistScreen" element={<PharmacistScreen />} />
             <Route path="/orderDetails/:orderId" element={<OrderDetails />} />
-            <Route path="/patient" element={<Homescreen />} />
+            {/* Pass cartItems to CartScreen */}
+            <Route path="/patient" element={<Homescreen allMedicines={filteredAndSearchedMedicines} />} />
             <Route path="/medicine" element={<Meds2 />} />
             <Route path="/medicine/:medicineId" element={<Meds2 />} />
             {/* Pass cartItems to CartScreen */}
