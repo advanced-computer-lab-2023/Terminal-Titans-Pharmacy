@@ -460,7 +460,7 @@ const Homescreen = () => {
 <InputGroup className="mb-3">
   <SplitButton
     variant="outline-secondary"
-    title="Action"
+    title="Search"
     id="segmented-button-dropdown-1"
     onClick={handleSearch}
   >

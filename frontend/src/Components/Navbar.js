@@ -734,9 +734,22 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
                 Cart <Badge bg="secondary">{cartItemCount}</Badge>
               </Button>
             </Nav.Link>
-            <Nav.Link href="/orderDetails">Order</Nav.Link>
+    
+            <Nav.Link href="/caorderDetailsrt">
+              <Button variant="light">
+                Order
+              </Button>
+            </Nav.Link>
+
+            <Nav.Link href="/patient">
+              <Button variant="light">
+                Store
+              </Button>
+            </Nav.Link>
+            
+            {/*<Nav.Link href="/orderDetails">Order</Nav.Link>
             <Nav.Link href="/patient">Store</Nav.Link>
-            {/*<NavDropdown title="Filter" id="basic-nav-dropdown">
+            <NavDropdown title="Filter" id="basic-nav-dropdown">
               {medicalUses.map((use, index) => (
                 <NavDropdown.Item key={index} onClick={() => handleMedicalUseFilter(use)}>
                   {use}
