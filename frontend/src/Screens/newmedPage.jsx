@@ -1,4 +1,4 @@
-import Nav from "../Components/Navbar-Pharmacist"
+import Nav from "../Components/Pharmacist-NavBar"
 import NewMed from "../Components/Addmed"
 
 export default function Addmed(){

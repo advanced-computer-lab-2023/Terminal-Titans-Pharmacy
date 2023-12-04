@@ -1,7 +1,6 @@
 // App.js
 import './App.css';
 import React from 'react';
-import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './Components/CartContext'; // Import the CartProvider
 import Navbar from './Components/Navbar';
@@ -24,31 +23,26 @@ import Success from './Components/success';
 import Cancel from './Components/cancel';
 import PaymentPage from './Components/paymentMethod';
 import ViewReqPharmDoc from './Components/viewReqPharmDoc.js';
+import NewMed from './Screens/newmedPage.jsx';
+import AvailableMeds from './Screens/AvailableMeds.js';
+import MedPharm from './Screens/MedPagePharm.js'
+
 
 function App() {
   // const signoutButtonFunc = () => {
   //   sessionStorage.removeItem('token');
   //   window.location.href = '/Health-Plus';
   // }
-  const [filteredAndSearchedMedicines, setFilteredAndSearchedMedicines] = useState([]);
-
-  const handleSearch = (result) => {
-    setFilteredAndSearchedMedicines(result);
-  };
-
-  const handleFilter = (result) => {
-    setFilteredAndSearchedMedicines(result);
-  };
 
   return (
     <CartProvider>
       <Router>
-        {
-          window.location.pathname == '/Health-Plus' || window.location.pathname == '/Health-Plus/registerPharmacist' || window.location.pathname == '/Health-Plus/registerPatient' ?
+        {/* {
+          window.location.pathname == '/Health-Plus' ||  window.location.pathname == '/Health-Plus/pharmacistScreen'|| window.location.pathname == '/Health-Plus/registerPharmacist' || window.location.pathname == '/Health-Plus/registerPatient' ?
             <></>
             :
-            <Navbar onSearch={handleSearch} onFilter={handleFilter} />
-        }
+            <Navbar />
+        } */}
         {/* Navbar */}
 
         {/* Backdrop */}
@@ -65,10 +59,13 @@ function App() {
             <Route path="/orderDetails" element={<OrderScreen />} />
             <Route path="/Health-Plus/pharmacistScreen" element={<PharmacistScreen />} />
             <Route path="/orderDetails/:orderId" element={<OrderDetails />} />
-            {/* Pass cartItems to CartScreen */}
-            <Route path="/patient" element={<Homescreen allMedicines={filteredAndSearchedMedicines} />} />
+            <Route path="/patient" element={<Homescreen />} />
             <Route path="/medicine" element={<Meds2 />} />
             <Route path="/medicine/:medicineId" element={<Meds2 />} />
+            <Route path="/medicinePharm/:medicineId" element={<Meds2/>}/>
+            <Route path="NewMed" element={<NewMed/>}/>
+            <Route path="medicinePharm/:medicineId" element={<MedPharm/>}/>
+            <Route path="/AvailableMeds" element={<AvailableMeds/>}/>
             {/* Pass cartItems to CartScreen */}
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/success" element={<Success />} />

@@ -26,11 +26,11 @@ export default function Addmed() {
     
     
       event.preventDefault();
-      const name = document.getElementsByName("Name")[0]?.value;
+      const name = document.getElementsByName("Name")[0]?.value.toLowerCase();
       const price = document.getElementsByName("Price")[0]?.value;
       const quantity = document.getElementsByName("Quantity")[0]?.value;
       const activeIngredients = document.getElementsByName("ActiveIngredients")[0]?.value;
-      const medicalUse = document.getElementsByName("MedicalUse")[0]?.value;
+      const medicalUse = document.getElementsByName("MedicalUse")[0]?.value.toLowerCase();
       const overTheCounter = document.getElementsByName("overTheCounter")[0]?.value;
       const photo = document.getElementsByName("photo")[0]?.files[0];
       const formData = new FormData();
@@ -161,7 +161,7 @@ export default function Addmed() {
           </Form.Control.Feedback>
       </Form.Group>
      </Row>
-      <Button type="submit" onClick={handleSubmit}>Submit form</Button>
+      <Button variant="outline-dark" onClick={handleSubmit}>Add</Button>
     </Form>
   );
 }

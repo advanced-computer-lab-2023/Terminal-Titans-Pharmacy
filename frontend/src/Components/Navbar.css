@@ -105,9 +105,11 @@ a.nav-link{
         font-size: 1rem;
     }
 }
-.text-red{
+.signout{
     color: black!important;
+    
 }
-.text-red:hover{
+.signout:hover{
     color: red!important;
 }
+
