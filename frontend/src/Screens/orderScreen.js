@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
+import Navbar from './Components/Navbar';
 
 const OrderScreen = () => {
     const [orderItems, updateOrderItems] = useState([]);
@@ -60,6 +61,7 @@ const OrderScreen = () => {
 
     return (
         <div>
+            <Navbar/>
             <div className="d-flex justify-content-evenly flex-wrap">
                 {orderItems.map((item, index) => (
                     <Card key={item._id} border="secondary" style={{ width: '18rem', marginBottom: '20px' }}>

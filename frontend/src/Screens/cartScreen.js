@@ -122,6 +122,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useCart } from '../Components/CartContext';
 import CartItem from '../Components/CartItem';
+import Navbar from './Components/Navbar';
 
 const CartScreen = () => {
   const { cartItems, updateCartItems } = useCart();
@@ -150,7 +151,9 @@ const CartScreen = () => {
   }, [updateCartItems]);
 
   return (
-    <div className="cartscreen">
+    <div>
+      <Navbar/>
+        <div className="cartscreen">
       <div className="cart_left">
         <h2>Shopping Cart</h2>
         {cartItems.map((item) => (
@@ -167,6 +170,8 @@ const CartScreen = () => {
         </div>
       </div>
     </div>
+    </div>
+  
   );
 };
 

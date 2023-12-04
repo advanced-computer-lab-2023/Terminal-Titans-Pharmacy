@@ -4,6 +4,7 @@ import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { useParams } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
+import Navbar from './Components/Navbar';
 
 function arrayBufferToBase64(buffer) {
     let binary = '';
@@ -60,6 +61,7 @@ const OrderScreen = () => {
 
     return (
         <div>
+            <Navbar/>
             <div className='d-flex justify-content-between'>
                 <div>Order {sessionStorage.getItem('orderNumber')}</div>
             </div>

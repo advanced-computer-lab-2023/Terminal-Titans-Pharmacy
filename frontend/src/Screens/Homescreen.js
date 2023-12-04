@@ -381,6 +381,8 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import SplitButton from 'react-bootstrap/SplitButton';
 import Meds from '../Components/Meds';
+import Navbar from './Components/Navbar';
+
 const Homescreen = () => {
   const [allMedicines, setAllMedicines] = useState([]);
   const [medicalUses, setMedicalUses] = useState([]);
@@ -456,7 +458,9 @@ const Homescreen = () => {
   }, []); // Runs once on mount
 
   return (
+    
     <div>
+      <Navbar/>
 <InputGroup className="mb-3">
   <SplitButton
     variant="outline-secondary"

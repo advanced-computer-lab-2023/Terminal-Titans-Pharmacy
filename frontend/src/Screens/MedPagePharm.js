@@ -3,6 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 import './Meds.css';
+import PharmNav from '../Components/Pharmacist-NavBar';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import './PharmMedView.css';
+
 
 function arrayBufferToBase64(buffer) {
     let binary = '';
@@ -68,51 +74,82 @@ function Meds2() {
         setSelectedQuantity(newQuantity);
     };
 
-
+    const divStyles = {
+        boxShadow: '1px 2px 9px #666',
+        margin: '4em',
+        padding: '1em',
+        margin: 'auto',
+        borderRadius:'10px'
+      };
     return (
-        <div className="meds">
-            <div className="medscreen_left">
-                <div className="left_img">
-                    {medicine.Picture && medicine.Picture.data && medicine.Picture.contentType && (
-                        <img
-                            src={`data:${medicine.Picture.contentType};base64,${arrayBufferToBase64(
-                                medicine.Picture.data.data
-                            )}`}
-                            alt={medicine.Name}
-                        />
-                    )}
-                </div>
-                <div className="left_info">
-                    <p className="left_name">{medicine.Name}</p>
-                    <p>Price: ${medicine.Price}</p>
-                    <p>{medicine.MedicalUse.join(' ')}</p>
-                </div>
+        <div> 
+            <PharmNav/>
+
+            <Container style={divStyles} >
+      <Row sm={12} md={9} lg={9}>
+        <Col sm={12} md={12} lg={6}>
+        <div className="left_img">
+                {medicine.Picture && medicine.Picture.data && medicine.Picture.contentType && (
+                    <img
+                        src={`data:${medicine.Picture.contentType};base64,${arrayBufferToBase64(
+                            medicine.Picture.data.data
+                        )}`}
+                        className=".imagesize"
+                        alt={medicine.Name}
+                    />
+                )}
             </div>
-            <div className="medscreen_right">
-                <div className="right_info">
-                    <p>
-                        Price: <span>${medicine.Price}</span>
-                    </p>
-                    <p>
-                        Status: <span>{medicine.Quantity > 0 ? 'In stock' : 'Out of stock'}</span>
-                    </p>
-                    <p>
-                        Quantity
-                        <select value={selectedQuantity} onChange={handleQuantityChange}>
-                            {Array.from({ length: medicine.Quantity + 1 }, (_, i) => (
-                                <option key={i} value={i}>
-                                    {i}
-                                </option>
-                            ))}
-                        </select>
-                    </p>
-                    <p>
-                       
-                    </p>
-                    {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-                </div>
+            <Row>
+          <Col sm={0} className='editsectionMdLg'>
+
+            <p style={{margin:'auto'}}>Additional Text Here</p>
+          </Col>
+        </Row>
+        </Col>
+        <Col sm={12} md={12} lg={6}>
+        <div className="left_info">
+                <p className="left_name">{medicine.Name}</p>
+                <p>Price: ${medicine.Price}</p>
+                <p> Active Ingredients: <span>{medicine.ActiveIngredients}</span></p>
+                <p>Medical use: {medicine.MedicalUse.join(' ')}</p>
+                <p>  Quantity: <span>{medicine.Quantity}</span></p>
+                <p>  Sales: <span>{medicine.Sales}</span> </p>
+                
+            </div>
+        </Col>
+      </Row>
+    </Container>
+
+             <div className="meds">
+        <div className="medscreen_left">
+           
+            <div className="left_info">
+                <p className="left_name">{medicine.Name}</p>
+                <p>Price: ${medicine.Price}</p>
+                <p>Medical use: {medicine.MedicalUse.join(' ')}</p>
+                <p>  Quantity: <span>{medicine.Quantity}</span></p>
             </div>
         </div>
+        <div className="medscreen_right">
+            <div className="right_info">
+                <p>
+                    Price: <span>${medicine.Price}</span>
+                </p>
+                <p>
+                    Status: <span>{medicine.Quantity > 0 ? 'In stock' : 'Out of stock'}</span>
+                </p>
+                <p>
+                    Quantity: <span>{medicine.Quantity}</span>
+                </p>
+                <p>
+                   
+                </p>
+                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+            </div>
+        </div>
+    </div>
+    </div>
+      
     );
 };
 

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 import './Meds.css';
+import Navbar from './Components/Navbar';
 
 function arrayBufferToBase64(buffer) {
     let binary = '';
@@ -128,6 +129,9 @@ function Meds2() {
     };
 
     return (
+        <div>
+            <Navbar/>
+        
         <div className="meds">
             <div className="medscreen_left">
                 <div className="left_img">
@@ -172,6 +176,7 @@ function Meds2() {
                     {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
                 </div>
             </div>
+        </div>
         </div>
     );
 };
