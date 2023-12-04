@@ -4,7 +4,7 @@ import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { useParams } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
-import Navbar from './Components/Navbar';
+import Navbar from '../Components/Navbar';
 
 function arrayBufferToBase64(buffer) {
     let binary = '';

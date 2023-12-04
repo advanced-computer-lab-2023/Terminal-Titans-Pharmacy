@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 import './Meds.css';
-import Navbar from './Components/Navbar';
+import Navbar from '../Components/Navbar';
 
 function arrayBufferToBase64(buffer) {
     let binary = '';

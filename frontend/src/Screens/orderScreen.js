@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
-import Navbar from './Components/Navbar';
+import Navbar from '../Components/Navbar';
 
 const OrderScreen = () => {
     const [orderItems, updateOrderItems] = useState([]);

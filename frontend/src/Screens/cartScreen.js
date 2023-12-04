@@ -122,7 +122,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useCart } from '../Components/CartContext';
 import CartItem from '../Components/CartItem';
-import Navbar from './Components/Navbar';
+import Navbar from '../Components/Navbar';
 
 const CartScreen = () => {
   const { cartItems, updateCartItems } = useCart();

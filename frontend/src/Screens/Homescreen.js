@@ -381,7 +381,7 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import SplitButton from 'react-bootstrap/SplitButton';
 import Meds from '../Components/Meds';
-import Navbar from './Components/Navbar';
+import Navbar from '../Components/Navbar';
 
 const Homescreen = () => {
   const [allMedicines, setAllMedicines] = useState([]);
