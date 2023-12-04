@@ -7,6 +7,8 @@ import PharmNav from '../Components/Pharmacist-NavBar';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 import './PharmMedView.css';
 
 
@@ -29,8 +31,10 @@ function Meds2() {
     const userId = new URLSearchParams(location.search).get('medicineId');
     const [selectedQuantity, setSelectedQuantity] = useState(1);
     const [errorMessage, setErrorMessage] = useState('');
+    const [editmode, setEditMode]=useState(false);
 
     useEffect(() => {
+        console.log("Edit "+editmode);
         const userId = new URLSearchParams(location.search).get('medicineId');
         console.log('UserId:', userId);
 
@@ -64,6 +68,7 @@ function Meds2() {
     };
 
     const medicine = findMedicineById(medicines, userId);
+    
 
     if (!medicine) {
         return <div>Medicine not found</div>;
@@ -73,6 +78,12 @@ function Meds2() {
         const newQuantity = parseInt(event.target.value);
         setSelectedQuantity(newQuantity);
     };
+    const editmodeOn=()=>{
+        setEditMode(true);
+    }
+    const editmodeOff=()=>{
+        setEditMode(false);
+    }
 
     const divStyles = {
         boxShadow: '1px 2px 9px #666',
@@ -82,7 +93,7 @@ function Meds2() {
         borderRadius:'10px'
       };
     return (
-        <div> 
+        (!editmode?<div> 
             <PharmNav/>
 
             <Container style={divStyles} >
@@ -90,37 +101,64 @@ function Meds2() {
         <Col sm={12} md={12} lg={6}>
         <div className="left_img">
                 {medicine.Picture && medicine.Picture.data && medicine.Picture.contentType && (
-                    <img
-                        src={`data:${medicine.Picture.contentType};base64,${arrayBufferToBase64(
-                            medicine.Picture.data.data
-                        )}`}
-                        className=".imagesize"
-                        alt={medicine.Name}
-                    />
+                    <div className="imagesize"> 
+                     <img
+                    src={`data:${medicine.Picture.contentType};base64,${arrayBufferToBase64(
+                        medicine.Picture.data.data
+                    )}`}
+                    alt={medicine.Name}
+                /></div>
+                  
                 )}
             </div>
             <Row>
-          <Col sm={0} className='editsectionMdLg'>
+                <div className='editsectionMdLg' style={{
+                       display: "flex",
+                       flexDirection: "column",
+                       justifyContent: "center",
 
-            <p style={{margin:'auto'}}>Additional Text Here</p>
-          </Col>
+                }}>
+                    <Col sm={0} >
+                    {/* <Form.Check // prettier-ignore
+                        type="switch"
+                        id="custom-switch"
+                        label="Check this switch"
+                        /> */}
+                       
+                       <Button variant="outline-dark" 
+                       className='my-5'
+                       style={{
+                        width:"30vw", 
+                        margin: "0 auto", 
+                        textAlign: "center",
+                        alignItems:"center",
+                        justifyContent: "center",
+                        display: "flex"}}
+                            onClick={editmodeOn}
+                           >Edit</Button>
+                    </Col>
+                </div>
+          
         </Row>
         </Col>
         <Col sm={12} md={12} lg={6}>
         <div className="left_info">
-                <p className="left_name">{medicine.Name}</p>
+                <p className="left_name">
+                {medicine.Name}
+                </p>
                 <p>Price: ${medicine.Price}</p>
                 <p> Active Ingredients: <span>{medicine.ActiveIngredients}</span></p>
                 <p>Medical use: {medicine.MedicalUse.join(' ')}</p>
                 <p>  Quantity: <span>{medicine.Quantity}</span></p>
                 <p>  Sales: <span>{medicine.Sales}</span> </p>
+                <p>Archive Status: <span> {""+medicine.Archived}</span> </p>
                 
             </div>
         </Col>
       </Row>
     </Container>
 
-             <div className="meds">
+             {/* <div className="meds">
         <div className="medscreen_left">
            
             <div className="left_info">
@@ -147,8 +185,170 @@ function Meds2() {
                 {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
             </div>
         </div>
+    </div> */}
+    </div>:
+    //EDIT MODE ON !
+    <div>
+        <PharmNav/>
+        
+        <Container style={divStyles} >
+      <Row sm={12} md={9} lg={9}>
+        <Col sm={12} md={12} lg={6}>
+        <div className="left_img">
+                {medicine.Picture && medicine.Picture.data && medicine.Picture.contentType && (
+                    <div className="imagesize"> 
+                     <img
+                    src={`data:${medicine.Picture.contentType};base64,${arrayBufferToBase64(
+                        medicine.Picture.data.data
+                    )}`}
+                    alt={medicine.Name}
+                /></div>
+                  
+                )}
+            </div>
+            <Row>
+                <div className='editsectionMdLg' style={{
+                       display: "flex",
+                       flexDirection: "column",
+                       justifyContent: "center",
+
+                }}>
+                    <Col sm={0} >
+                    {/* <Form.Check // prettier-ignore
+                        type="switch"
+                        id="custom-switch"
+                        label="Check this switch"
+                        /> */}
+                       
+                       <Button variant="outline-success" 
+                       className='my-4'
+                       style={{
+                        width:"20vw", 
+                        margin: "auto", 
+                        textAlign: "center",
+                        alignItems:"center",
+                        justifyContent: "center",
+                        display: "block"}}
+                            onClick={editmodeOff}
+                           >Done</Button>
+                            
+                            
+                    </Col>
+                    
+                </div>
+                <Col> <Button variant="outline-danger" 
+                       style={{
+                        width:"20vw", 
+                        margin: "0 auto", 
+                        textAlign: "center",
+                        alignItems:"center",
+                        justifyContent: "center",
+                        display: "block"}}
+                            onClick={editmodeOff}
+                           >Cancel</Button></Col>
+          
+        </Row>
+        </Col>
+        <Col sm={12} md={12} lg={6}>
+        <div className="left_info">
+                <p className="left_name">
+                <Form.Control
+        type="text"
+        placeholder={medicine.Name}
+        aria-label="Med Name"
+        disabled
+        readOnly
+      />
+                </p>
+                <p>Price: $
+                    <Form.Control type="text" placeholder="Normal text" />
+                    </p>
+                <p> Active Ingredients: <span>{medicine.ActiveIngredients}</span></p>
+                <p>Medical use: {medicine.MedicalUse.join(' ')}</p>
+                <p>  Quantity: <span>{medicine.Quantity}</span></p>
+                <p>  Sales: <span>{medicine.Sales}</span> </p>
+                <p>Archive Status: <span> {""+medicine.Archived}</span> </p>
+                
+            </div>
+        </Col>
+      </Row>
+    </Container>
     </div>
-    </div>
+        )
+    //     <div> 
+    //         <PharmNav/>
+
+    //         <Container style={divStyles} >
+    //   <Row sm={12} md={9} lg={9}>
+    //     <Col sm={12} md={12} lg={6}>
+    //     <div className="left_img">
+    //             {medicine.Picture && medicine.Picture.data && medicine.Picture.contentType && (
+    //                 <div className="imagesize"> 
+    //                  <img
+    //                 src={`data:${medicine.Picture.contentType};base64,${arrayBufferToBase64(
+    //                     medicine.Picture.data.data
+    //                 )}`}
+    //                 alt={medicine.Name}
+    //             /></div>
+                  
+    //             )}
+    //         </div>
+    //         <Row>
+    //             <div className='editsectionMdLg'>
+    //                 <Col sm={0}>
+    //                 <Form.Check // prettier-ignore
+    //                     type="switch"
+    //                     id="custom-switch"
+    //                     label="Check this switch"
+    //                     />
+    //                 </Col>
+    //             </div>
+          
+    //     </Row>
+    //     </Col>
+    //     <Col sm={12} md={12} lg={6}>
+    //     <div className="left_info">
+    //             <p className="left_name">{medicine.Name}</p>
+    //             <p>Price: ${medicine.Price}</p>
+    //             <p> Active Ingredients: <span>{medicine.ActiveIngredients}</span></p>
+    //             <p>Medical use: {medicine.MedicalUse.join(' ')}</p>
+    //             <p>  Quantity: <span>{medicine.Quantity}</span></p>
+    //             <p>  Sales: <span>{medicine.Sales}</span> </p>
+                
+    //         </div>
+    //     </Col>
+    //   </Row>
+    // </Container>
+
+    //          <div className="meds">
+    //     <div className="medscreen_left">
+           
+    //         <div className="left_info">
+    //             <p className="left_name">{medicine.Name}</p>
+    //             <p>Price: ${medicine.Price}</p>
+    //             <p>Medical use: {medicine.MedicalUse.join(' ')}</p>
+    //             <p>  Quantity: <span>{medicine.Quantity}</span></p>
+    //         </div>
+    //     </div>
+    //     <div className="medscreen_right">
+    //         <div className="right_info">
+    //             <p>
+    //                 Price: <span>${medicine.Price}</span>
+    //             </p>
+    //             <p>
+    //                 Status: <span>{medicine.Quantity > 0 ? 'In stock' : 'Out of stock'}</span>
+    //             </p>
+    //             <p>
+    //                 Quantity: <span>{medicine.Quantity}</span>
+    //             </p>
+    //             <p>
+                   
+    //             </p>
+    //             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+    //         </div>
+    //     </div>
+    // </div>
+    // </div>
       
     );
 };
