@@ -6,6 +6,7 @@ import { CartProvider } from './Components/CartContext'; // Import the CartProvi
 import Navbar from './Components/Navbar';
 import Homescreen from './Screens/Homescreen';
 import Meds2 from './Screens/Meds';
+//import MedsPharm from './Screens/MedPagePharm.js';
 import CartScreen from './Screens/cartScreen';
 import ForgotPassword from "./Screens/ForgotPassword";
 import Checckout from './Components/Checkout';
@@ -62,9 +63,10 @@ function App() {
             <Route path="/patient" element={<Homescreen />} />
             <Route path="/medicine" element={<Meds2 />} />
             <Route path="/medicine/:medicineId" element={<Meds2 />} />
-            <Route path="/medicinePharm/:medicineId" element={<Meds2/>}/>
+            <Route path="/medicinepharm" element={<MedPharm/>}/>
+            <Route path="/medicinepharm/:medicineId" element={<MedPharm/>}/>
             <Route path="NewMed" element={<NewMed/>}/>
-            <Route path="medicinePharm/:medicineId" element={<MedPharm/>}/>
+            {/* <Route path="/medicinePharm/:medicineId" element={<MedPharm/>}/> */}
             <Route path="/AvailableMeds" element={<AvailableMeds/>}/>
             {/* Pass cartItems to CartScreen */}
             <Route path="/checkout" element={<Checkout />} />

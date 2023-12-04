@@ -131,7 +131,7 @@ import "./Homescreen.css"
 import React, { useState, useEffect } from 'react';
 import Meds from '../Components/MedsPharmacist';
 import SearchFilterComponent from '../Components/SearchFilter';
-
+import PharmacistNav from '../Components/Pharmacist-NavBar';
 const Homescreen = () => {
   const [medicines, setMedicines] = useState([]);
 
@@ -156,16 +156,20 @@ const Homescreen = () => {
   }, []);
 
   return (
-    <div className="homescreen">
-      <h2 className="homescreen_title">Meds</h2>
-      <div className="homescreen_meds">
-        {Array.isArray(medicines) ? (
-          medicines.map((medicine) => <Meds key={medicine.Name} medicines={[medicine]} />)
-        ) : (
-          <p>Error: Medicines data is not in the expected format.</p>
-        )}
-      </div>
+    <div>
+      <PharmacistNav/>
+      <div className="homescreen">
+      
+    <h2 className="homescreen_title">Meds</h2>
+    <div className="homescreen_meds">
+      {Array.isArray(medicines) ? (
+        medicines.map((medicine) => <Meds key={medicine.Name} medicines={[medicine]} />)
+      ) : (
+        <p>Error: Medicines data is not in the expected format.</p>
+      )}
     </div>
+  </div></div>
+    
   );
 };
 

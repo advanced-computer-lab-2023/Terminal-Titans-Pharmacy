@@ -35,7 +35,7 @@ const Meds = ({ medicines }) => {
                       <p className="info_name">{medicine.Name}</p>
                       <p className="infooo">{medicine.MedicalUse.join(' ')}</p>
                       <p className="price">${medicine.Price}</p>
-                      <Link to={`/medicine?medicineId=${medicine._id}`}>
+                      <Link to={`/medicinepharm?medicineId=${medicine._id}`}>
                         <Button variant='outline-dark' style={{width:'100%'}}>View</Button>
                       </Link> 
                   </div>

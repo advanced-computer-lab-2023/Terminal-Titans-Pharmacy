@@ -657,6 +657,25 @@ router.get('/getAllMedicines', protect, async (req, res) => {
 
     const meds = await MedicineModel.find();
 
+    router.get('/getMedicineById/:id', protect, async (req, res) => {
+      try {
+        let exists = await PharmacistModel.findById(req.user);
+        if (!exists || req.user.__t != "Pharmacist") {
+          return res.status(500).json({
+            success: false,
+            message: "Not authorized"
+          });
+        }
+        const id = req.params.id;
+        const meds = await MedicineModel.findById(id);
+    
+        // const medicines = data.Result.filter((medicine) => medicine.Picture);
+        res.status(200).json({ success: true, meds });
+      } catch (error) {
+        console.error('Error fetching medicine data:', error);
+        res.status(500).json({ success: false, message: error.message });
+      }
+    });
     
     // const medicines = data.Result.filter((medicine) => medicine.Picture);
     res.status(200).json({ success: true, meds });

@@ -30,11 +30,12 @@ function Meds2() {
 
         const fetchMedicines = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/Pharma/getAllMedicines/', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } }
+                const response = await axios.get('http://localhost:8000/Pharma/getAllMedicines', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } }
                 );
                 const jsonData = response.data.meds;
                 console.log(response);
-                setMedicines(jsonData.meds);
+                setMedicines(jsonData);
+              
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
