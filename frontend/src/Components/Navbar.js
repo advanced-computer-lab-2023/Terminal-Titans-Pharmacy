@@ -735,7 +735,7 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
               </Button>
             </Nav.Link>
     
-            <Nav.Link href="/caorderDetailsrt">
+            <Nav.Link href="/orderDetails">
               <Button variant="light">
                 Order
               </Button>
