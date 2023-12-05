@@ -10,6 +10,7 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import './PharmMedView.css';
+import { Link } from 'react-router-dom';
 
 
 function arrayBufferToBase64(buffer) {
@@ -97,6 +98,12 @@ function Meds2() {
             <PharmNav/>
 
             <Container style={divStyles} >
+                <Row sm={12} md={9} lg={9}>
+                <Link to={`/AvailableMeds`}>
+                        <Button variant='outline-dark'>Back</Button>
+                      </Link> 
+                    
+                </Row>
       <Row sm={12} md={9} lg={9}>
         <Col sm={12} md={12} lg={6}>
         <div className="left_img">
