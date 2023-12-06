@@ -382,10 +382,13 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import SplitButton from 'react-bootstrap/SplitButton';
 import Meds from '../Components/Meds';
 import Navbar from '../Components/Navbar';
+import { Link } from 'react-router-dom';
+import { Button } from 'react-bootstrap';
 
 const Homescreen = () => {
   const [allMedicines, setAllMedicines] = useState([]);
   const [medicalUses, setMedicalUses] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     const getMedicines = async () => {
@@ -410,8 +413,28 @@ const Homescreen = () => {
     const inputValue = document.getElementById('searchInput').value;
     try {
       const response = await axios.get(`http://localhost:8000/Patient/getMedicine/${inputValue}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+
       if (response.status === 200) {
-        setAllMedicines([response.data.Result]);
+        const result = response.data.Result;
+
+        if (result && result.Quantity > 0) {
+          setAllMedicines([response.data.Result]);
+        } else if (result && result.Quantity === 0) {
+          setErrorMessage(`The medicine is out of stock. Here are some alternatives.`);
+
+          // Set a timer to clear the error message after 2 minutes (adjust as needed)
+          setTimeout(() => {
+            setErrorMessage('');
+          }, 4000); 
+
+          const alternativesResponse = await axios.get(`http://localhost:8000/Patient/findAlternatives/${inputValue}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+
+          if (alternativesResponse.status === 200) {
+            setAllMedicines(alternativesResponse.data.Alternatives);
+          } else {
+            console.error('Failed to find alternatives. Unexpected response:', alternativesResponse);
+          }
+        }
       } else {
         console.error('Failed to search medicines. Unexpected response:', response);
       }
@@ -458,31 +481,35 @@ const Homescreen = () => {
   }, []); // Runs once on mount
 
   return (
-    
     <div>
-      <Navbar/>
-<InputGroup className="mb-3">
-  <SplitButton
-    variant="outline-secondary"
-    title="Search"
-    id="segmented-button-dropdown-1"
-    onClick={handleSearch}
-  >
-    {medicalUses.map((use, index) => (
-      <Dropdown.Item key={index} onClick={() => handleMedicalUseFilter(use)}>
-        {use}
-      </Dropdown.Item>
-    ))}
-    <Dropdown.Divider />
-  </SplitButton>
-  <Form.Control
-    id="searchInput"
-    type="search"
-    placeholder="Search"
-    aria-label="Text input for search"
-     
-  />
-</InputGroup>
+      <Navbar />
+      <InputGroup className="mb-3">
+        <SplitButton
+          variant="outline-secondary"
+          title="Search"
+          id="segmented-button-dropdown-1"
+          onClick={handleSearch}
+        >
+          <Dropdown.Header>Filter</Dropdown.Header>
+          {medicalUses.map((use, index) => (
+            <Dropdown.Item key={index} onClick={() => handleMedicalUseFilter(use)}>
+              {use}
+            </Dropdown.Item>
+          ))}
+          <Dropdown.Divider />
+        </SplitButton>
+        <Form.Control
+          id="searchInput"
+          type="search"
+          placeholder="Search"
+          aria-label="Text input for search"
+        />
+      </InputGroup>
+      {errorMessage && (
+        <div className="alert alert-danger" role="alert">
+          {errorMessage}
+        </div>
+      )}
       <div className="homescreen">
         <h2 className="homescreen_title">Meds</h2>
         <div className="homescreen_meds">
@@ -492,6 +519,7 @@ const Homescreen = () => {
             <p>Error: Medicines data is not in the expected format.</p>
           )}
         </div>
+        
       </div>
     </div>
   );
