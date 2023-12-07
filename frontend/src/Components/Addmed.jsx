@@ -67,6 +67,7 @@ export default function Addmed() {
     boxShadow: '1px 2px 9px #111',
     margin: '4em',
     padding: '1em',
+    borderRadius:'10px'
   };
   return (
     

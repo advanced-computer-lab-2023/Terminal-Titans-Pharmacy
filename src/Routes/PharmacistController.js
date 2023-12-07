@@ -33,7 +33,7 @@ router.get('/getMedicine', protect, async (req, res) => {
     if (!Medicines) {
       return (res.status(400).send({ message: "No Medicine with this name", success: false }));
     }
-    res.status(200).json({ Redult: Medicines, success: true });
+    res.status(200).json({ Result: Medicines, success: true });
   }
 
   catch (error) {
@@ -161,6 +161,123 @@ router.get('/getMedicine', protect, async (req, res) => {
 //     }
 
 //  }
+
+
+router.get('/filterMedical/:MedicalUse', protect, async (req, res) => {
+  try {
+    const exists = await PharmacistModel.findById(req.user);
+    if (!exists || req.user.__t !== 'Pharmacist') {
+      return res.status(500).json({
+        success: false,
+        message: 'Not authorized',
+      });
+    }
+
+    const medicalUse = req.params.MedicalUse.toLowerCase();
+    console.log(medicalUse);
+
+    if (!medicalUse) {
+      return res.status(400).send({ message: 'Please fill the input', success: false });
+    }
+
+    const filteredMedicines = await MedicineModel.find({
+      MedicalUse: medicalUse,
+      OverTheCounter: true,
+      Archived: false,
+    });
+
+    if (!filteredMedicines.length) {
+      return res.status(400).send({
+        message: 'No medicines found with the specified medical use and conditions.',
+        success: false,
+      });
+    }
+
+    console.log(filteredMedicines);
+    res.status(200).send({ Result: filteredMedicines, success: true });
+  } catch (error) {
+    console.error('Error filtering medicine data:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.get('/findAlternatives/:Name', protect, async (req, res) => {
+  try {
+    let exists = await PharmacistModel.findById(req.user);
+    if (!exists || req.user.__t !== "Pharmacist") {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+
+    const Name = req.params.Name.toLowerCase();
+    console.log(Name);
+
+    if (!Name) {
+      return res.status(400).send({ message: 'Please fill the input', success: false });
+    }
+
+    const searchedMedicine = await MedicineModel.findOne({ Name, OverTheCounter: true, Archived: false });
+
+    if (!searchedMedicine) {
+      // If the searched medicine is not found, check for alternatives based on medical use
+      const alternatives = await MedicineModel.find({ MedicalUse: searchedMedicine.MedicalUse, OverTheCounter: true, Archived: false, Quantity: { $gt: 0 } });
+      console.log(alternatives);
+      if (alternatives.length === 0) {
+        return res.status(400).send({ message: "No alternatives found for this medicine", success: false });
+      }
+
+      return res.status(200).json({ Alternatives: alternatives, success: true });
+    }
+
+    if (searchedMedicine.Quantity <= 0) {
+      // If the searched medicine is out of stock, get alternatives based on medical use
+      const alternatives = await MedicineModel.find({ MedicalUse: searchedMedicine.MedicalUse, OverTheCounter: true, Archived: false, Quantity: { $gt: 0 } });
+      console.log(alternatives);
+      if (alternatives.length === 0) {
+        return res.status(400).send({ message: "Medicine is out of stock and no alternatives found", success: false });
+      }
+
+      return res.status(200).json({ Alternatives: alternatives, success: true });
+    }
+
+    return res.status(400).send({ message: "This medicine is not eligible for alternatives", success: false });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to find alternatives", success: false });
+  }
+});
+
+router.get('/getAllMedicalUses', protect, async (req, res) => {
+  try {
+    let exists = await PharmacistModel.findById(req.user);
+    if (!exists || req.user.__t !== 'Pharmacist') {
+      return res.status(500).json({
+        success: false,
+        message: 'Not authorized',
+      });
+    }
+
+    const medicines = await MedicineModel.find({Archived:false, OverTheCounter: true});
+
+    // Extract unique medical uses using Set
+    const medicalUsesSet = new Set();
+    medicines.forEach((medicine) => {
+      medicine.MedicalUse.forEach((use) => {
+        medicalUsesSet.add(use);
+      });
+    });
+
+    const medicalUses = Array.from(medicalUsesSet);
+
+    res.status(200).json({ success: true, medicalUses });
+  } catch (error) {
+    console.error('Error fetching medical uses:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 
 router.post('/addMedicine', upload.single('photo'), protect, async (req, res) => {
   try {
