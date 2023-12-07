@@ -30,7 +30,7 @@ export default function Addmed() {
       const price = document.getElementsByName("Price")[0]?.value;
       const quantity = document.getElementsByName("Quantity")[0]?.value;
       const activeIngredients = document.getElementsByName("ActiveIngredients")[0]?.value;
-      const medicalUse = document.getElementsByName("MedicalUse")[0]?.value.toLowerCase();
+      const medicalUse = document.getElementsByName("MedicalUse")[0]?.value;
       const overTheCounter = document.getElementsByName("overTheCounter")[0]?.value;
       const photo = document.getElementsByName("photo")[0]?.files[0];
       const formData = new FormData();
@@ -41,6 +41,7 @@ export default function Addmed() {
       formData.append("MedicalUse", medicalUse);
       formData.append("OverTheCounter", overTheCounter);
       formData.append("photo", photo);
+      console.log(formData);
       await fetch("http://localhost:8000/Pharma/addMedicine", {
           method: "POST",
           body: formData
@@ -161,7 +162,7 @@ export default function Addmed() {
           </Form.Control.Feedback>
       </Form.Group>
      </Row>
-      <Button variant="outline-dark" onClick={handleSubmit}>Add</Button>
+      <Button type="submit" onClick={handleSubmit}>Submit form</Button>
     </Form>
   );
 }

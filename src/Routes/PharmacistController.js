@@ -241,21 +241,30 @@ router.post('/addMedicine', upload.single('photo'), protect, async (req, res) =>
 //edit medicine using name w ingredients w price w quantity
 router.put('/editMedicine', protect, async (req, res) => {
   try {
-    let exists = await user.findById(req.user);
-    if (!exists || exists.__t !== 'Pharmacist') {
-      return res.status(500).json({
-        success: false,
-        message: "Not authorized"
-      });
-    }
-    const medicineName = req.query.medicineName;
-    const newPrice = req.query.newPrice;
-    const newIngredients = req.query.newIngredients;
+    // let exists = await user.findById(req.user);
+    // if (!exists || exists.__t !== 'Pharmacist') {
+    //   return res.status(500).json({
+    //     success: false,
+    //     message: "Not authorized"
+    //   });
+    //}
+    const medID= req.body._id;
+    const medicineName = req.body.Name;
+    const newQuantity=req.body.Quantity;
+    const archive=req.body.Archived;
+    const newPrice = req.body.Price;
+    const newOverTheCounter=req.body.OverTheCounter;
+    const newIngredients = req.body.ActiveIngredients;
+    console.log(req.body);
     const updateFields = {};
     updateFields.ActiveIngredients = newIngredients;
     updateFields.Price = newPrice;
+    updateFields.Quantity=newQuantity;
+    updateFields.Archived=archive;
+    updateFields.OverTheCounter=newOverTheCounter;
+
     const updatedMedicine = await MedicineModel.findOneAndUpdate(
-      { Name: medicineName },
+      { _id: medID },
       updateFields,
       { new: true }
     );
@@ -271,35 +280,35 @@ router.put('/editMedicine', protect, async (req, res) => {
 });
 
 //for ejs
-router.get('/editMedicine', protect, async (req, res) => {
-  try {
-    let exists = await user.findById(req.user);
-    if (!exists || exists.__t !== 'Pharmacist') {
-      return res.status(500).json({
-        success: false,
-        message: "Not authorized"
-      });
-    }
-    const medicineName = req.query.medicineName;
-    const newPrice = req.query.newPrice;
-    const newIngredients = req.query.newIngredients;
-    const updateFields = {};
-    updateFields.ActiveIngredients = newIngredients;
-    updateFields.Price = newPrice;
-    const updatedMedicine = await MedicineModel.findOneAndUpdate(
-      { Name: medicineName },
-      updateFields,
-      { new: true }
-    );
-    if (!updatedMedicine) {
-      return res.status(404).json({ error: 'Medicine not found' });
-    }
-    res.status(200).json(updatedMedicine);
-  }
-  catch (error) {
-    res.status(500).json({ error: "Cannot do this" })
-  }
-});
+// router.get('/editMedicine', protect, async (req, res) => {
+//   try {
+//     let exists = await user.findById(req.user);
+//     if (!exists || exists.__t !== 'Pharmacist') {
+//       return res.status(500).json({
+//         success: false,
+//         message: "Not authorized"
+//       });
+//     }
+//     const medicineName = req.query.medicineName;
+//     const newPrice = req.query.newPrice;
+//     const newIngredients = req.query.newIngredients;
+//     const updateFields = {};
+//     updateFields.ActiveIngredients = newIngredients;
+//     updateFields.Price = newPrice;
+//     const updatedMedicine = await MedicineModel.findOneAndUpdate(
+//       { Name: medicineName },
+//       updateFields,
+//       { new: true }
+//     );
+//     if (!updatedMedicine) {
+//       return res.status(404).json({ error: 'Medicine not found' });
+//     }
+//     res.status(200).json(updatedMedicine);
+//   }
+//   catch (error) {
+//     res.status(500).json({ error: "Cannot do this" })
+//   }
+// });
 
 
 //view the quantity and sales of a medicine
