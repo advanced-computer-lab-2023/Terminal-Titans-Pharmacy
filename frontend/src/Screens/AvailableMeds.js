@@ -234,7 +234,7 @@ const Homescreen = () => {
   useEffect(() => {
     const getMedicines = async () => {
       try {
-        const response = await fetch('http://localhost:8000/Pharma/getAllMedicines/', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+        const response = await fetch('http://localhost:7000/Pharma/getAllMedicines/', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
         const jsonData = await response.json();
 
         if (Array.isArray(jsonData.meds)) {
@@ -253,7 +253,7 @@ const Homescreen = () => {
   const handleSearch = async () => {
     const inputValue = document.getElementById('searchInput').value;
     try {
-      const response = await axios.get(`http://localhost:8000/Pharma/getMedicine/${inputValue}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+      const response = await axios.get(`http://localhost:7000/Pharma/getMedicine/${inputValue}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
 
       if (response.status === 200) {
         const result = response.data.Result;
@@ -268,7 +268,7 @@ const Homescreen = () => {
             setErrorMessage('');
           }, 4000); 
 
-          const alternativesResponse = await axios.get(`http://localhost:8000/Pharma/findAlternatives/${inputValue}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+          const alternativesResponse = await axios.get(`http://localhost:7000/Pharma/findAlternatives/${inputValue}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
 
           if (alternativesResponse.status === 200) {
             setAllMedicines(alternativesResponse.data.Alternatives);
@@ -286,7 +286,7 @@ const Homescreen = () => {
 
   const handleMedicalUseFilter = async (medicalUse) => {
     try {
-      const response = await axios.get(`http://localhost:8000/Pharma/filterMedical/${medicalUse}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+      const response = await axios.get(`http://localhost:7000/Pharma/filterMedical/${medicalUse}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
       if (response.status === 200) {
         setAllMedicines(response.data.Result);
       } else {
@@ -300,7 +300,7 @@ const Homescreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const medicalUsesResponse = await axios.get('http://localhost:8000/Pharma/getAllMedicalUses', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+        const medicalUsesResponse = await axios.get('http://localhost:7000/Pharma/getAllMedicalUses', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
         if (medicalUsesResponse.status === 200) {
           setMedicalUses(medicalUsesResponse.data.medicalUses);
         } else {
