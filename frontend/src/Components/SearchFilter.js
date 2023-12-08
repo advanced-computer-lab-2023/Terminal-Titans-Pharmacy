@@ -6,7 +6,7 @@ const SearchFilterComponent = ({ onSearchResult }) => {
 
   const handleSearch = async () => {
     try {
-      const response = await fetch('http://localhost:8000/Patient/getMedicine2', {
+      const response = await fetch('http://localhost:7000/Patient/getMedicine2', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ const SearchFilterComponent = ({ onSearchResult }) => {
 
   const handleFilter = async () => {
     try {
-      const response = await fetch('http://localhost:8000/Patient/filterMedical2', {
+      const response = await fetch('http://localhost:7000/Patient/filterMedical2', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
