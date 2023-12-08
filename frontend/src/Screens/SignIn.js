@@ -45,6 +45,7 @@ export default function SignIn() {
             console.log(response);
             if (response.data.success) {
                 sessionStorage.setItem('token', response.data.Result.token);
+                localStorage.setItem('token', response.data.Result.token);
                 if (response.data.Result.type === 'Admin') {
                     // go to admin page
                     window.location.pathname = '/Health-Plus/admin';

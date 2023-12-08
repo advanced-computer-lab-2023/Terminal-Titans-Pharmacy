@@ -16,11 +16,14 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 import Badge from 'react-bootstrap/Badge';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/esm/Row';
+import { useNavigate, createSearchParams } from "react-router-dom";
 // import * as formik from 'formik';
 // import * as yup from 'yup';
 import InputGroup from 'react-bootstrap/InputGroup';
 
+
 const Navbar1 = ({ click }) => {
+  const navigate = useNavigate();
   const { cartItems } = useCart();
   const [cartItemCount, setCartItemCount] = useState(0);
   const [modalShow, setModalShow] = React.useState(false);
@@ -29,6 +32,22 @@ const Navbar1 = ({ click }) => {
   const signoutButtonFunc = () => {
     sessionStorage.removeItem('token');
     window.location.href = '/Health-Plus';
+  }
+
+  const token = sessionStorage.getItem("token");
+
+  const navigateChat=()=>{
+    window.postMessage({ key: "token", value: sessionStorage.getItem("token") }, "*");
+    window.location.href = `http://localhost:3000/Health-Plus/chat/:${token}`
+    // navigate('http://localhost:3000/Health-Plus/chat',{
+    //         state: {
+    //             token: token
+    //         }}, { replace: true }
+            
+          
+    //       )
+
+          
   }
 
   const SignoutDanger=()=>{
@@ -53,7 +72,7 @@ const Navbar1 = ({ click }) => {
             <Offcanvas.Title id={`offcanvasNavbarLabel-expand-${'xl'}`}>
               Titans Pharmacy
             </Offcanvas.Title>
-          </Offcanvas.Header>
+          </Offcanvas.Header>  
           <Offcanvas.Body>
             <Nav className="justify-content-end flex-grow-1 pe-3">
             <NavDropdown title="Medicines" id="collapsible-nav-dropdown" className='align-self-center justify-self-center me-3' style={{
@@ -66,7 +85,7 @@ const Navbar1 = ({ click }) => {
               </NavDropdown.Item>
             </NavDropdown>
 
-            <Nav.Link className='me-3' style={{fontSize:'20px'}}> Chat</Nav.Link>
+            <Nav.Link className='me-3' style={{fontSize:'20px'}} onClick={()=> navigateChat() }> Chat</Nav.Link>
             <Nav.Link className='me-3' href='/NewMed' style={{fontSize:'20px'}}> Reports</Nav.Link>
 
             <NavDropdown title="Profile" id="collapsible-nav-dropdown" className='align-self-center me-5' style={{
