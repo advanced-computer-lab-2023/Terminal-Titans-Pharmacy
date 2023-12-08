@@ -67,6 +67,7 @@ const Navbar1 = ({ click }) => {
             </NavDropdown>
 
             <Nav.Link className='me-3' style={{fontSize:'20px'}}> Chat</Nav.Link>
+            <Nav.Link className='me-3' href='/NewMed' style={{fontSize:'20px'}}> Reports</Nav.Link>
 
             <NavDropdown title="Profile" id="collapsible-nav-dropdown" className='align-self-center me-5' style={{
               fontSize: '20px'

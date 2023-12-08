@@ -29,6 +29,7 @@ import AvailableMeds from './Screens/AvailableMeds.js';
 import MedPharm from './Screens/MedPagePharm.js'
 
 
+
 function App() {
   // const signoutButtonFunc = () => {
   //   sessionStorage.removeItem('token');
@@ -65,7 +66,7 @@ function App() {
             <Route path="/medicine/:medicineId" element={<Meds2 />} />
             <Route path="/medicinepharm" element={<MedPharm/>}/>
             <Route path="/medicinepharm/:medicineId" element={<MedPharm/>}/>
-            <Route path="NewMed" element={<NewMed/>}/>
+            <Route path="/NewMed" element={<NewMed/>}/>
             {/* <Route path="/medicinePharm/:medicineId" element={<MedPharm/>}/> */}
             <Route path="/AvailableMeds" element={<AvailableMeds/>}/>
             {/* Pass cartItems to CartScreen */}

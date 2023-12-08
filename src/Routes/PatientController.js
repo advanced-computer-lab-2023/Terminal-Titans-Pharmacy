@@ -80,32 +80,158 @@ router.get('/filterMedical/:MedicalUse', protect, async (req, res) => {
 
 
 
-//search for medicine based on name
-router.get('/getMedicine/:Name', protect, async (req, res) => {
-  let exists = await PatientModel.findById(req.user);
-  if (!exists || req.user.__t != "Patient") {
-    return res.status(500).json({
-      success: false,
-      message: "Not authorized"
-    });
-  }
-  const Name = req.params.Name.toLowerCase();
-  console.log(Name);
-  if (!Name) {
-    return res.status(400).send({ message: 'Please fill the input', success: false });
-  }
-  try {
-    // const Name = req.body;
-    const Medicines = await MedicineModel.findOne({ Name , OverTheCounter: true , Archived: false });
-    console.log(Medicines);
-    if (!Medicines) {
-      return (res.status(400).send({ message: "No Medicine with this name", success: false }));
-    }
-    res.status(200).json({ Result: Medicines, success: true });
-  }
+// //search for medicine based on name
+// router.get('/getMedicine/:Name', protect, async (req, res) => {
+//   let exists = await PatientModel.findById(req.user);
+//   if (!exists || req.user.__t != "Patient") {
+//     return res.status(500).json({
+//       success: false,
+//       message: "Not authorized"
+//     });
+//   }
+//   const Name = req.params.Name.toLowerCase();
+//   console.log(Name);
+//   if (!Name) {
+//     return res.status(400).send({ message: 'Please fill the input', success: false });
+//   }
+//   try {
+//     // const Name = req.body;
+//     const Medicines = await MedicineModel.findOne({ Name , OverTheCounter: true , Archived: false });
+//     console.log(Medicines);
+//     if (!Medicines) {
+//       return (res.status(400).send({ message: "No Medicine with this name", success: false }));
+//     }
+//     res.status(200).json({ Result: Medicines, success: true });
+//   }
 
-  catch (error) {
-    res.status(500).json({ message: "Failed getMedicine", success: false })
+//   catch (error) {
+//     res.status(500).json({ message: "Failed getMedicine", success: false })
+//   }
+// });
+// router.get('/getMedicine/:Name', protect, async (req, res) => {
+//   try {
+//     let exists = await PatientModel.findById(req.user);
+//     if (!exists || req.user.__t != "Patient") {
+//       return res.status(500).json({
+//         success: false,
+//         message: "Not authorized"
+//       });
+//     }
+
+//     const Name = req.params.Name.toLowerCase();
+//     console.log(Name);
+
+//     if (!Name) {
+//       return res.status(400).send({ message: 'Please fill the input', success: false });
+//     }
+
+//     const searchedMedicine = await MedicineModel.findOne({ Name, OverTheCounter: true, Archived: false });
+
+//     if (!searchedMedicine) {
+//       // If the searched medicine is not found, check for alternatives based on medical use
+//       const alternatives = await MedicineModel.find({ MedicalUse: searchedMedicine.MedicalUse, OverTheCounter: true, Archived: false });
+      
+//       if (alternatives.length === 0) {
+//         return res.status(400).send({ message: "No Medicine with this name and no alternatives found", success: false });
+//       }
+
+//       return res.status(200).json({ Alternatives: alternatives, success: true });
+//     }
+
+//     if (searchedMedicine.Stock <= 0) {
+//       // If the searched medicine is out of stock, get alternatives based on medical use
+//       const alternatives = await MedicineModel.find({ MedicalUse: searchedMedicine.MedicalUse, OverTheCounter: true, Archived: false });
+      
+//       if (alternatives.length === 0) {
+//         return res.status(400).send({ message: "Medicine is out of stock and no alternatives found", success: false });
+//       }
+
+//       return res.status(200).json({ Alternatives: alternatives, success: true });
+//     }
+
+//     res.status(200).json({ Result: searchedMedicine, success: true });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Failed getMedicine", success: false });
+//   }
+// });
+// Search for a medicine by name
+router.get('/getMedicine/:Name', protect, async (req, res) => {
+  try {
+    let exists = await PatientModel.findById(req.user);
+    if (!exists || req.user.__t !== "Patient") {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+
+    const Name = req.params.Name.toLowerCase();
+    console.log(Name);
+
+    if (!Name) {
+      return res.status(400).send({ message: 'Please fill the input', success: false });
+    }
+
+    const searchedMedicine = await MedicineModel.findOne({ Name, OverTheCounter: true, Archived: false });
+
+    if (!searchedMedicine) {
+      return res.status(400).send({ message: "No Medicine with this name found", success: false });
+    }
+
+    res.status(200).json({ Result: searchedMedicine, success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to search for the medicine", success: false });
+  }
+});
+
+// Find alternatives for a medicine based on its name
+router.get('/findAlternatives/:Name', protect, async (req, res) => {
+  try {
+    let exists = await PatientModel.findById(req.user);
+    if (!exists || req.user.__t !== "Patient") {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+
+    const Name = req.params.Name.toLowerCase();
+    console.log(Name);
+
+    if (!Name) {
+      return res.status(400).send({ message: 'Please fill the input', success: false });
+    }
+
+    const searchedMedicine = await MedicineModel.findOne({ Name, OverTheCounter: true, Archived: false });
+
+    if (!searchedMedicine) {
+      // If the searched medicine is not found, check for alternatives based on medical use
+      const alternatives = await MedicineModel.find({ MedicalUse: searchedMedicine.MedicalUse, OverTheCounter: true, Archived: false, Quantity: { $gt: 0 } });
+      console.log(alternatives);
+      if (alternatives.length === 0) {
+        return res.status(400).send({ message: "No alternatives found for this medicine", success: false });
+      }
+
+      return res.status(200).json({ Alternatives: alternatives, success: true });
+    }
+
+    if (searchedMedicine.Quantity <= 0) {
+      // If the searched medicine is out of stock, get alternatives based on medical use
+      const alternatives = await MedicineModel.find({ MedicalUse: searchedMedicine.MedicalUse, OverTheCounter: true, Archived: false, Quantity: { $gt: 0 } });
+      console.log(alternatives);
+      if (alternatives.length === 0) {
+        return res.status(400).send({ message: "Medicine is out of stock and no alternatives found", success: false });
+      }
+
+      return res.status(200).json({ Alternatives: alternatives, success: true });
+    }
+
+    return res.status(400).send({ message: "This medicine is not eligible for alternatives", success: false });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to find alternatives", success: false });
   }
 });
 

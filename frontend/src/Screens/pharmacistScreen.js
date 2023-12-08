@@ -4,12 +4,15 @@ import Button from 'react-bootstrap/Button';
 import Tess from "../Components/Addmed"
 import Body from '../Components/PharmScreenBody';
 
+
+
 function pharmacistScreen() {
     return (
     <div>
        <Nav/>
        <Body/>
-        {/* <Tess/> */}
+       <Tess/>
+       
     </div>   
         
     )

@@ -99,7 +99,7 @@ const Meds = ({ medicines }) => {
           <div className="meds_info">
             <p className="info_name">{medicine.Name}</p>
             <p className="infooo">{medicine.MedicalUse.join(' ')}</p>
-            <p className="price">${medicine.Price}</p>
+            <p className="price">${medicine.Price} </p>
             <Link to={`/medicine?medicineId=${medicine._id}`} className="info_buttom">
               View
             </Link>

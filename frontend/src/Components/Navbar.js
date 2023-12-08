@@ -746,7 +746,11 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
                 Store
               </Button>
             </Nav.Link>
-            
+            <Nav.Link href="/patient">
+              <Button variant="light">
+                undo searches
+              </Button>
+            </Nav.Link>
             {/*<Nav.Link href="/orderDetails">Order</Nav.Link>
             <Nav.Link href="/patient">Store</Nav.Link>
             <NavDropdown title="Filter" id="basic-nav-dropdown">
