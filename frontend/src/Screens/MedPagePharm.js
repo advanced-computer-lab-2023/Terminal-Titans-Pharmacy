@@ -49,7 +49,7 @@ function Meds2() {
 
         const fetchMedicines = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/Pharma/getAllMedicines', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } }
+                const response = await axios.get('http://localhost:7000/Pharma/getAllMedicines', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } }
                 );
                 const jsonData = response.data.meds;
                 console.log(response);
@@ -170,7 +170,7 @@ function Meds2() {
         // formData.append("OverTheCounter", overTheCounter);
         // formData.append("Archived", archiveStatus);
         // console.log(formData.append.arguments)
-        await fetch("http://localhost:8000/Pharma/editMedicine", {
+        await fetch("http://localhost:7000/Pharma/editMedicine", {
             method: "PUT",
 
              headers: { 

@@ -42,7 +42,7 @@ export default function Addmed() {
       formData.append("OverTheCounter", overTheCounter);
       formData.append("photo", photo);
       console.log(formData);
-      await fetch("http://localhost:8000/Pharma/addMedicine", {
+      await fetch("http://localhost:7000/Pharma/addMedicine", {
           method: "POST",
           body: formData
           , headers: {
