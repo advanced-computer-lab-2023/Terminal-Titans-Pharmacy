@@ -6,7 +6,8 @@ const express = require('express');
 const protect = require("../middleware/authMiddleware.js");
 const router = express.Router();
 const stripe= require('stripe')
-
+const healthPackageModel = require("../Models/healthPackageModel.js");
+const healthPackageStatus = require("../Models/healthPackageStatus.js");
 
 
 //App variables
@@ -568,17 +569,34 @@ router.get('/checkout/:id/:address/:paymentMethod', async (req, res) => {
 
     // Debugging: Output the 'total' value after setting it
     console.log('Total after setting:', total);
-    if(total>0){
-    // Create the order in the database
-    const newOrder = new Order({
-      userId: patientId,
-      items: itemsForOrder,
-      total: total,
-      address: req.params.address,
-      paymentMethod:req.params.paymentMethod,
-      status:'processing'
-    });
-    await newOrder.save();
+    if (total > 0) {
+      let myHealthStatus = await healthPackageStatus.findOne({ patientId: patientId.id, status: 'Subscribed' });
+      const packId = myHealthStatus.packageId;
+      var discountP = 0;
+      if (packId) {
+          const allPackages = await healthPackageModel.find({ _id: packId });
+          if (allPackages.length > 0)
+              discountP = allPackages[0].medicinDiscountInPercentage;
+          else
+              return (res.status(400).send({ error: "cant find package", success: false }));
+
+      }
+      const discount = (total * (discountP / 100));
+      total = total - discount;
+
+      // Create the order in the database
+      const newOrder = new Order({
+          userId: patientId,
+          items: itemsForOrder,
+          total: total,
+          discount: discount,
+          address: req.params.address,
+          paymentMethod: req.params.paymentMethod,
+          status: 'processing'
+      });
+      await newOrder.save();
+      addTransaction(-1 * total, patientId, req.params.paymentMethod, 'Medicine Purchase');
+
   }
 
     // Clear the cart by removing all cart items
@@ -772,21 +790,36 @@ router.put('/cancelOrder/:orderId', protect,async (req, res) => {
 });
 
 async function getOrderDetails(pid) {
-    
-    const cartItems = await CartItem.find({ userId: pid });
-    let list = []
-    for (var x in cartItems) {
-      const med = await MedicineModel.findById(cartItems[x].medicineId);
-      medInfo={
-        id:med._id,
-        name:med.Name,
-        price:med.Price*100*cartItems[x].quantity,
-        quantity:cartItems[x].quantity
+  try {
+      let myHealthStatus = await healthPackageStatus.findOne({ patientId: pid, status: 'Subscribed' });
+      const packId = myHealthStatus.packageId;
+      var discountP = 0;
+      if (packId) {
+          const allPackages = await healthPackageModel.find({ _id: packId });
+          if (allPackages.length > 0)
+              discountP = allPackages[0].medicinDiscountInPercentage;
+          else
+              return (res.status(400).send({ error: "cant find package", success: false }));
+
       }
-      list.push(medInfo);
-    }
+      const cartItems = await CartItem.find({ userId: pid });
+      let list = []
+      for (var x in cartItems) {
+          const med = await MedicineModel.findById(cartItems[x].medicineId);
+          medInfo = {
+              id: med._id,
+              name: med.Name,
+              price: med.Price * 100 * (1 - discountP / 100),
+              quantity: cartItems[x].quantity
+          }
+          list.push(medInfo);
+      }
       return list
-  
+  }
+  catch (error) {
+      console.log(error);
+  }
+
 }
 
 const processCardPayment = async (req, res,pid,address) => {
@@ -940,6 +973,17 @@ router.get('/viewWallet', protect, async (req, res) => {
   }
 });
 
+const addTransaction = (amount, userId, paymentMethod, description) => {
+  console.log('l')
+  const newTransaction = new transactionsModel({
+      amount: Math.round(amount * 100) / 100,
+      userId: userId,
+      paymentMethod: paymentMethod,
+      description: description
+  });
+  newTransaction.save();
+  console.log('l')
+}
 
 
 module.exports = router;
