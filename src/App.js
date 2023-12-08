@@ -1,17 +1,52 @@
 // External variables
+// const express = require("express");
+// const mongoose = require('mongoose');
+// const multer = require("multer");
+// mongoose.set('strictQuery', false);
+// require("dotenv").config();
+// const jwt = require('jsonwebtoken');
+
+// // const {createAdmin, deleteAdmin, getMedicine, getListMed, getPharmacist, getPatient} = require("./Routes/Adminph");
+// const MongoURI = process.env.MONGO_URI;
+// //App variables
+// const app = express();
+// const port = process.env.PORT || "8000";
+
+// const Admin = require('./Routes/Adminph.js');
+// const Patient = require('./Routes/PatientController.js');
+// const Pharmacist = require('./Routes/PharmacistController.js');
+// const securityModule=require('./Routes/securityRoute.js')
+
+// const ejs = require('ejs');
+// // #Importing the userController
+
+
+// // configurations
+// // Mongo DB
+// mongoose.connect(MongoURI)
+//   .then(() => {
+//     console.log("MongoDB is now connected!")
+//     // Starting server
+//     app.listen(port, () => {
+//       console.log(`Listening to requests on http://localhost:${port}`);
+//     })
+//   })
+//   .catch(err => console.log(err));
+
 const express = require("express");
 const mongoose = require('mongoose');
 const multer = require("multer");
 mongoose.set('strictQuery', false);
 require("dotenv").config();
 const jwt = require('jsonwebtoken');
+const connectDB = require('./config/db.js');
 
 // const {createAdmin, deleteAdmin, getMedicine, getListMed, getPharmacist, getPatient} = require("./Routes/Adminph");
 const MongoURI = process.env.MONGO_URI;
 //App variables
 const app = express();
-const port = process.env.PORT || "8000";
-
+const port = process.env.PORT || "7000";
+const http =require ('http');
 const Admin = require('./Routes/Adminph.js');
 const Patient = require('./Routes/PatientController.js');
 const Pharmacist = require('./Routes/PharmacistController.js');
@@ -23,15 +58,18 @@ const ejs = require('ejs');
 
 // configurations
 // Mongo DB
-mongoose.connect(MongoURI)
-  .then(() => {
-    console.log("MongoDB is now connected!")
-    // Starting server
-    app.listen(port, () => {
-      console.log(`Listening to requests on http://localhost:${port}`);
-    })
-  })
-  .catch(err => console.log(err));
+
+  
+  connectDB()
+
+  //App variables
+ 
+  
+  const server = http.Server(app)
+  server.listen(port, "localhost", () => {
+    console.log("Server is running on port 7000");
+  });
+
 /*
                                                     Start of your code
 */

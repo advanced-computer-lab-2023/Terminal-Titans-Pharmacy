@@ -221,7 +221,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import SplitButton from 'react-bootstrap/SplitButton';
-import Meds from '../Components/Meds';
+import Meds from '../Components/MedsPharmacist';
 import Navbar from '../Components/Navbar';
 import { Link } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
@@ -324,6 +324,7 @@ const Homescreen = () => {
   return (
     <div>
       <PharmacistNav/>
+      
       <InputGroup className="mb-3">
         <SplitButton
           variant="outline-secondary"
