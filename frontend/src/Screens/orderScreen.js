@@ -12,7 +12,7 @@ const OrderScreen = () => {
         // Fetch cart items
         const fetchOrders = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/Patient/getOrder', {
+                const response = await axios.get('http://localhost:7000/Patient/getOrder', {
                     headers: { Authorization: 'Bearer ' + sessionStorage.getItem('token') },
                 });
                 console.log(response);
@@ -42,13 +42,13 @@ const OrderScreen = () => {
         try {
             const response = await axios({
                 method: 'put', //you can set what request you want to be
-                url: `http://localhost:8000/Patient/cancelOrder/${id}`,
+                url: `http://localhost:7000/Patient/cancelOrder/${id}`,
                 headers: {
                     Authorization: 'Bearer ' + sessionStorage.getItem("token")
                 }
             })
-            // axios.put(`http://localhost:8000/Patient/cancelOrder/${id}`,null,{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}})
-            // const response = await axios.put(`http://localhost:8000/Patient/cancelOrder/${id}`,{
+            // axios.put(`http://localhost:7000/Patient/cancelOrder/${id}`,null,{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}})
+            // const response = await axios.put(`http://localhost:7000/Patient/cancelOrder/${id}`,{
             //     headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") }
             // });
             // console.log(response);

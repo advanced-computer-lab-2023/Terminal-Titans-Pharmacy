@@ -8,6 +8,7 @@ const router = express.Router();
 const stripe= require('stripe')
 const healthPackageModel = require("../Models/healthPackageModel.js");
 const healthPackageStatus = require("../Models/healthPackageStatus.js");
+const transactionsModel=require("../Models/transactionsModel.js");
 
 
 //App variables
@@ -19,7 +20,7 @@ const stripeInstance = stripe('sk_test_51OAmglE5rOvAFcqVk714zBO64pgCArV8MfP0BWTn
 router.get('/filterMedical/:MedicalUse', protect, async (req, res) => {
   try {
     const exists = await PatientModel.findById(req.user);
-    if (!exists || req.user.__t !== 'Patient') {
+    if (!exists || req.user.__t !== 'patient') {
       return res.status(500).json({
         success: false,
         message: 'Not authorized',
@@ -159,7 +160,7 @@ router.get('/filterMedical/:MedicalUse', protect, async (req, res) => {
 router.get('/getMedicine/:Name', protect, async (req, res) => {
   try {
     let exists = await PatientModel.findById(req.user);
-    if (!exists || req.user.__t !== "Patient") {
+    if (!exists || req.user.__t !== "patient") {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
@@ -190,7 +191,7 @@ router.get('/getMedicine/:Name', protect, async (req, res) => {
 router.get('/findAlternatives/:Name', protect, async (req, res) => {
   try {
     let exists = await PatientModel.findById(req.user);
-    if (!exists || req.user.__t !== "Patient") {
+    if (!exists || req.user.__t !== "patient") {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
@@ -239,7 +240,7 @@ router.get('/findAlternatives/:Name', protect, async (req, res) => {
 router.get('/getAllMedicine2', protect, async (req, res) => {
   try {
     let exists = await PatientModel.findById(req.user);
-    if (!exists || req.user.__t != "Patient") {
+    if (!exists || req.user.__t != "patient") {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
@@ -260,8 +261,9 @@ router.get('/getAllMedicine2', protect, async (req, res) => {
 //old get all medicine
 router.get('/getAllMedicine', protect, async (req, res) => {
   try {
+    console.log(req.user.__t);
     let exists = await PatientModel.findById(req.user);
-    if (!exists || req.user.__t != "Patient") {
+    if (!exists || req.user.__t != "patient") {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
@@ -269,7 +271,7 @@ router.get('/getAllMedicine', protect, async (req, res) => {
     }
 
     const meds = await MedicineModel.find();
-
+console.log(meds)
     
     // const medicines = data.Result.filter((medicine) => medicine.Picture);
     res.status(200).json({ success: true, meds });
@@ -283,7 +285,7 @@ router.get('/getAllMedicine', protect, async (req, res) => {
 router.get('/getMedicineById/:id', protect, async (req, res) => {
   try {
     let exists = await PatientModel.findById(req.user);
-    if (!exists || req.user.__t != "Patient") {
+    if (!exists || req.user.__t != "patient") {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
@@ -301,15 +303,16 @@ router.get('/getMedicineById/:id', protect, async (req, res) => {
 });
 
 router.get('/getAllMedicalUses', protect, async (req, res) => {
+  console.log("pp");
   try {
+
     let exists = await PatientModel.findById(req.user);
-    if (!exists || req.user.__t !== 'Patient') {
+    if (!exists || req.user.__t !== 'patient' ) {
       return res.status(500).json({
         success: false,
         message: 'Not authorized',
       });
     }
-
     const medicines = await MedicineModel.find({Archived:false, OverTheCounter: true});
 
     // Extract unique medical uses using Set
@@ -321,7 +324,7 @@ router.get('/getAllMedicalUses', protect, async (req, res) => {
     });
 
     const medicalUses = Array.from(medicalUsesSet);
-
+console.log(medicalUsesSet)
     res.status(200).json({ success: true, medicalUses });
   } catch (error) {
     console.error('Error fetching medical uses:', error);
@@ -336,7 +339,7 @@ router.get('/getAllMedicalUses', protect, async (req, res) => {
 
 // Add a medicine to the cart
 // router.post('/addToCart', protect, async (req, res) => {
-//   let exists = await PatientModel.findById(req.user);
+//   let exists = await patientModel.findById(req.user);
 //   if (!exists) {
 //     return res.status(500).json({
 //       success: false,
@@ -395,7 +398,7 @@ router.get('/getAllMedicalUses', protect, async (req, res) => {
 // Add a medicine to the cart
 router.post('/addToCart/:medicineId', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
-  if (!exists || req.user.__t !== "Patient") {
+  if (!exists || req.user.__t !== "patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -459,7 +462,7 @@ router.post('/addToCart/:medicineId', protect, async (req, res) => {
 // Retrieve the number of items in the cart to help in the frontend
 router.get('/cartItemCount', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
-  if (!exists || req.user.__t !== "Patient") {
+  if (!exists || req.user.__t !== "patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -497,30 +500,54 @@ router.get('/cartItemCount', protect, async (req, res) => {
 // View the cart
 router.get('/cartinCheckOut',protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
-  if (!exists || req.user.__t !== "Patient") {
+  if (!exists || req.user.__t !== "patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
     });
   } let pid = req.user._id//temp until login
+ 
+  let myHealthStatus = await healthPackageStatus.findOne({ patientId: pid, status: 'Subscribed' });
+  
+  const packId = myHealthStatus.healthPackageId;
+  var discountP = 0;
+  if (packId) {
+      const allPackages = await healthPackageModel.find({ _id: packId });
+      if (allPackages.length > 0)
+          discountP = allPackages[0].medicinDiscountInPercentage;
+      else
+          return (res.status(400).send({ error: "cant find package", success: false }));
+
+  }
+  console.log(packId);
   const cartItems = await CartItem.find({ userId: pid });
   let list = []
+  let total=0;
   for (var x in cartItems) {
+    console.log(cartItems[x])
     const med = await MedicineModel.findById(cartItems[x].medicineId);
-    list.push(med);
+    medInfo = {
+      id: med._id,
+      Name: med.Name,
+      Price: med.Price-(med.Price*discountP/100),
+      Quantity: cartItems[x].quantity,
+    }
+    total+=(med.Price-(med.Price*discountP/100))*cartItems[x].quantity,
+    list.push(medInfo);
   }
+  
   Result = {
-    cartItems: cartItems,
-    medInfo: list
+    total: total,
+    medInfo: list,
+    wallet: Math.round(exists.Wallet * 100) / 100,  
   }
-  console.log(cartItems);
   res.json(Result);
 });
 
 // Delete an item from the cart
 router.delete('/deleteCartItem/:cartItemId', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
-  if (!exists || req.user.__t !== "Patient") {
+  if (!exists || req.user.__t !== "patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -546,7 +573,7 @@ router.delete('/deleteCartItem/:cartItemId', protect, async (req, res) => {
 // View the cart
 router.get('/cart', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
-  if (!exists || req.user.__t !== "Patient") {
+  if (!exists || req.user.__t !== "patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -559,7 +586,7 @@ router.get('/cart', protect, async (req, res) => {
 // Update the quantity of an item in the cart
 router.put('/updateCartItem/:cartItemId', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
-  if (!exists || req.user.__t !== "Patient") {
+  if (!exists || req.user.__t !== "patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -588,7 +615,7 @@ router.put('/updateCartItem/:cartItemId', protect, async (req, res) => {
 });
 router.get('/cart/total', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
-  if (!exists || req.user.__t !== "Patient") {
+  if (!exists || req.user.__t !== "patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -697,7 +724,7 @@ router.get('/checkout/:id/:address/:paymentMethod', async (req, res) => {
     console.log('Total after setting:', total);
     if (total > 0) {
       let myHealthStatus = await healthPackageStatus.findOne({ patientId: patientId.id, status: 'Subscribed' });
-      const packId = myHealthStatus.packageId;
+      const packId = myHealthStatus?.healthPackageId;
       var discountP = 0;
       if (packId) {
           const allPackages = await healthPackageModel.find({ _id: packId });
@@ -730,19 +757,19 @@ router.get('/checkout/:id/:address/:paymentMethod', async (req, res) => {
     await CartItem.deleteMany({ userId: patientId });
     console.log('right before redirect')
     if(req.params.paymentMethod==='Card')
-    return res.redirect('http://localhost:3000/patient')
+    return res.redirect('http://localhost:4000/checkout?id=true')
   else
-   res.status(200).json({ message: 'Checkout successful. Your order has been placed.' });
+  return res.status(200).json({ message: 'Checkout successful. Your order has been placed.' });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Checkout failed. Server error.' });
+  return  res.status(500).json({ error: 'Checkout failed. Server error.' });
   }
 });
 
 // Add a new delivery address for a patient
 router.post('/addAddress', protect,async (req, res) => {
   let exists = await PatientModel.findById(req.user);
-  if (!exists || req.user.__t != "Patient") {
+  if (!exists || req.user.__t != "patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -785,7 +812,7 @@ router.post('/addAddress', protect,async (req, res) => {
         address: patient.address,
 
       });
-    res.json({ message: 'Address added successfully', patient: updatedPatient });
+    res.json({ message: 'Address added successfully', patient: updatedPatient, success: true });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to add the address' });
@@ -796,7 +823,7 @@ router.post('/addAddress', protect,async (req, res) => {
 // Retrieve the patient's addresses
 router.get('/getAddresses',protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
-  if (!exists || req.user.__t != "Patient") {
+  if (!exists || req.user.__t != "patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -814,8 +841,11 @@ router.get('/getAddresses',protect, async (req, res) => {
     }
 
     const address = patient.address; // Retrieve the patient's addresses
-
-    res.json({ address });
+    let result={
+      address:address,
+      Name:patient.Name
+    }
+    res.json({ result });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to retrieve addresses' });
@@ -825,7 +855,7 @@ router.get('/getAddresses',protect, async (req, res) => {
 // Retrieve order details and status
 router.get('/getOrder', protect,async (req, res) => {
   const user = await PatientModel.findById(req.user);
-  if (!user || user.__t !== 'Patient') {
+  if (!user || user.__t !== 'patient') {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -854,7 +884,7 @@ router.get('/getOrder', protect,async (req, res) => {
 // Retrieve a certain order details and status
 router.get('/getOrder/:orderId', protect,async (req, res) => {
   const user = await PatientModel.findById(req.user);
-  if (!user || user.__t !== 'Patient') {
+  if (!user || user.__t !== 'patient') {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -883,7 +913,7 @@ router.get('/getOrder/:orderId', protect,async (req, res) => {
 router.put('/cancelOrder/:orderId', protect,async (req, res) => {
   console.log(req);
   const user = await PatientModel.findById(req.user);
-  if (!user || user.__t !== 'Patient') {
+  if (!user || user.__t !== 'patient') {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
@@ -918,7 +948,7 @@ router.put('/cancelOrder/:orderId', protect,async (req, res) => {
 async function getOrderDetails(pid) {
   try {
       let myHealthStatus = await healthPackageStatus.findOne({ patientId: pid, status: 'Subscribed' });
-      const packId = myHealthStatus.packageId;
+      const packId = myHealthStatus.healthPackageId;
       var discountP = 0;
       if (packId) {
           const allPackages = await healthPackageModel.find({ _id: packId });
@@ -969,8 +999,8 @@ const processCardPayment = async (req, res,pid,address) => {
           quantity: item.quantity,
         }
       }),
-      success_url: `http://localhost:8000/patient/checkout/${pid}/${encodeURIComponent(address)}/${encodeURIComponent(paymentMethod)}`,
-      cancel_url: `http://localhost:3000/cancel`,
+      success_url: `http://localhost:7000/patient/checkout/${pid}/${encodeURIComponent(address)}/${encodeURIComponent(paymentMethod)}`,
+      cancel_url: `http://localhost:4000/cancel`,
     })
    
 
@@ -1004,9 +1034,7 @@ total=total/100;
   }
   try {
       await PatientModel.findByIdAndUpdate(userId, user);
-      var response = await fetch(`http://localhost:8000/patient/checkout/${userId}/${encodeURIComponent(address)}/${encodeURIComponent(paymentMethod)}`);
-
-    console.log(response.status)
+      var response = await fetch(`http://localhost:7000/patient/checkout/${userId}/${encodeURIComponent(address)}/${encodeURIComponent(paymentMethod)}`);
     if(response.status===200)
     return res.status(200).json({ message: 'Checkout successful. Your order has been placed.' });
   } catch (e) {
@@ -1021,13 +1049,14 @@ router.post('/payment' ,protect, async (req,res) => {
 
     
   let exists = await PatientModel.findById(req.user);
-  if (!exists || req.user.__t != "Patient") {
+  if (!exists || req.user.__t != "patient") {
     return res.status(500).json({
       success: false,
       message: "Not authorized"
     });
   }
   let userId=exists._id
+  console.log(req.body)
   let paymentMethod = req.body.paymentMethod;
   try {
     if (paymentMethod === "wallet") {
@@ -1044,7 +1073,7 @@ router.post('/payment' ,protect, async (req,res) => {
           }
        
     else
-    var response= await fetch(`http://localhost:8000/patient/checkout/${userId}/${encodeURIComponent(req.body.address)}/${encodeURIComponent(paymentMethod)}`);
+    var response= await fetch(`http://localhost:7000/patient/checkout/${userId}/${encodeURIComponent(req.body.address)}/${encodeURIComponent(paymentMethod)}`);
     if(response.status===200)
     return res.status(200).json({ message: 'Checkout successful. Your order has been placed.' });
   }
@@ -1060,7 +1089,7 @@ router.post('/payment' ,protect, async (req,res) => {
 router.get('/viewWallet', protect, async (req, res) => {
   try {
     let exists = await PatientModel.findById(req.user);
-    if (!exists || req.user.__t !== "Patient") {
+    if (!exists || req.user.__t !== "patient") {
       return res.status(500).json({
         success: false,
         message: "Not authorized"

@@ -53,5 +53,5 @@ const PatientSchema = new Schema({
 
   }, { timestamps: true });
   
-  const Patient = userModel.discriminator('Patient', PatientSchema);
+  const Patient = userModel.discriminator('patient', PatientSchema);
   module.exports = Patient;

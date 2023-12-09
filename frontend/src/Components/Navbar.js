@@ -29,7 +29,7 @@
 // //   useEffect(() => {
 // //     const fetchCartItemCount = async () => {
 // //       try {
-// //         const response = await axios.get('http://localhost:8000/Patient/cartItemCount', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+// //         const response = await axios.get('http://localhost:7000/Patient/cartItemCount', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
 // //         if (response.status === 200) {
 // //           setCartItemCount(response.data.itemCount);
 // //         } else {
@@ -188,7 +188,7 @@
 // //     // Create a JSON object with the username and password
 // //     const data = { password, oldPassword };
 
-// //     fetch('http://localhost:8000/security/changePassword', {
+// //     fetch('http://localhost:7000/security/changePassword', {
 // //       method: 'POST',
 // //       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + sessionStorage.getItem("token") },
 // //       body: JSON.stringify(data),
@@ -277,7 +277,7 @@
 
 // //   const handleMedicalUseFilter = async (medicalUse) => {
 // //     try {
-// //       const response = await axios.get(`http://localhost:8000/Patient/filterMedical/${medicalUse}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+// //       const response = await axios.get(`http://localhost:7000/Patient/filterMedical/${medicalUse}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
 // //       if (response.status === 200) {
 // //         setFilteredMedicines(response.data.Result);
 // //       } else {
@@ -292,7 +292,7 @@
 // //     const fetchData = async () => {
 // //       try {
 // //         // Fetch cart item count
-// //         const cartResponse = await axios.get('http://localhost:8000/Patient/cartItemCount', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+// //         const cartResponse = await axios.get('http://localhost:7000/Patient/cartItemCount', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
 // //         if (cartResponse.status === 200) {
 // //           setCartItemCount(cartResponse.data.itemCount);
 // //         } else {
@@ -300,7 +300,7 @@
 // //         }
 
 // //         // Fetch medical uses
-// //         const medicalUsesResponse = await axios.get('http://localhost:8000/Patient/getAllMedicalUses', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+// //         const medicalUsesResponse = await axios.get('http://localhost:7000/Patient/getAllMedicalUses', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
 // //         if (medicalUsesResponse.status === 200) {
 // //           setMedicalUses(medicalUsesResponse.data.medicalUses);
 // //         } else {
@@ -394,7 +394,7 @@
 
 //   const handleMedicalUseFilter = async (medicalUse) => {
 //     try {
-//       const response = await axios.get(`http://localhost:8000/Patient/filterMedical/${medicalUse}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+//       const response = await axios.get(`http://localhost:7000/Patient/filterMedical/${medicalUse}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
 //       if (response.status === 200) {
 //         setFilteredMedicines(response.data.Result);
 //       } else {
@@ -409,7 +409,7 @@
 //     const fetchData = async () => {
 //       try {
 //         // Fetch cart item count
-//         const cartResponse = await axios.get('http://localhost:8000/Patient/cartItemCount', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+//         const cartResponse = await axios.get('http://localhost:7000/Patient/cartItemCount', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
 //         if (cartResponse.status === 200) {
 //           setCartItemCount(cartResponse.data.itemCount);
 //         } else {
@@ -417,7 +417,7 @@
 //         }
 
 //         // Fetch medical uses
-//         const medicalUsesResponse = await axios.get('http://localhost:8000/Patient/getAllMedicalUses', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+//         const medicalUsesResponse = await axios.get('http://localhost:7000/Patient/getAllMedicalUses', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
 //         if (medicalUsesResponse.status === 200) {
 //           setMedicalUses(medicalUsesResponse.data.medicalUses);
 //         } else {
@@ -504,7 +504,7 @@
 //     // Create a JSON object with the username and password
 //     const data = { password, oldPassword };
 
-//     fetch('http://localhost:8000/security/changePassword', {
+//     fetch('http://localhost:7000/security/changePassword', {
 //       method: 'POST',
 //       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + sessionStorage.getItem("token") },
 //       body: JSON.stringify(data),
@@ -593,7 +593,7 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
 
   // const handleSearch = async (Name) => {
   //   try {
-  //     const response = await axios.get(`http://localhost:8000/Patient/getMedicine/${Name}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+  //     const response = await axios.get(`http://localhost:7000/Patient/getMedicine/${Name}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
   //     if (response.status === 200) {
   //       //setSearchedMedicines(response.data.Result);
   //       // Update filteredMedicines as well, if needed
@@ -609,7 +609,7 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
   // const handleSearch = async () => {
   //   const inputValue = document.getElementById('searchInput').value;
   //   try {
-  //     const response = await axios.get(`http://localhost:8000/Patient/getMedicine/${inputValue}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+  //     const response = await axios.get(`http://localhost:7000/Patient/getMedicine/${inputValue}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
   //     if (response.status === 200) {
   //       setFilteredAndSearchedMedicines(response.data.Result);
   //     } else {
@@ -622,7 +622,7 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
   // const handleSearch = async () => {
   //   const inputValue = document.getElementById('searchInput').value;
   //   try {
-  //     const response = await axios.get(`http://localhost:8000/Patient/getMedicine/${inputValue}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+  //     const response = await axios.get(`http://localhost:7000/Patient/getMedicine/${inputValue}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
   //     if (response.status === 200) {
   //       setFilteredAndSearchedMedicines(response.data.Result);
   //       onSearch(response.data.Result);
@@ -636,7 +636,7 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
 
   // const handleMedicalUseFilter = async (medicalUse) => {
   //   try {
-  //     const response = await axios.get(`http://localhost:8000/Patient/filterMedical/${medicalUse}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+  //     const response = await axios.get(`http://localhost:7000/Patient/filterMedical/${medicalUse}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
   //     if (response.status === 200) {
   //       setFilteredAndSearchedMedicines(response.data.Result);
   //       onFilter(response.data.Result);
@@ -656,7 +656,7 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
 
   // const handleMedicalUseFilter = async (medicalUse) => {
   //   try {
-  //     const response = await axios.get(`http://localhost:8000/Patient/filterMedical/${medicalUse}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+  //     const response = await axios.get(`http://localhost:7000/Patient/filterMedical/${medicalUse}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
   //     if (response.status === 200) {
   //       setFilteredMedicines(response.data.Result);
   //       setFilteredAndSearchedMedicines(response.data.Result);
@@ -672,14 +672,14 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const cartResponse = await axios.get('http://localhost:8000/Patient/cartItemCount', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+        const cartResponse = await axios.get('http://localhost:7000/Patient/cartItemCount', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
         if (cartResponse.status === 200) {
           setCartItemCount(cartResponse.data.itemCount);
         } else {
           console.error('Failed to get cart item count. Unexpected response:', cartResponse);
         }
 
-        const medicalUsesResponse = await axios.get('http://localhost:8000/Patient/getAllMedicalUses', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+        const medicalUsesResponse = await axios.get('http://localhost:7000/Patient/getAllMedicalUses', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
         if (medicalUsesResponse.status === 200) {
           setMedicalUses(medicalUsesResponse.data.medicalUses);
         } else {
@@ -797,7 +797,7 @@ function MyVerticallyCenteredModal(props) {
     // Create a JSON object with the username and password
     const data = { password, oldPassword };
 
-    fetch('http://localhost:8000/security/changePassword', {
+    fetch('http://localhost:7000/security/changePassword', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + sessionStorage.getItem("token") },
       body: JSON.stringify(data),

@@ -10,7 +10,7 @@ function ViewReqPharmDoc() {
         await axios(
             {
                 method: 'get',
-                url: 'http://localhost:8000/admin/viewReqPharm',
+                url: 'http://localhost:7000/admin/viewReqPharm',
                 headers: {
                     Authorization: `Bearer ${sessionStorage.getItem('token')}`
                 }

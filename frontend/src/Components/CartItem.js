@@ -56,7 +56,7 @@ const CartItem = ({ item }) => {
   useEffect(() => {
     const fetchMedicines = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/Patient/getAllMedicine/',{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}});
+        const response = await axios.get('http://localhost:7000/Patient/getAllMedicine/',{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}});
         const medicines = response.data.meds;
 
         const matchedMedicine = medicines.find((med) => med._id === item.medicineId);
@@ -74,7 +74,7 @@ const CartItem = ({ item }) => {
 
   const handleQuantityChange = async (newQuantity) => {
     try {
-      await axios.put(`http://localhost:8000/Patient/updateCartItem/${item._id}`, { quantity: newQuantity },{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}});
+      await axios.put(`http://localhost:7000/Patient/updateCartItem/${item._id}`, { quantity: newQuantity },{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}});
       setQuantity(newQuantity);
     } catch (error) {
       console.error('Error updating quantity:', error);
@@ -83,7 +83,7 @@ const CartItem = ({ item }) => {
 
   const handleDeleteCartItem = async () => {
     try {
-      await axios.delete(`http://localhost:8000/Patient/deleteCartItem/${item._id}`,{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}});
+      await axios.delete(`http://localhost:7000/Patient/deleteCartItem/${item._id}`,{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}});
     } catch (error) {
       console.error('Error deleting cart item:', error);
     }

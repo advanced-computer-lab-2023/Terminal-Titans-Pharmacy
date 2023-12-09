@@ -33,7 +33,7 @@ import "./Homescreen.css"
 // //     useEffect(() => {
 // //         const getMedicines = async () => {
 // //             try {
-// //                 var response = await fetch(`http://localhost:8000/Patient/getAllMedicine/`);
+// //                 var response = await fetch(`http://localhost:7000/Patient/getAllMedicine/`);
 // //                 const jsonData = await response.json();
 // //                 let result = jsonData.Result;
 // //                 setMedicines(result);
@@ -69,7 +69,7 @@ import "./Homescreen.css"
 // // //     useEffect(() => {
 // // //         const getMedicines = async () => {
 // // //             try {
-// // //                 var response = await fetch(`http://localhost:8000/Admin/getAllMedicine/`);
+// // //                 var response = await fetch(`http://localhost:7000/Admin/getAllMedicine/`);
 // // //                 const jsonData = await response.json();
 // // //                 let result = jsonData.Result;
 // // //                 setMedicines(result);
@@ -102,7 +102,7 @@ import "./Homescreen.css"
 //   useEffect(() => {
 //     const getMedicines = async () => {
 //       try {
-//         const response = await fetch('http://localhost:8000/Patient/getAllMedicine/');
+//         const response = await fetch('http://localhost:7000/Patient/getAllMedicine/');
 //         const jsonData = await response.json();
 //         const result = jsonData.Result;
 //         setMedicines(result);
@@ -147,7 +147,7 @@ import "./Homescreen.css"
 
 //   const handleMedicalUseFilter = async (medicalUse) => {
 //     try {
-//       const response = await axios.get(`http://localhost:8000/Patient/filterMedical/${medicalUse}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+//       const response = await axios.get(`http://localhost:7000/Patient/filterMedical/${medicalUse}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
 //       if (response.status === 200) {
 //         setAllMedicines(response.data.Result);
 //       } else {
@@ -162,7 +162,7 @@ import "./Homescreen.css"
 //   const handleSearch = async () => {
 //     const inputValue = document.getElementById('searchInput').value;
 //     try {
-//       const response = await axios.get(`http://localhost:8000/Pharma/getMedicine/${inputValue}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+//       const response = await axios.get(`http://localhost:7000/Pharma/getMedicine/${inputValue}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
 
 //       if (response.status === 200) {
 //         const result = response.data.Result;
@@ -177,7 +177,7 @@ import "./Homescreen.css"
 //             setErrorMessage('');
 //           }, 4000); 
 
-//           const alternativesResponse = await axios.get(`http://localhost:8000/Patient/findAlternatives/${inputValue}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+//           const alternativesResponse = await axios.get(`http://localhost:7000/Patient/findAlternatives/${inputValue}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
 
 //           if (alternativesResponse.status === 200) {
 //             setAllMedicines(alternativesResponse.data.Alternatives);
@@ -196,7 +196,7 @@ import "./Homescreen.css"
 //   useEffect(() => {
 //     const getMedicines = async () => {
 //       try {
-//         const response = await fetch('http://localhost:8000/Pharma/getAllMedicines',{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}});
+//         const response = await fetch('http://localhost:7000/Pharma/getAllMedicines',{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}});
 //         const jsonData = await response.json();
 
 //         // Check if jsonData.Result is an array

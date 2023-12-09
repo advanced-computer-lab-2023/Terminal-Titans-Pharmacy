@@ -25,7 +25,7 @@ const OrderScreen = () => {
         // Fetch cart items
         const fetchMedicines = async () => {
             try {
-                const response = await axios.get(`http://localhost:8000/Patient/getOrder/${orderId}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } }
+                const response = await axios.get(`http://localhost:7000/Patient/getOrder/${orderId}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } }
                 );
                 const jsonData = response.data.order;
                 // setMedicines(jsonData);
@@ -45,7 +45,7 @@ const OrderScreen = () => {
             let res = [];
             for (let i = 0; i < orderList.length; i++) {
                 console.log(orderList[i]);
-                await axios.get(`http://localhost:8000/Patient/getMedicineById/${orderList[i].medicineId}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } })
+                await axios.get(`http://localhost:7000/Patient/getMedicineById/${orderList[i].medicineId}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } })
                     .then((response) => {
                         let jsonData = response.data.meds;
                         jsonData.Quantity = orderList[i].quantity;

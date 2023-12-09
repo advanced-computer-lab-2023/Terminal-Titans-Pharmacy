@@ -40,7 +40,7 @@
 
 //     useEffect(() => {
 //         // Make a GET request to your backend API to fetch cart items
-//         axios.get('http://localhost:8000/Patient/cart')
+//         axios.get('http://localhost:7000/Patient/cart')
 //             .then((response) => {
 //                 setCartItems(response.data);
 //             })
@@ -83,7 +83,7 @@
 
 //   useEffect(() => {
 //     // Fetch cart items when the component mounts
-//     axios.get('http://localhost:8000/Patient/cart')
+//     axios.get('http://localhost:7000/Patient/cart')
 //       .then((response) => {
 //         updateCartItems(response.data);
 //       })
@@ -130,7 +130,7 @@ const CartScreen = () => {
 
   useEffect(() => {
     // Fetch cart items
-    axios.get('http://localhost:8000/Patient/cart',{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}})
+    axios.get('http://localhost:7000/Patient/cart',{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}})
       .then((response) => {
         console.log(response);
         updateCartItems(response.data);
@@ -140,7 +140,7 @@ const CartScreen = () => {
       });
 
     // Fetch total sum
-    axios.get('http://localhost:8000/Patient/cart/total',{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}})
+    axios.get('http://localhost:7000/Patient/cart/total',{headers:{Authorization:'Bearer '+sessionStorage.getItem("token")}})
       .then((response) => {
         console.log(response);
         setTotalSum(response.data.totalPrice); // Assuming the response structure has a key 'totalPrice'
