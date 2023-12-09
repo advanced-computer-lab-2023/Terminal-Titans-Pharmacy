@@ -38,7 +38,7 @@ const Navbar1 = ({ click }) => {
 
   const navigateChat=()=>{
     window.postMessage({ key: "token", value: sessionStorage.getItem("token") }, "*");
-    window.location.href = `http://localhost:3000/Health-Plus/chat/:${token}`
+    window.location.href = `http://localhost:3000/Health-Plus/chat/${token}`
     // navigate('http://localhost:3000/Health-Plus/chat',{
     //         state: {
     //             token: token
