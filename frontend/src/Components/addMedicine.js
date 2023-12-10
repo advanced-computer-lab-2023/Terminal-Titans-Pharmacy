@@ -16,7 +16,7 @@ function addMedicine() {
         formData.append("MedicalUse", medicalUse);
         formData.append("OverTheCounter", overTheCounter);
         formData.append("photo", photo);
-        await fetch("http://localhost:8000/Pharma/addMedicine", {
+        await fetch("http://localhost:7000/Pharma/addMedicine", {
             method: "POST",
             body: formData
             , headers: {

@@ -41,7 +41,7 @@ function ForgotPasswordForm() {
     const data = { email };
     if (validator.isEmail(email)) {
       // Make a POST request to your backend register route
-      fetch('http://localhost:8000/security/sendOTP', {
+      fetch('http://localhost:7000/security/sendOTP', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ function ForgotPasswordForm() {
     const data = { email, otp };
     console.log(otp)
     // Make a POST request to your backend register route
-    fetch('http://localhost:8000/security/verifyOTP', {
+    fetch('http://localhost:7000/security/verifyOTP', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -103,7 +103,7 @@ function ForgotPasswordForm() {
       minUppercase: 1, minNumbers: 1, minSymbols: 0
     })) {
     // Make a POST request to your backend register route
-    fetch('http://localhost:8000/security/forgotPassword', {
+    fetch('http://localhost:7000/security/forgotPassword', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

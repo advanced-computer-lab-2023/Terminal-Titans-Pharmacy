@@ -653,6 +653,11 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
     sessionStorage.removeItem('token');
     window.location.href = '/Health-Plus';
   };
+  const token = sessionStorage.getItem("token");
+  const navigateChat=()=>{
+    window.postMessage({ key: "token", value: sessionStorage.getItem("token") }, "*");
+    window.location.href = `http://localhost:3000/Health-Plus/chat/${token}`;          
+  }
 
   // const handleMedicalUseFilter = async (medicalUse) => {
   //   try {
@@ -751,6 +756,8 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
                 undo searches
               </Button>
             </Nav.Link>
+            
+            <Button variant='light' onClick={()=> navigateChat() }><i className="fas fa-comments"></i></Button>
             {/*<Nav.Link href="/orderDetails">Order</Nav.Link>
             <Nav.Link href="/patient">Store</Nav.Link>
             <NavDropdown title="Filter" id="basic-nav-dropdown">

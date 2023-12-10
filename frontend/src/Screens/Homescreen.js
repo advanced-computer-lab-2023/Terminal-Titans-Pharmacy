@@ -1,4 +1,4 @@
- import "./Homescreen.css"
+
 // // // // // import Meds from "../Components/Meds";
 
 // // // // // const Homescreen = () =>{
@@ -374,6 +374,7 @@
 // };
 
 // export default Homescreen;
+import "./Homescreen.css"
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -513,7 +514,10 @@ const [medicalUseValue, setMedicalUseValue] = React.useState('');
   
   return (
     <div>
-      <Navbar />
+      <div>
+        <Navbar />
+      </div>
+    <div>
       <InputGroup className="mb-3">
         <Button
           variant="outline-secondary"
@@ -561,26 +565,27 @@ const [medicalUseValue, setMedicalUseValue] = React.useState('');
                 {use}
                </MenuItem>
            
-          ))}
-  </Select>
-  <div>
-    <Button variant="outline-dark" style={{ width: '45%', marginRight: '5%', marginTop: '2%' }} onClick={() => { handleClick(); handleMedicalUseFilter(medicalUseValue); }}>
-      Filter
-    </Button>
-    <Button variant="outline-dark" style={{ width: '45%', marginTop: '2%' }} onClick={() => { handleClick(); getMedicines(); }}>
-      Reset
-    </Button>
-  </div>
-  </FormControl>
-        </StyledPopperDiv>
-      </Popper>
+            ))}
+    </Select>
+    <div>
+      <Button variant="outline-dark" style={{ width: '45%', marginRight: '5%', marginTop: '2%' }} onClick={() => { handleClick(); handleMedicalUseFilter(medicalUseValue); }}>
+        Filter
+      </Button>
+      <Button variant="outline-dark" style={{ width: '45%', marginTop: '2%' }} onClick={() => { handleClick(); getMedicines(); }}>
+        Reset
+      </Button>
+    </div>
+    </FormControl>
+          </StyledPopperDiv>
+        </Popper>
 
-      </InputGroup>
-      {errorMessage && (
-        <div className="alert alert-danger" role="alert">
-          {errorMessage}
-        </div>
-      )}
+        </InputGroup>
+        {errorMessage && (
+          <div className="alert alert-danger" role="alert">
+            {errorMessage}
+          </div>
+        )}
+    </div>
       <div className="homescreen">
         <h2 className="homescreen_title">Meds</h2>
         <div className="homescreen_meds">
@@ -589,7 +594,7 @@ const [medicalUseValue, setMedicalUseValue] = React.useState('');
           ) : (
             <p>Error: Medicines data is not in the expected format.</p>
           )}
-        </div>
+      </div>
         
       </div>
     </div>
