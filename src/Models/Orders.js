@@ -23,6 +23,10 @@ const orderSchema = new Schema({
     type: String,
     required: true
   },
+  discount: {
+    type: Number,
+    default: 0
+  },
 },{ timestamps: true});
 
 
