@@ -380,18 +380,25 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import SplitButton from 'react-bootstrap/SplitButton';
+import Button from 'react-bootstrap/Button';
 import Meds from '../Components/Meds';
 import Navbar from '../Components/Navbar';
 import { Link } from 'react-router-dom';
-import { Button } from 'react-bootstrap';
+import Popper from '@mui/material/Popper';
+import { styled, css } from '@mui/material/styles';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { useHistory } from 'react-router-dom';
 
 const Homescreen = () => {
   const [allMedicines, setAllMedicines] = useState([]);
   const [medicalUses, setMedicalUses] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
-
-  useEffect(() => {
+const [anchorEl, setAnchorEl] = React.useState(null);
+const [medicalUseValue, setMedicalUseValue] = React.useState('');
+ 
     const getMedicines = async () => {
+   //   setAnchorEl(null);
       try {
         const response = await fetch('http://localhost:7000/Patient/getAllMedicine2/', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
         const jsonData = await response.json();
@@ -405,7 +412,7 @@ const Homescreen = () => {
         console.error('Error fetching data:', error);
       }
     };
-
+    useEffect(() => {
     getMedicines();
   }, []);
 
@@ -445,6 +452,8 @@ const Homescreen = () => {
 
   const handleMedicalUseFilter = async (medicalUse) => {
     try {
+     // setAnchorEl(null);
+    
       const response = await axios.get(`http://localhost:7000/Patient/filterMedical/${medicalUse}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
       if (response.status === 200) {
         setAllMedicines(response.data.Result);
@@ -480,30 +489,92 @@ const Homescreen = () => {
     return () => clearInterval(intervalId);
   }, []); // Runs once on mount
 
+  const handleClick = (event) => {
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+  const StyledPopperDiv = styled('div')(
+    ({ theme }) => css`
+      background-color: ${theme.palette.mode === 'dark' ? '#1C2025' : '#fff'};
+      border-radius: 8px;
+      border: 1px solid ${theme.palette.mode === 'dark' ? '#434D5B' :'#DAE2ED'};
+      box-shadow: ${theme.palette.mode === 'dark'
+        ? `0px 4px 8px rgb(0 0 0 / 0.7)`
+        : `0px 4px 8px rgb(0 0 0 / 0.1)`};
+      padding: 0.75rem;
+      color: ${theme.palette.mode === 'dark' ? '#E5EAF2' : '#434D5B'};
+      font-size: 0.875rem;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-weight: 500;
+      opacity: 1;
+      margin: 0.25rem 0;
+    `,
+  );
+  const open = Boolean(anchorEl);
+  
   return (
     <div>
       <Navbar />
       <InputGroup className="mb-3">
-        <SplitButton
+        <Button
           variant="outline-secondary"
           title="Search"
           id="segmented-button-dropdown-1"
           onClick={handleSearch}
         >
-          <Dropdown.Header>Filter</Dropdown.Header>
+          Search
+          {/* <Dropdown.Header>Filter</Dropdown.Header>
           {medicalUses.map((use, index) => (
             <Dropdown.Item key={index} onClick={() => handleMedicalUseFilter(use)}>
               {use}
             </Dropdown.Item>
           ))}
-          <Dropdown.Divider />
-        </SplitButton>
+          <Dropdown.Divider /> */}
+        </Button>
         <Form.Control
           id="searchInput"
           type="search"
           placeholder="Search"
           aria-label="Text input for search"
         />
+         <Button
+          variant="outline-secondary"
+          title="Search"
+          id="segmented-button"
+          onClick={handleClick}
+        >  <FilterListIcon />
+        Filter</Button>
+        <Popper id={open ? 'simple-popper' : undefined} open={open} anchorEl={anchorEl} style={{width:'20%'}}>
+        <StyledPopperDiv>
+        <FormControl fullWidth>
+         <InputLabel id="demo-simple-select-label">Medical Use</InputLabel>
+        <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={medicalUseValue}
+            label="medicalUse"
+            
+            onChange={(e) => setMedicalUseValue(e.target.value)}          
+          >
+            <MenuItem value=''>any</MenuItem> 
+            {medicalUses.map((use, index) => (
+               <MenuItem value={use}>
+                {use}
+               </MenuItem>
+           
+          ))}
+  </Select>
+  <div>
+    <Button variant="outline-dark" style={{ width: '45%', marginRight: '5%', marginTop: '2%' }} onClick={() => { handleClick(); handleMedicalUseFilter(medicalUseValue); }}>
+      Filter
+    </Button>
+    <Button variant="outline-dark" style={{ width: '45%', marginTop: '2%' }} onClick={() => { handleClick(); getMedicines(); }}>
+      Reset
+    </Button>
+  </div>
+  </FormControl>
+        </StyledPopperDiv>
+      </Popper>
+
       </InputGroup>
       {errorMessage && (
         <div className="alert alert-danger" role="alert">

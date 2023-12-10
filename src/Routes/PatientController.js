@@ -26,7 +26,7 @@ router.get('/filterMedical/:MedicalUse', protect, async (req, res) => {
         message: 'Not authorized',
       });
     }
-
+console.log(req.params.MedicalUse)
     const medicalUse = req.params.MedicalUse.toLowerCase();
     console.log(medicalUse);
 
@@ -303,7 +303,7 @@ router.get('/getMedicineById/:id', protect, async (req, res) => {
 });
 
 router.get('/getAllMedicalUses', protect, async (req, res) => {
-  console.log("pp");
+  
   try {
 
     let exists = await PatientModel.findById(req.user);
