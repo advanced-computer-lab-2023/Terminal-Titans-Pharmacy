@@ -1,262 +1,97 @@
-import './Navbar.css';
-// export default Navbar;
-import React, { useState, useEffect } from 'react';
-import validator from 'validator'
-import Modal from 'react-bootstrap/Modal';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import { useCart } from '../Components/CartContext'; // Import the useCart hook
-import Button from 'react-bootstrap/Button';
-import Container from 'react-bootstrap/Container';
-import Form from 'react-bootstrap/Form';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
-import Offcanvas from 'react-bootstrap/Offcanvas';
-import Badge from 'react-bootstrap/Badge';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/esm/Row';
-import { useNavigate, createSearchParams } from "react-router-dom";
-// import * as formik from 'formik';
-// import * as yup from 'yup';
-import InputGroup from 'react-bootstrap/InputGroup';
+import * as React from 'react';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import CssBaseline from '@mui/material/CssBaseline';
+import Grid from '@mui/material/Grid';
+// StarIcon from '@mui/icons-material/StarBorder';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
+import Dropdown from 'react-bootstrap/Dropdown';
+import GlobalStyles from '@mui/material/GlobalStyles';
+import Container from '@mui/material/Container';
 
 
-const Navbar1 = ({ click }) => {
-  const navigate = useNavigate();
-  const { cartItems } = useCart();
-  const [cartItemCount, setCartItemCount] = useState(0);
-  const [modalShow, setModalShow] = React.useState(false);
+// TODO remove, this demo shouldn't need to reset the theme.
+const defaultTheme = createTheme();
 
+export default function Pricing() {
+
+  const createHandleMenuClick = (menuItem) => {
+    return () => {
+      console.log(`Clicked on ${menuItem}`);
+    };
+  };
+
+  function goToChat() {
+    window.location.href = `chat/${sessionStorage.getItem('token')}`;
+  }
 
   const signoutButtonFunc = () => {
     sessionStorage.removeItem('token');
     window.location.href = '/Health-Plus';
   }
 
-  const token = sessionStorage.getItem("token");
-
-  const navigateChat=()=>{
-    window.postMessage({ key: "token", value: sessionStorage.getItem("token") }, "*");
-    window.location.href = `http://localhost:3000/Health-Plus/chat/${token}`
-    // navigate('http://localhost:3000/Health-Plus/chat',{
-    //         state: {
-    //             token: token
-    //         }}, { replace: true }
-            
-          
-    //       )
-
-          
-  }
-
-  const SignoutDanger=()=>{
-  
-  }
-
   return (
-    <Navbar key={'xl'} expand={'xl'} className="bg-body-tertiary mb-3">
-      <MyVerticallyCenteredModal
-        show={modalShow}
-        onHide={() => setModalShow(false)}
-      />
-      <Container fluid>
-        <Navbar.Brand href="/Health-Plus/pharmacistScreen" style={{fontSize:'20px'}}>Titans Pharmacy</Navbar.Brand>
-        <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${'xl'}`} />
-        <Navbar.Offcanvas
-          id={`offcanvasNavbar-expand-${'xl'}`}
-          aria-labelledby={`offcanvasNavbarLabel-expand-${'xl'}`}
-          placement="end"
-        >
-          <Offcanvas.Header closeButton>
-            <Offcanvas.Title id={`offcanvasNavbarLabel-expand-${'xl'}`}>
-              Titans Pharmacy
-            </Offcanvas.Title>
-          </Offcanvas.Header>  
-          <Offcanvas.Body>
-            <Nav className="justify-content-end flex-grow-1 pe-3">
-            <NavDropdown title="Medicines" id="collapsible-nav-dropdown" className='align-self-center justify-self-center me-3' style={{
-              fontSize: '20px'
-            }}>
-              <NavDropdown.Item href="/AvailableMeds">Available Medicines</NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item href="/NewMed">
-                Add a new medicine
-              </NavDropdown.Item>
-            </NavDropdown>
+    require("../Styles/pharmacistNavBar.css"),
+    <ThemeProvider theme={defaultTheme}>
+      <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
+      <CssBaseline />
+      <AppBar
+        position="static"
+        color="default"
+        elevation={0}
+        sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}
+      >
+        <Toolbar sx={{ flexWrap: 'wrap' }}>
+          <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
+            Health Plus+
+          </Typography>
+          <nav>
+            <Dropdown className="d-inline mx-2">
+              <Dropdown.Toggle id="dropdown-autoclose-true">
+                Medicines
+              </Dropdown.Toggle>
 
-            <Nav.Link className='me-3' style={{fontSize:'20px'}} onClick={()=> navigateChat() }> Chat</Nav.Link>
-            <Nav.Link className='me-3' href='/NewMed' style={{fontSize:'20px'}}> Reports</Nav.Link>
+              <Dropdown.Menu>
+                <Dropdown.Item href="#">Available Medicines</Dropdown.Item>
+                <Dropdown.Divider />
+                <Dropdown.Item href="#">Add a new medicine</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
 
-            <NavDropdown title="Profile" id="collapsible-nav-dropdown" className='align-self-center me-5' style={{
-              fontSize: '20px'
-            }}>
-              <NavDropdown.Item variant="light" onClick={() => setModalShow(true)}>Change Password</NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item onClick={signoutButtonFunc} className="signout">
-                Sign out
-              </NavDropdown.Item>
-            </NavDropdown>
-            
+            <Link>
+              <Button
+                style={{ color: 'black' }}
+                // hena link el chatting
+                onClick={() => { goToChat() }}
+                sx={{ my: 1, mx: 1.5 }}
+              >
+                View Reports
+              </Button>
+            </Link>
+            <Button
+              variant="button"
+              color="text.primary"
+              // hena link el chatting
+              onClick={() => { goToChat() }}
+              sx={{ my: 1, mx: 1.5 }}
+            >
+              Chat
+            </Button>
+          </nav>
+          {/* mehtag a7ot hena el link ely hywadini 3ala el home page tani */}
 
-              {/* <Nav.Link href="/cart">
-                <Button variant="primary">
-                  Cart <Badge bg="secondary">{cartItemCount}</Badge>
-                </Button>
-              </Nav.Link> */}
+          <Button onClick={signoutButtonFunc}>Sign Out</Button>
+        </Toolbar>
+      </AppBar>
 
-
-              {/* <Nav.Link href="/orderDetails">Order</Nav.Link> */}
-              
-              {/* <Nav.Link href="/patient">Store</Nav.Link> */}
-              {/* <Nav.Link><Button variant="light" onClick={() => setModalShow(true)}>Change Password</Button></Nav.Link>
-              <Nav.Link>
-                <Button variant="danger" onClick={signoutButtonFunc}>Sign Out</Button>
-              </Nav.Link> */}
-            
-            </Nav>
-      
-          </Offcanvas.Body>
-        </Navbar.Offcanvas>
-      </Container>
-    </Navbar>
-  );
-};
-
-export default Navbar1;
-
-function MyVerticallyCenteredModal(props) {
-  const [oldPassword, setoldPassword] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorMessagePass, setErrorMessagePass] = useState('')
-  const [validated, setValidated] = useState(false);
-  
-
-  const validatePass = (value) => {
-    setPassword(value);
-    if (value !== '' && validator.isStrongPassword(value, {
-      minLength: 8, minLowercase: 1,
-      minUppercase: 1, minNumbers: 1, minSymbols: 0
-    })) {
-      setErrorMessagePass('Is Strong Password')
-    } else {
-      setErrorMessagePass('Password has to be 8 characters long and contain at least 1 lowercase, 1 uppercase, 1 number ')
-    }
-  }
-
-
-
-  const changePassword = async (event) => {
-    event.preventDefault(); // Prevent the default form submission behavior
-
-    // Create a JSON object with the username and password
-    const data = { password, oldPassword };
-
-    fetch('http://localhost:8000/security/changePassword', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + sessionStorage.getItem("token") },
-      body: JSON.stringify(data),
-    }).then((response) => response.json()).then(data => {
-      console.log(data);
-      if (data.success) {
-        alert("Password Changed Successfully")
-        sessionStorage.removeItem('token');
-        window.location.href = '/Health-Plus';
-      }
-      else {
-        alert(data.message)
-      }
-    })
-      .catch((error) => {
-
-        console.error('Error:', error);
-        alert(error.response.data.message)
-
-      });
-    // Make a POST request to your backend register route
-
-
-  };
-  return (
-    <Modal
-      {...props}
-      size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
-    >
-      <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
-          Change Password
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form noValidate validated={validated}></Form>
-       {/* <Row className='mb-3'> <h4>Enter your new Password</h4></Row> */}
-       <Row > 
-        {/* <Form.Label>Old Password</Form.Label>  */}
-       <Form.Group as={Col} md="10" controlId="validationCustom01">
-          <Form.Label>Old Password</Form.Label>
-          <InputGroup>  <Form.Control
-            size='md'
-            required
-            type="password"
-            value={oldPassword}
-            onChange={(e) => setoldPassword(e.target.value)}
-            placeholder="Old Password"
-          />
-          <Form.Control.Feedback type="invalid">
-              Please enter the Password
-            </Form.Control.Feedback> 
-             </InputGroup>
-        </Form.Group>
-        {/* <Form.Group as={Col} md="6" controlId="validationCustom03">
-          <Form.Label>City</Form.Label>
-          <Form.Control type="text" placeholder="City" required />
-          <Form.Control.Feedback type="invalid">
-            Please provide a valid city.
-          </Form.Control.Feedback>
-        </Form.Group> */}
-       </Row>
-        {/* <label htmlFor="oldPassword">old Password:</label> */}
-        {/* <input
-          type="password"
-          value={oldPassword}
-          onChange={(e) => setoldPassword(e.target.value)}></input> */}
-
-        {/* <label htmlFor="password">Password:</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => validatePass(e.target.value)}></input> <br />
-        {errorMessagePass === '' ? null :
-          <h5 style={{
-            color: 'red',
-          }}>{errorMessagePass}</h5>} */}
-<br />
-        <Row> 
-        {/* <Form.Label>Old Password</Form.Label>  */}
-       <Form.Group as={Col} md="10" controlId="validationCustom01">
-          <Form.Label>New Password</Form.Label>
-          <Form.Control
-            required
-            size='md'
-            type="password"
-            value={password}
-            onChange={(e) => validatePass(e.target.value)}
-            placeholder="New Password"
-          />
-          <Form.Control.Feedback type="invalid">
-              Please enter the Password
-            </Form.Control.Feedback>
-        </Form.Group>
-       </Row>
-
-        <br />
-      </Modal.Body>
-      <Modal.Footer className='align-self-center'>
-        <Button variant='outline-dark' onClick={changePassword}>Submit</Button>
-        {/* <Button onClick={props.onHide}>Close</Button> */}
-      </Modal.Footer>
-    </Modal>
+    </ThemeProvider>
   );
 }
