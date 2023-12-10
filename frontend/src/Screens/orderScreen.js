@@ -81,6 +81,9 @@ const OrderScreen = () => {
                                     <ListGroup.Item action href="#link2" disabled>
                                         Total Quantity: {item.totalQuantity}
                                     </ListGroup.Item>
+                                    <ListGroup.Item action href="#link2" disabled>
+                                        Total Discount: {item.discount}
+                                    </ListGroup.Item>
                                 </ListGroup>
                             </Card.Text>
                             {/* Add additional content as needed */}
