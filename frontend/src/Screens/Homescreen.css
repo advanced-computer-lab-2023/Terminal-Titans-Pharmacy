@@ -14,7 +14,7 @@
 .homescreen_meds{
     margin-left: 1rem;
     display: grid;
-    grid-gap: 4rem;
+    grid-gap: 0.5rem;
     grid-template-columns: repeat(4, 1fr);
 }
 
