@@ -1,18 +1,20 @@
-const PatientModel = require("../Models/Patient.js");
-const MedicineModel = require("../Models/Medicine.js");
-const CartItem = require("../Models/Cart.js");
-const Order = require("../Models/Orders.js");
+//App variables
 const express = require('express');
+const app = express();
+
 const protect = require("../middleware/authMiddleware.js");
 const router = express.Router();
 const stripe= require('stripe')
 const healthPackageModel = require("../Models/healthPackageModel.js");
 const healthPackageStatus = require("../Models/healthPackageStatus.js");
 const transactionsModel=require("../Models/transactionsModel.js");
-
-
-//App variables
-const app = express();
+const PrescriptionModel = require("../Models/Prescription.js");
+const PatientModel = require("../Models/Patient.js");
+const MedicineModel = require("../Models/Medicine.js");
+const CartItem = require("../Models/Cart.js");
+const Order = require("../Models/Orders.js");
+const user = require("../Models/user.js");
+//const cors = require('cors');
 app.use(express.urlencoded({ extended: false }))
 const stripeInstance = stripe('sk_test_51OAmglE5rOvAFcqVk714zBO64pgCArV8MfP0BWTnycXGzLnWqkX5cP37OvMffUIDt6DdoKif93x9PfiC39XvkhJr00LuYVmMyv');
 //const stripe = require('stripe')(s);
@@ -39,16 +41,27 @@ console.log(req.params.MedicalUse)
       OverTheCounter: true,
       Archived: false,
     });
+        // Fetch prescribed medicines for the patient
+        const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id });
 
-    if (!filteredMedicines.length) {
+        // Extract and deduplicate medicine IDs from prescriptions
+        const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
+    
+        // Fetch details of prescribed medicines
+        const prescribedMeds = await MedicineModel.find({ _id: { $in: Array.from(prescribedMedicineIds) }, MedicalUse: medicalUse,OverTheCounter: false,Archived: false });
+    
+        // Combine over-the-counter and prescribed medicines into a single array with no duplicates
+        const combinedMedsSet = new Set([...filteredMedicines, ...prescribedMeds]);
+        const combinedMeds = Array.from(combinedMedsSet);
+    if (!combinedMeds.length) {
       return res.status(400).send({
         message: 'No medicines found with the specified medical use and conditions.',
         success: false,
       });
     }
 
-    console.log(filteredMedicines);
-    res.status(200).send({ Result: filteredMedicines, success: true });
+    console.log(combinedMeds);
+    res.status(200).send({ Result: combinedMeds, success: true });
   } catch (error) {
     console.error('Error filtering medicine data:', error);
     res.status(500).json({ success: false, message: error.message });
@@ -157,6 +170,50 @@ console.log(req.params.MedicalUse)
 //   }
 // });
 // Search for a medicine by name
+// router.get('/getMedicine/:Name', protect, async (req, res) => {
+//   try {
+//     let exists = await PatientModel.findById(req.user);
+//     if (!exists || req.user.__t !== "patient") {
+//       return res.status(500).json({
+//         success: false,
+//         message: "Not authorized"
+//       });
+//     }
+
+//     const Name = req.params.Name.toLowerCase();
+//     console.log(Name);
+
+//     if (!Name) {
+//       return res.status(400).send({ message: 'Please fill the input', success: false });
+//     }
+
+//     const searchedMedicine = await MedicineModel.findOne({ Name, OverTheCounter: true, Archived: false });
+//     // Fetch prescribed medicines for the patient
+//     const searchedMedicineArray = searchedMedicine ? [searchedMedicine] : [];
+
+//     const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id });
+
+//     // Extract and deduplicate medicine IDs from prescriptions
+//     const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
+
+//     // Fetch details of prescribed medicines
+//     const prescribedMeds = await MedicineModel.findOne({ _id: { $in: Array.from(prescribedMedicineIds) },Name : Name,OverTheCounter: false,Archived: false });
+//     //const prescribedMedsArray = prescribedMeds ? [prescribedMeds] : [];
+
+//     // // Combine over-the-counter and prescribed medicines into a single array with no duplicates
+//     // const combinedMedsSet = new Set([...searchedMedicineArray, ...prescribedMedsArray]);
+//     // const combinedMeds = Array.from(combinedMedsSet);
+    
+//     if (!combinedMeds) {
+//       return res.status(400).send({ message: "No Medicine with this name found", success: false });
+//     }
+
+//     res.status(200).json({ Result: combinedMeds, success: true });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Failed to search for the medicine", success: false });
+//   }
+// });
 router.get('/getMedicine/:Name', protect, async (req, res) => {
   try {
     let exists = await PatientModel.findById(req.user);
@@ -175,18 +232,31 @@ router.get('/getMedicine/:Name', protect, async (req, res) => {
     }
 
     const searchedMedicine = await MedicineModel.findOne({ Name, OverTheCounter: true, Archived: false });
+    const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id });
 
-    if (!searchedMedicine) {
+    // Extract and deduplicate medicine IDs from prescriptions
+    const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
+
+    // Fetch details of prescribed medicines
+    const prescribedMeds = await MedicineModel.findOne({ _id: { $in: Array.from(prescribedMedicineIds) }, Name: Name, OverTheCounter: false, Archived: false });
+
+    if (!searchedMedicine && !prescribedMeds) {
       return res.status(400).send({ message: "No Medicine with this name found", success: false });
     }
 
-    res.status(200).json({ Result: searchedMedicine, success: true });
+    if (searchedMedicine && prescribedMeds) {
+      // Both searched and prescribed medicines exist, decide which one to prioritize.
+      // For example, you can prioritize searchedMedicine over prescribedMeds.
+      return res.status(200).json({ Result: searchedMedicine, success: true });
+    }
+
+    // Return the existing medicine (either searchedMedicine or prescribedMeds)
+    res.status(200).json({ Result: searchedMedicine || prescribedMeds, success: true });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to search for the medicine", success: false });
   }
 });
-
 // Find alternatives for a medicine based on its name
 router.get('/findAlternatives/:Name', protect, async (req, res) => {
   try {
@@ -207,9 +277,22 @@ router.get('/findAlternatives/:Name', protect, async (req, res) => {
 
     const searchedMedicine = await MedicineModel.findOne({ Name, OverTheCounter: true, Archived: false });
 
-    if (!searchedMedicine) {
+    // Fetch prescribed medicines for the patient
+    const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id });
+
+    // Extract and deduplicate medicine IDs from prescriptions
+    const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
+
+    // Fetch details of prescribed medicines
+    const prescribedMeds = await MedicineModel.find({ _id: { $in: Array.from(prescribedMedicineIds) },Name,OverTheCounter: false,Archived: false });
+
+    // Combine over-the-counter and prescribed medicines into a single array with no duplicates
+    const combinedMedsSet = new Set([...searchedMedicine, ...prescribedMeds]);
+    const combinedMeds = Array.from(combinedMedsSet);
+
+    if (!combinedMeds) {
       // If the searched medicine is not found, check for alternatives based on medical use
-      const alternatives = await MedicineModel.find({ MedicalUse: searchedMedicine.MedicalUse, OverTheCounter: true, Archived: false, Quantity: { $gt: 0 } });
+      const alternatives = await MedicineModel.find({ MedicalUse: combinedMeds.MedicalUse, Archived: false, Quantity: { $gt: 0 } });
       console.log(alternatives);
       if (alternatives.length === 0) {
         return res.status(400).send({ message: "No alternatives found for this medicine", success: false });
@@ -218,9 +301,9 @@ router.get('/findAlternatives/:Name', protect, async (req, res) => {
       return res.status(200).json({ Alternatives: alternatives, success: true });
     }
 
-    if (searchedMedicine.Quantity <= 0) {
+    if (combinedMeds.Quantity <= 0) {
       // If the searched medicine is out of stock, get alternatives based on medical use
-      const alternatives = await MedicineModel.find({ MedicalUse: searchedMedicine.MedicalUse, OverTheCounter: true, Archived: false, Quantity: { $gt: 0 } });
+      const alternatives = await MedicineModel.find({ MedicalUse: combinedMeds.MedicalUse, Archived: false, Quantity: { $gt: 0 } });
       console.log(alternatives);
       if (alternatives.length === 0) {
         return res.status(400).send({ message: "Medicine is out of stock and no alternatives found", success: false });
@@ -236,39 +319,149 @@ router.get('/findAlternatives/:Name', protect, async (req, res) => {
   }
 });
 
-//get all medicine over the counter and not archived
+// //get all medicine over the counter and not archived
+// router.get('/getAllMedicine2', protect, async (req, res) => {
+//   try {
+//     let exists = await PatientModel.findById(req.user);
+//     if (!exists || req.user.__t != "patient") {
+//       return res.status(500).json({
+//         success: false,
+//         message: "Not authorized"
+//       });
+//     }
+//     const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id });
+
+//     const meds = await MedicineModel.find({ OverTheCounter: true , Archived: false});
+
+//     // Add a new property 'isOverTheCounter' to each medicine object
+
+//     res.status(200).json({ success: true, meds});
+//   } catch (error) {
+//     console.error('Error fetching medicine data:', error);
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// });
+
+// router.get('/getAllMedicine2', protect, async (req, res) => {
+//   let exists = await PatientModel.findById(req.user);
+//   if (!exists || req.user.__t !== "patient") {
+//     return res.status(500).json({
+//       success: false,
+//       message: "Not authorized"
+//     });
+//   }
+//   try {
+    
+
+//     // Fetch over-the-counter medicines
+//     const overTheCounterMeds = await MedicineModel.find({ OverTheCounter: true, Archived: false });
+
+//     // Fetch prescribed medicines for the patient
+//     const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id });
+
+//     // Extract and deduplicate medicine IDs from prescriptions
+//     const prescribedMedicineIds = Array.from(new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId))));
+//     console.log(prescribedMedicineIds.length);
+//     // Fetch details of prescribed medicines
+//     const prescribedMeds = await MedicineModel.find({ _id: { $in: prescribedMedicineIds } });
+
+//     // Add a new property 'isOverTheCounter' to each medicine object
+//     const combinedMeds = [...overTheCounterMeds, ...prescribedMeds];
+//     //console.log(combinedMeds);
+//     res.status(200).json({ success: true, meds: combinedMeds });
+//   } catch (error) {
+//     console.error('Error fetching medicine data:', error);
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// });
 router.get('/getAllMedicine2', protect, async (req, res) => {
   try {
     let exists = await PatientModel.findById(req.user);
-    if (!exists || req.user.__t != "patient") {
+    if (!exists || req.user.__t !== "patient") {
       return res.status(500).json({
         success: false,
         message: "Not authorized"
       });
     }
 
-    const meds = await MedicineModel.find({ OverTheCounter: true , Archived: false});
+    // Fetch over-the-counter medicines
+    const overTheCounterMeds = await MedicineModel.find({ OverTheCounter: true, Archived: false });
 
-    // Add a new property 'isOverTheCounter' to each medicine object
+    // Fetch prescribed medicines for the patient
+    const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id });
 
-    res.status(200).json({ success: true, meds});
+    // Extract and deduplicate medicine IDs from prescriptions
+    const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
+
+    // Fetch details of prescribed medicines
+    const prescribedMeds = await MedicineModel.find({ _id: { $in: Array.from(prescribedMedicineIds) }, OverTheCounter: false, Archived: false });
+
+    // Combine over-the-counter and prescribed medicines into a single array with no duplicates
+    const combinedMedsSet = new Set([...overTheCounterMeds, ...prescribedMeds]);
+    const combinedMeds = Array.from(combinedMedsSet);
+
+    // Update quantity for prescribed medicines
+    prescriptions.forEach(prescription => {
+      prescription.items.forEach(item => {
+        const foundMedicine = prescribedMeds.find(medicine => medicine._id.toString() === item.medicineId.toString());
+        if (foundMedicine) {
+          foundMedicine.Quantity = item.dosage;
+        }
+      });
+    });
+
+    res.status(200).json({ success: true, meds: combinedMeds });
   } catch (error) {
     console.error('Error fetching medicine data:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
 
+// router.get('/getAllMedicine2', protect, async (req, res) => {
+//   try {
+//     let exists = await PatientModel.findById(req.user);
+//     if (!exists || req.user.__t !== "patient") {
+//       return res.status(500).json({
+//         success: false,
+//         message: "Not authorized"
+//       });
+//     }
+
+//     // Fetch over-the-counter medicines
+//     const overTheCounterMeds = await MedicineModel.find({ OverTheCounter: true, Archived: false });
+
+//     // Fetch prescribed medicines for the patient
+//     const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id });
+
+//     // Extract and deduplicate medicine IDs from prescriptions
+//     const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
+
+//     // Fetch details of prescribed medicines
+//     const prescribedMeds = await MedicineModel.find({ _id: { $in: Array.from(prescribedMedicineIds) },OverTheCounter: false,Archived: false });
+
+//     // Combine over-the-counter and prescribed medicines into a single array with no duplicates
+//     const combinedMedsSet = new Set([...overTheCounterMeds, ...prescribedMeds]);
+//     const combinedMeds = Array.from(combinedMedsSet);
+
+//     res.status(200).json({ success: true, meds: combinedMeds });
+//   } catch (error) {
+//     console.error('Error fetching medicine data:', error);
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// });
+
 //old get all medicine
+
 router.get('/getAllMedicine', protect, async (req, res) => {
+  let exists = await PatientModel.findById(req.user);
+  if (!exists || req.user.__t !== "patient") {
+    return res.status(500).json({
+      success: false,
+      message: "Not authorized"
+    });
+  }
   try {
-    console.log(req.user.__t);
-    let exists = await PatientModel.findById(req.user);
-    if (!exists || req.user.__t != "patient") {
-      return res.status(500).json({
-        success: false,
-        message: "Not authorized"
-      });
-    }
+    
 
     const meds = await MedicineModel.find();
 console.log(meds)
@@ -290,6 +483,7 @@ router.get('/getMedicineById/:id', protect, async (req, res) => {
         success: false,
         message: "Not authorized"
       });
+    
     }
     const id = req.params.id;
     const meds = await MedicineModel.findById(id);
@@ -314,10 +508,21 @@ router.get('/getAllMedicalUses', protect, async (req, res) => {
       });
     }
     const medicines = await MedicineModel.find({Archived:false, OverTheCounter: true});
+        // Fetch prescribed medicines for the patient
+        const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id });
 
+        // Extract and deduplicate medicine IDs from prescriptions
+        const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
+    
+        // Fetch details of prescribed medicines
+        const prescribedMeds = await MedicineModel.find({ _id: { $in: Array.from(prescribedMedicineIds) },OverTheCounter: false,Archived: false });
+    
+        // Combine over-the-counter and prescribed medicines into a single array with no duplicates
+        const combinedMedsSet = new Set([...medicines, ...prescribedMeds]);
+        const combinedMeds = Array.from(combinedMedsSet);
     // Extract unique medical uses using Set
     const medicalUsesSet = new Set();
-    medicines.forEach((medicine) => {
+    combinedMeds.forEach((medicine) => {
       medicine.MedicalUse.forEach((use) => {
         medicalUsesSet.add(use);
       });
@@ -582,7 +787,56 @@ router.get('/cart', protect, async (req, res) => {
   const cartItems = await CartItem.find({ userId: req.user._id });
   res.json(cartItems);
 });
+// Update the quantity of an item in the cart
+// router.put('/updateCartItem/:cartItemId', protect, async (req, res) => {
+//   let exists = await PatientModel.findById(req.user);
+//   if (!exists || req.user.__t !== "patient") {
+//     return res.status(500).json({
+//       success: false,
+//       message: "Not authorized"
+//     });
+//   }
+//   const cartItemId = req.params.cartItemId;
+//   const newQuantity = req.body.quantity;
 
+//   try {
+//     // Find the cart item by its unique ID
+//     const cartItem = await CartItem.findOne({ _id: cartItemId, userId: req.user._id });
+//     const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id });
+
+//     // Extract and deduplicate medicine IDs from prescriptions
+//     const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
+
+//     // Fetch details of prescribed medicines
+//     const prescribedMeds = await MedicineModel.find({ _id: { $in: Array.from(prescribedMedicineIds) } });
+    
+//     // Check if the cart item's medicineId is in the prescribed medicines
+//     const isPrescribedMedicine = prescribedMeds.some(medicine => medicine._id.toString() === cartItem.medicineId.toString());
+
+//     if (!cartItem) {
+//       return res.status(404).json({ error: 'Cart item not found' });
+//     }
+
+//     // If the cart item's medicine is not a prescribed medicine, update the quantity
+//     if (!isPrescribedMedicine) {
+//       // Update the quantity
+//       cartItem.quantity = newQuantity;
+//       await cartItem.save();
+//     } else {
+//       // If the cart item's medicine is a prescribed medicine, update the Quantity property
+//       const prescribedItem = cartItem.items.find(item => item.medicineId.toString() === cartItem.medicineId.toString());
+//       if (prescribedItem) {
+//         prescribedItem.Quantity = prescribedItem.dosage; // Assuming the property is named Quantity
+//         await cartItem.save();
+//       }
+//     }
+
+//     res.json({ message: 'Cart item quantity updated successfully', updatedCartItem: cartItem });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Server error' });
+//   }
+// });
 // Update the quantity of an item in the cart
 router.put('/updateCartItem/:cartItemId', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
@@ -613,6 +867,52 @@ router.put('/updateCartItem/:cartItemId', protect, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+// // Update the quantity of an item in the cart
+// router.put('/updateCartItem/:cartItemId', protect, async (req, res) => {
+//   let exists = await PatientModel.findById(req.user);
+//   if (!exists || req.user.__t !== "patient") {
+//     return res.status(500).json({
+//       success: false,
+//       message: "Not authorized"
+//     });
+//   }
+//   const cartItemId = req.params.cartItemId;
+//   const newQuantity = req.body.quantity;
+
+//   try {
+//     // Find the cart item by its unique ID
+//     const cartItem = await CartItem.findOne({ _id: cartItemId, userId: req.user._id });
+//     const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id });
+
+//     // Extract and deduplicate medicine IDs from prescriptions
+//     const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
+
+//     // Fetch details of prescribed medicines
+//     const prescribedMeds = await MedicineModel.find({ _id: { $in: Array.from(prescribedMedicineIds) }});
+//     prescriptions.forEach(prescription => {
+//       prescription.items.forEach(item => {
+//         const foundMedicine = cartItem.find(medicine => medicine._id.toString() === item.medicineId.toString());
+//         if (foundMedicine) {
+//           foundMedicine.Quantity = item.dosage;
+//         }
+//       });
+//     });
+//     // if(prescribedMeds._id == cartItem.medicineId){
+//     //   cartItem.quantity = ;
+//     // }
+//     if (!cartItem) {
+//       return res.status(404).json({ error: 'Cart item not found' });
+//     }
+//     // Update the quantity
+//     cartItem.quantity = newQuantity;
+//     await cartItem.save();
+
+//     res.json({ message: 'Cart item quantity updated successfully', updatedCartItem: cartItem });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Server error' });
+//   }
+// });
 router.get('/cart/total', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
   if (!exists || req.user.__t !== "patient") {
@@ -1142,3 +1442,4 @@ const addTransaction = (amount, userId, paymentMethod, description) => {
 
 
 module.exports = router;
+
