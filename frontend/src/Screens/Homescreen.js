@@ -374,22 +374,18 @@
 // };
 
 // export default Homescreen;
-import "./Homescreen.css"
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import Dropdown from 'react-bootstrap/Dropdown';
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
-import SplitButton from 'react-bootstrap/SplitButton';
-import Button from 'react-bootstrap/Button';
-import Meds from '../Components/Meds';
-import Navbar from '../Components/Navbar';
-import { Link } from 'react-router-dom';
-import Popper from '@mui/material/Popper';
-import { styled, css } from '@mui/material/styles';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
-import { useHistory } from 'react-router-dom';
+import Popper from '@mui/material/Popper';
+import { css, styled } from '@mui/material/styles';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Meds from '../Components/Meds';
+import Navbar from '../Components/Navbar';
+import "./Homescreen.css";
 
 const Homescreen = () => {
   const [allMedicines, setAllMedicines] = useState([]);
@@ -517,7 +513,7 @@ const [medicalUseValue, setMedicalUseValue] = React.useState('');
       <div>
         <Navbar />
       </div>
-    <div>
+     <div>
       <InputGroup className="mb-3">
         <Button
           variant="outline-secondary"
@@ -566,16 +562,16 @@ const [medicalUseValue, setMedicalUseValue] = React.useState('');
                </MenuItem>
            
             ))}
-    </Select>
-    <div>
+      </Select>
+     <div>
       <Button variant="outline-dark" style={{ width: '45%', marginRight: '5%', marginTop: '2%' }} onClick={() => { handleClick(); handleMedicalUseFilter(medicalUseValue); }}>
         Filter
       </Button>
       <Button variant="outline-dark" style={{ width: '45%', marginTop: '2%' }} onClick={() => { handleClick(); getMedicines(); }}>
         Reset
       </Button>
-    </div>
-    </FormControl>
+     </div>
+     </FormControl>
           </StyledPopperDiv>
         </Popper>
 
@@ -585,7 +581,7 @@ const [medicalUseValue, setMedicalUseValue] = React.useState('');
             {errorMessage}
           </div>
         )}
-    </div>
+     </div>
       <div className="homescreen">
         <h2 className="homescreen_title">Meds</h2>
         <div className="homescreen_meds">

@@ -616,7 +616,8 @@ router.get('/totalSalesReport/:chosenMonth', protect, async (req, res) => {
                 in: {
                   medicine: '$$item.medicineId',
                   quantity: '$$item.quantity',
-                  price: '$$item.price' // Include the price in the response
+                  price: '$$item.price', // Include the price in the response
+                  totalPrice: { $multiply: ['$$item.quantity', '$$item.price'] }
                 }
               }
             }
@@ -642,16 +643,83 @@ router.get('/totalSalesReport/:chosenMonth', protect, async (req, res) => {
   }
 });
 
+router.get('/totalSalesReport', protect, async (req, res) => {
+  try {
+    // Check if the user is authorized (Pharmacist)
+    let exists = await user.findById(req.user);
+    if (!exists || exists.__t !== 'Pharmacist') {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+
+    // Get the chosen month from the route parameters
+    const chosenMonth = req.params.chosenMonth;
+
+
+
+    // Perform a query to get the total sales for the chosen month from the Orders model
+    const totalSales = await OrderModel.aggregate([
+      // {
+      //   $match: {
+      //     $expr: {
+      //       $eq: [{ $month: '$createdAt' }, parseInt(chosenMonth)]
+      //     }
+      //   }
+      // },
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: '$total' },
+          medicinesSold: {
+            $push: {
+              $map: {
+                input: '$items',
+                as: 'item',
+                in: {
+                  medicine: '$$item.medicineId',
+                  quantity: '$$item.quantity',
+                  price: '$$item.price', // Include the price in the response
+                  totalPrice: { $multiply: ['$$item.quantity', '$$item.price'] }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]);
+
+    // Check if there are any results
+    if (totalSales.length === 0) {
+      return res.status(404).json({ message: 'No sales for the chosen month', success: false });
+    }
+
+    // Flatten the medicinesSold array and resolve medicine details
+    const medicinesSold = totalSales[0].medicinesSold.flat();
+    const medicinesDetails = await resolveMedicineDetails(medicinesSold);
+
+    // Return the total sales, total quantity sold, and medicine details for the chosen month
+    res.status(200).json({ Result: { totalSales: totalSales[0].totalSales, totalQuantitySold: totalSales[0].totalQuantitySold, medicinesSold: medicinesDetails }, success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error retrieving total sales report", success: false });
+  }
+});
+
+
 // Helper function to resolve medicine details
 async function resolveMedicineDetails(medicinesSold) {
   const medicineDetails = [];
   for (const item of medicinesSold) {
     const medicine = await MedicineModel.findById(item.medicine);
     if (medicine) {
+      const totalPrice = item.quantity * item.price;
       medicineDetails.push({
         medicineName: medicine.Name,
         quantitySold: item.quantity,
-        price: item.price
+        price: item.price,
+        totalPrice: totalPrice
       });
     }
   }
@@ -680,10 +748,13 @@ router.get('/filterSalesReport/:medicineName/:chosenDate', protect, async (req, 
     }
 
     // Prepare the match object based on the provided parameters
-    const match = {};
+    let match = {};
     if (medicineName) {
-      const medicine = await MedicineModel.findOne({ Name: medicineName });
-      if (medicine) {
+      // console.log(medicineName);
+      const medicine = await MedicineModel.findOne({ Name: medicineName }).select("-Picture");
+      // console.log("MEDICINE"+ medicine)
+      // console.log(medicine!==null||medicine!={});
+      if (medicine!==null||medicine!={}) {
         match['items.medicineId'] = medicine._id;
       } else {
         // If medicineName is provided but not found, return no sales
@@ -691,12 +762,25 @@ router.get('/filterSalesReport/:medicineName/:chosenDate', protect, async (req, 
       }
     }
     if (chosenDate) {
+      const currentYear = new Date().getFullYear();
+    //  console.log("YEAR:"+currentYear);
+      const startOfMonth = new Date(chosenDate);
+      startOfMonth.setFullYear(currentYear);
+  startOfMonth.setDate(1);
+  const endOfMonth = new Date(startOfMonth);
+  endOfMonth.setMonth(endOfMonth.getMonth() + 1); // Move to the next month
+  endOfMonth.setDate(endOfMonth.getDate() - 1); 
+  
+      // console.log("Start of the month"+startOfMonth);
+      // console.log("End of the month"+endOfMonth);
       match['createdAt'] = {
-        $gte: new Date(chosenDate),
-        $lt: new Date(new Date(chosenDate).setDate(new Date(chosenDate).getDate() + 1)) // Next day to include all sales on the chosen date
+        // $gte: new Date(chosenDate),
+        // $lt: new Date(new Date(chosenDate).setDate(new Date(chosenDate).getDate() + 1)) // Next day to include all sales on the chosen date
+        $gte:startOfMonth,
+        $lt:endOfMonth
       };
     }
-
+    console.log(match);
     // Perform a query to get the filtered sales report from the Orders model
     const salesReport = await OrderModel.aggregate([
       {
@@ -714,7 +798,8 @@ router.get('/filterSalesReport/:medicineName/:chosenDate', protect, async (req, 
                 in: {
                   medicine: '$$item.medicineId',
                   quantity: '$$item.quantity',
-                  price: '$$item.price' // Include the price in the response
+                  price: '$$item.price' , // Include the price in the response 
+                  totalPrice: { $multiply: ['$$item.quantity', '$$item.price'] }
                 }
               }
             }
@@ -724,6 +809,7 @@ router.get('/filterSalesReport/:medicineName/:chosenDate', protect, async (req, 
     ]);
 
     // Check if there are any results
+    
     if (salesReport.length === 0) {
       return res.status(404).json({ message: 'No sales for the provided criteria', success: false });
     }

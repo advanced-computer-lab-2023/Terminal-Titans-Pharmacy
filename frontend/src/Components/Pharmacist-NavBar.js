@@ -1,21 +1,14 @@
-import * as React from 'react';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardHeader from '@mui/material/CardHeader';
 import CssBaseline from '@mui/material/CssBaseline';
-import Grid from '@mui/material/Grid';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import * as React from 'react';
 // StarIcon from '@mui/icons-material/StarBorder';
+import GlobalStyles from '@mui/material/GlobalStyles';
+import Link from '@mui/material/Link';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
 import Dropdown from 'react-bootstrap/Dropdown';
-import GlobalStyles from '@mui/material/GlobalStyles';
-import Container from '@mui/material/Container';
 
 
 // TODO remove, this demo shouldn't need to reset the theme.
@@ -30,7 +23,12 @@ export default function Pricing() {
   };
 
   function goToChat() {
-    window.location.href = `chat/${sessionStorage.getItem('token')}`;
+    
+    window.location.href = `http://localhost:3000/Health-Plus/chat/:${sessionStorage.getItem('token')}`
+  }
+
+  function goToReports() {
+    window.location.href = `/monthlysales`;
   }
 
   const signoutButtonFunc = () => {
@@ -70,7 +68,7 @@ export default function Pricing() {
               <Button
                 style={{ color: 'black' }}
                 // hena link el chatting
-                onClick={() => { goToChat() }}
+                onClick={() => { goToReports() }}
                 sx={{ my: 1, mx: 1.5 }}
               >
                 View Reports

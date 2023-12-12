@@ -1,32 +1,29 @@
 // App.js
-import './App.css';
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import './App.css';
 import { CartProvider } from './Components/CartContext'; // Import the CartProvider
-import Navbar from './Components/Navbar';
 import Homescreen from './Screens/Homescreen';
 import Meds2 from './Screens/Meds';
 //import MedsPharm from './Screens/MedPagePharm.js';
-import CartScreen from './Screens/cartScreen';
-import ForgotPassword from "./Screens/ForgotPassword";
-import Checckout from './Components/Checkout';
-import OrderDetails from './Screens/OrderDetails.js';
-import Address from './Components/addAddress';
-import Checkout from './Components/Checkout';
-import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Register from './Screens/Register';
-import OrderScreen from './Screens/orderScreen';
-import SignIn from './Screens/SignIn';
-import PharmacistScreen from './Screens/pharmacistScreen';
-import AdminPage from './Screens/AdminScreen';
-import Success from './Components/success';
+import Checkout from './Components/Checkout';
 import Cancel from './Components/cancel';
 import PaymentPage from './Components/paymentMethod';
+import Success from './Components/success';
 import ViewReqPharmDoc from './Components/viewReqPharmDoc.js';
-import NewMed from './Screens/newmedPage.jsx';
+import AdminPage from './Screens/AdminScreen';
 import AvailableMeds from './Screens/AvailableMeds.js';
-import MedPharm from './Screens/MedPagePharm.js'
+import ForgotPassword from "./Screens/ForgotPassword";
+import MedPharm from './Screens/MedPagePharm.js';
+import MonthlySales from './Screens/MonthlySalesPage.jsx';
+import OrderDetails from './Screens/OrderDetails.js';
+import Register from './Screens/Register';
+import SignIn from './Screens/SignIn';
+import CartScreen from './Screens/cartScreen';
+import NewMed from './Screens/newmedPage.jsx';
+import OrderScreen from './Screens/orderScreen';
+import PharmacistScreen from './Screens/pharmacistScreen';
 
 
 
@@ -64,6 +61,7 @@ function App() {
             <Route path="/Health-Plus/patient" element={<Homescreen />} />
             <Route path="/patient" element={<Homescreen />} />
             <Route path="/medicine" element={<Meds2 />} />
+            <Route path='/monthlysales' element={<MonthlySales/>}/>
             <Route path="/medicine/:medicineId" element={<Meds2 />} />
             <Route path="/medicinepharm" element={<MedPharm/>}/>
             <Route path="/medicinepharm/:medicineId" element={<MedPharm/>}/>

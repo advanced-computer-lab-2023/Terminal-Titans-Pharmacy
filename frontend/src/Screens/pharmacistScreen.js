@@ -1,8 +1,6 @@
 
-import Button from 'react-bootstrap/Button';
- import Nav from "../Components/Pharmacist-NavBar"
-import Tess from "../Components/Addmed"
 import Body from '../Components/PharmScreenBody';
+import Nav from "../Components/Pharmacist-NavBar";
 
 
 
@@ -11,7 +9,7 @@ function pharmacistScreen() {
     <div>
        <Nav/>
        <Body/>
-       <Tess/>
+       {/* <Tess/> */}
        
     </div>   
         
