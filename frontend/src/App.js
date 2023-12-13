@@ -58,7 +58,6 @@ function App() {
             <Route path="/orderDetails" element={<OrderScreen />} />
             <Route path="/Health-Plus/pharmacistScreen" element={<PharmacistScreen />} />
             <Route path="/orderDetails/:orderId" element={<OrderDetails />} />
-            <Route path="/patient" element={<Homescreen />} />
             <Route path="/patient/:id" element={<Homescreen />} />
             <Route path="/medicine" element={<Meds2 />} />
             <Route path='/monthlysales' element={<MonthlySales/>}/>

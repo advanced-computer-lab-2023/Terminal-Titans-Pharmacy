@@ -56,7 +56,7 @@ export default function SignIn() {
                 }
                 else {
                     // go to patient page
-                    window.location.pathname = `/Health-Plus/patient/${response.data.Result.token}`;
+                    window.location.pathname = `/patient/${response.data.Result.token}`;
                 }
             }
             else {
