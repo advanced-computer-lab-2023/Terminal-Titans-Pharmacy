@@ -1,17 +1,16 @@
 // export default Meds2;
-import React, { useState, useEffect } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
-import './Meds.css';
-import PharmNav from '../Components/Pharmacist-NavBar';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Form from 'react-bootstrap/Form';
+import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
+import Col from 'react-bootstrap/Col';
+import Container from 'react-bootstrap/Container';
+import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
+import Row from 'react-bootstrap/Row';
+import { Link, useLocation, useParams } from 'react-router-dom';
+import PharmNav from '../Components/Pharmacist-NavBar';
+import './Meds.css';
 import './PharmMedView.css';
-import { Link } from 'react-router-dom';
 
 
 function arrayBufferToBase64(buffer) {
@@ -213,9 +212,9 @@ function Meds2() {
                       </Link> 
                     
                 </Row>
-      <Row sm={12} md={9} lg={9}>
-        <Col sm={12} md={12} lg={6}>
-        <div className="left_img">
+             <Row sm={12} md={9} lg={9}>
+            <Col sm={12} md={12} lg={6}>
+            <div className="left_img">
                 {medicine.Picture && medicine.Picture.data && medicine.Picture.contentType && (
                     <div className="imagesize"> 
                      <img
