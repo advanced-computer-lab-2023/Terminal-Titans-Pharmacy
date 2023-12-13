@@ -42,7 +42,7 @@ console.log(req.params.MedicalUse)
       Archived: false,
     });
         // Fetch prescribed medicines for the patient
-        const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id });
+        const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id, status: 'not filled' });
 
         // Extract and deduplicate medicine IDs from prescriptions
         const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
@@ -232,7 +232,7 @@ router.get('/getMedicine/:Name', protect, async (req, res) => {
     }
 
     const searchedMedicine = await MedicineModel.findOne({ Name, OverTheCounter: true, Archived: false });
-    const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id });
+    const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id, status: 'not filled' });
 
     // Extract and deduplicate medicine IDs from prescriptions
     const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
@@ -278,7 +278,7 @@ router.get('/findAlternatives/:Name', protect, async (req, res) => {
     const searchedMedicine = await MedicineModel.findOne({ Name, OverTheCounter: true, Archived: false });
 
     // Fetch prescribed medicines for the patient
-    const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id });
+    const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id, status: 'not filled' });
 
     // Extract and deduplicate medicine IDs from prescriptions
     const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
@@ -388,7 +388,7 @@ router.get('/getAllMedicine2', protect, async (req, res) => {
     const overTheCounterMeds = await MedicineModel.find({ OverTheCounter: true, Archived: false });
 
     // Fetch prescribed medicines for the patient
-    const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id });
+    const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id, status: 'not filled' });
 
     // Extract and deduplicate medicine IDs from prescriptions
     const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
@@ -509,7 +509,7 @@ router.get('/getAllMedicalUses', protect, async (req, res) => {
     }
     const medicines = await MedicineModel.find({Archived:false, OverTheCounter: true});
         // Fetch prescribed medicines for the patient
-        const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id });
+        const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id, status: 'not filled' });
 
         // Extract and deduplicate medicine IDs from prescriptions
         const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
