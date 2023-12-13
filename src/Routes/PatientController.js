@@ -838,6 +838,35 @@ router.get('/cart', protect, async (req, res) => {
 //   }
 // });
 // Update the quantity of an item in the cart
+// router.put('/updateCartItem/:cartItemId', protect, async (req, res) => {
+//   let exists = await PatientModel.findById(req.user);
+//   if (!exists || req.user.__t !== "patient") {
+//     return res.status(500).json({
+//       success: false,
+//       message: "Not authorized"
+//     });
+//   }
+//   const cartItemId = req.params.cartItemId;
+//   const newQuantity = req.body.quantity;
+
+//   try {
+//     // Find the cart item by its unique ID
+//     const cartItem = await CartItem.findOne({ _id: cartItemId, userId: req.user._id });
+
+//     if (!cartItem) {
+//       return res.status(404).json({ error: 'Cart item not found' });
+//     }
+
+//     // Update the quantity
+//     cartItem.quantity = newQuantity;
+//     await cartItem.save();
+
+//     res.json({ message: 'Cart item quantity updated successfully', updatedCartItem: cartItem });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Server error' });
+//   }
+// });
 router.put('/updateCartItem/:cartItemId', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
   if (!exists || req.user.__t !== "patient") {
@@ -846,6 +875,7 @@ router.put('/updateCartItem/:cartItemId', protect, async (req, res) => {
       message: "Not authorized"
     });
   }
+
   const cartItemId = req.params.cartItemId;
   const newQuantity = req.body.quantity;
 
@@ -857,17 +887,33 @@ router.put('/updateCartItem/:cartItemId', protect, async (req, res) => {
       return res.status(404).json({ error: 'Cart item not found' });
     }
 
+    // Check if the medicine in the cart is prescribed
+    const prescription = await PrescriptionModel.findOne({
+      PatientId: req.user._id,
+      'items.medicineId': cartItem.medicineId,
+    });
+
+    if (prescription) {
+      return res.status(400).json({
+        error: 'Cannot update quantity for prescribed medicine in the cart',
+      });
+    }
+
     // Update the quantity
     cartItem.quantity = newQuantity;
     await cartItem.save();
 
-    res.json({ message: 'Cart item quantity updated successfully', updatedCartItem: cartItem });
+    res.json({
+      message: 'Cart item quantity updated successfully',
+      updatedCartItem: cartItem,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 });
-// // Update the quantity of an item in the cart
+
+// // // Update the quantity of an item in the cart
 // router.put('/updateCartItem/:cartItemId', protect, async (req, res) => {
 //   let exists = await PatientModel.findById(req.user);
 //   if (!exists || req.user.__t !== "patient") {
