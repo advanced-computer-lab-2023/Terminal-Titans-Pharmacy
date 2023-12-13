@@ -33,7 +33,9 @@ import "./CartItem.css"
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import { Audio } from  'react-loader-spinner'
+// import { Audio } from  'react-loader-spinner'
+
+
 function arrayBufferToBase64(buffer) {
   let binary = '';
   const bytes = new Uint8Array(buffer);
@@ -103,15 +105,15 @@ const CartItem = ({ item }) => {
   };
 
   if (!medicine) {
-    return <Audio
-    height = "80"
-    width = "80"
-    radius = "9"
-    color = 'black'
-    ariaLabel = 'three-dots-loading'     
-    wrapperStyle
-    wrapperClass
-  />
+  //   return <Audio
+  //   height = "80"
+  //   width = "80"
+  //   radius = "9"
+  //   color = 'black'
+  //   ariaLabel = 'three-dots-loading'     
+  //   wrapperStyle
+  //   wrapperClass
+  // />
   }
 
   return (
