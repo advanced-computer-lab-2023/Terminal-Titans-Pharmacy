@@ -24,6 +24,10 @@ import CartScreen from './Screens/cartScreen';
 import NewMed from './Screens/newmedPage.jsx';
 import OrderScreen from './Screens/orderScreen';
 import PharmacistScreen from './Screens/pharmacistScreen';
+import AdminAvailableMeds from './Screens/AdminAvailableMedecine';
+import AdminSalesReport from './Screens/AdminSalesReport';
+import AdminPharmProfile from './Components/adminViewPharmReq';
+import ViewAdminPharmApplications from './Components/ViewAdminPharmApplications';
 
 
 
@@ -55,10 +59,15 @@ function App() {
             <Route path="/Health-Plus" element={<SignIn />} />
             <Route path="/Health-Plus/register" element={<Register />} />
             <Route path="/Health-Plus/admin" element={<AdminPage />} />
+            <Route path="/Health-Plus/adminAvailableMeds" element={<AdminAvailableMeds />} />
+            <Route path="/Health-Plus/adminSalesReport" element={<AdminSalesReport />} />
+            <Route path="/Health-Plus/adminPharmApplicationList" element={<ViewAdminPharmApplications />} /> 
+            <Route path="/Health-Plus/adminViewReqPharm" element={<AdminPharmProfile />} /> 
             <Route path="/orderDetails" element={<OrderScreen />} />
             <Route path="/Health-Plus/pharmacistScreen" element={<PharmacistScreen />} />
             <Route path="/orderDetails/:orderId" element={<OrderDetails />} />
             <Route path="/patient" element={<Homescreen />} />
+            <Route path="/patient/:id" element={<Homescreen />} />
             <Route path="/medicine" element={<Meds2 />} />
             <Route path='/monthlysales' element={<MonthlySales/>}/>
             <Route path="/medicine/:medicineId" element={<Meds2 />} />

@@ -1,0 +1,15 @@
+.blackButton {
+    background-color: black !important;
+  }
+
+.blackButton:hover{
+    background-color: #535658!important;
+  }
+
+  .admin-button{
+    background-color: black !important;
+  }
+
+  .admin-button:hover{
+    background-color: #535658!important;
+  }

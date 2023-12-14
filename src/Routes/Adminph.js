@@ -155,6 +155,8 @@ router.get('/getAllMedicine', protect, async (req, res) => {
   }
 });
 
+
+
 //view a pharmacist's information
 
 router.get('/getPharmacist', protect, async (req, res) => {
@@ -231,6 +233,35 @@ router.get('/filterMedical/:MedicalUse', protect, async (req, res) => {
 
   res.status(200).send({ Result: Medicines, success: true })
 
+});
+
+router.get('/getAllMedicalUses', protect, async (req, res) => {
+  try {
+    let user = await adminModel.findById(req.user);
+    if (!user || user.__t !== "Admin") {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+
+    const medicines = await MedicineModel.find({Archived:false, OverTheCounter: true});
+
+    // Extract unique medical uses using Set
+    const medicalUsesSet = new Set();
+    medicines.forEach((medicine) => {
+      medicine.MedicalUse.forEach((use) => {
+        medicalUsesSet.add(use);
+      });
+    });
+
+    const medicalUses = Array.from(medicalUsesSet);
+
+    res.status(200).json({ success: true, medicalUses });
+  } catch (error) {
+    console.error('Error fetching medical uses:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 //view a list of all requested pharmacists

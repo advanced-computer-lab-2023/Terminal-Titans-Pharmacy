@@ -3,6 +3,11 @@
     
     justify-self: center;
 }
+
+.homescreen_admin{
+    
+    justify-self: center;
+}
 .homescreen_title{
     font-size: 1.5rem;
     color: #171717;
@@ -17,9 +22,17 @@
     grid-gap: 4rem;
     grid-template-columns: repeat(4, 1fr);
 }
+.homescreen_meds_admin{
+    margin-left: 1rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
 
 @media (max-width : 1232px){
     .homescreen_meds{
+        grid-template-columns: repeat(3,1fr);
+    }
+    .homescreen_meds_admin{
         grid-template-columns: repeat(3,1fr);
     }
 
@@ -28,10 +41,16 @@
     .homescreen_meds{
         grid-template-columns: repeat(2,1fr);
     }
+    .homescreen_meds_admin{
+        grid-template-columns: repeat(2,1fr);
+    }
     
 }
 @media (max-width : 630px){
     .homescreen_meds{
+        grid-template-columns: 1fr;
+    }
+    .homescreen_meds_admin{
         grid-template-columns: 1fr;
     }
     
