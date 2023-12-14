@@ -10,7 +10,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Meds from '../Components/Meds';
 import Nav from "../Components/Admin-NavBar"
 import "./Homescreen.css";
-import "../Screens/AdminScreen.css";
+import "../Styles/AdminScreen.css";
 
 import { useParams } from 'react-router-dom';
 

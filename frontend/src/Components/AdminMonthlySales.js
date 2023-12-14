@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Table from 'react-bootstrap/Table';
-import "../Screens/AdminScreen.css";
+import "../Styles/AdminScreen.css";
 
 function Sales() {
     var [meds,setMeds]= useState([])
