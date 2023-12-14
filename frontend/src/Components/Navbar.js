@@ -582,6 +582,8 @@ import Meds from './Meds';
 import Homescreen from '../Screens/Homescreen';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
+import Sidebar from './sidebar';
+
 const Navbar1 = ({ click, onSearch, onFilter }) => {
   const { cartItems } = useCart();
   const [cartItemCount, setCartItemCount] = useState(0);
@@ -712,7 +714,6 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
         show={modalShow}
         onHide={() => setModalShow(false)}
       />
-
       <Container fluid>
         <Navbar.Brand href="/patient">Titans Pharmacy</Navbar.Brand>
         <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${'xl'}`} />
@@ -727,7 +728,14 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
         <Button variant="outline-success" onClick={handleSearch}>
           Search
         </Button>
-  </InputGroup>*/}
+  </InputGroup>
+  
+             <Nav.Link href="/orderDetails">
+              <Button variant="light">
+                Order
+              </Button>
+            </Nav.Link>
+                        <Button variant='light' onClick={()=> navigateChat() }><i className="fas fa-comments"></i></Button>*/}
         <Navbar.Offcanvas
           id={`offcanvasNavbar-expand-${'xl'}`}
           aria-labelledby={`offcanvasNavbarLabel-expand-${'xl'}`}
@@ -740,15 +748,11 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
               </Button>
             </Nav.Link>
     
-            <Nav.Link href="/orderDetails">
-              <Button variant="light">
-                Order
-              </Button>
-            </Nav.Link>
+ 
 
             <Nav.Link href="/patient">
               <Button variant="light">
-                Store
+                Home
               </Button>
             </Nav.Link>
             <Nav.Link href="/patient">
@@ -757,7 +761,7 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
               </Button>
             </Nav.Link>
             
-            <Button variant='light' onClick={()=> navigateChat() }><i className="fas fa-comments"></i></Button>
+
             {/*<Nav.Link href="/orderDetails">Order</Nav.Link>
             <Nav.Link href="/patient">Store</Nav.Link>
             <NavDropdown title="Filter" id="basic-nav-dropdown">
@@ -768,12 +772,13 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
               ))}
               </NavDropdown>*/}
 
-            {/* Display filtered medicines */}
-
-            <Nav.Link><Button variant="light" onClick={() => setModalShow(true)}>Change Password</Button></Nav.Link>
+            {/* Display filtered medicines
             <Nav.Link>
               <Button variant="danger" onClick={signoutButtonFunc}>Sign Out</Button>
-            </Nav.Link>
+            </Nav.Link> */}
+
+            <Nav.Link><Button variant="light" onClick={() => setModalShow(true)}>Change Password</Button></Nav.Link>
+            
           </Nav>
         </Navbar.Offcanvas>
       </Container>

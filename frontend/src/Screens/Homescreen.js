@@ -11,6 +11,7 @@ import Meds from '../Components/Meds';
 import Navbar from '../Components/Navbar';
 import "./Homescreen.css";
 import { useParams } from 'react-router-dom';
+import Sidebar from '../Components/sidebar.js';
 
 const Homescreen = () => {
   const [allMedicines, setAllMedicines] = useState([]);
@@ -142,91 +143,99 @@ const Homescreen = () => {
 
   return (
     <div>
-      <div>
-        <Navbar />
-      </div>
-     <div>
-      <InputGroup className="mb-3">
-        <Button
-          variant="outline-secondary"
-          title="Search"
-          id="segmented-button-dropdown-1"
-          onClick={handleSearch}
-        >
-          Search
-          {/* <Dropdown.Header>Filter</Dropdown.Header>
-          {medicalUses.map((use, index) => (
-            <Dropdown.Item key={index} onClick={() => handleMedicalUseFilter(use)}>
-              {use}
-            </Dropdown.Item>
-          ))}
-          <Dropdown.Divider /> */}
-        </Button>
-        <Form.Control
-          id="searchInput"
-          type="search"
-          placeholder="Search"
-          aria-label="Text input for search"
-        />
-         <Button
-          variant="outline-secondary"
-          title="Search"
-          id="segmented-button"
-          onClick={handleClick}
-        >  <FilterListIcon />
-        Filter</Button>
-        <Popper id={open ? 'simple-popper' : undefined} open={open} anchorEl={anchorEl} style={{width:'20%'}}>
-        <StyledPopperDiv>
-        <FormControl fullWidth>
-         <InputLabel id="demo-simple-select-label">Medical Use</InputLabel>
-        <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={medicalUseValue}
-            label="medicalUse"
-            
-            onChange={(e) => setMedicalUseValue(e.target.value)}          
-          >
-            <MenuItem value=''>any</MenuItem> 
-            {medicalUses.map((use, index) => (
-               <MenuItem value={use}>
-                {use}
-               </MenuItem>
-           
-            ))}
-    </Select>
-    <div>
-      <Button variant="outline-dark" style={{ width: '45%', marginRight: '5%', marginTop: '2%' }} onClick={() => { handleClick(); handleMedicalUseFilter(medicalUseValue); }}>
-        Filter
-      </Button>
-      <Button variant="outline-dark" style={{ width: '45%', marginTop: '2%' }} onClick={() => { handleClick(); getMedicines(); }}>
-        Reset
-      </Button>
-    </div>
-    </FormControl>
-          </StyledPopperDiv>
-        </Popper>
+      <Navbar />
+      <div style={{ display: 'flex', flexDirection: 'row' }}>
+        <Sidebar />
 
-        </InputGroup>
-        {errorMessage && (
-          <div className="alert alert-danger" role="alert">
-            {errorMessage}
+        <div className="content-wrapper">
+          <div>
+            <InputGroup className="mb-3">
+              <Button
+                variant="outline-secondary"
+                title="Search"
+                id="segmented-button-dropdown-1"
+                onClick={handleSearch}
+              >
+                Search
+              </Button>
+              <Form.Control
+                id="searchInput"
+                type="search"
+                placeholder="Search"
+                aria-label="Text input for search"
+              />
+              <Button
+                variant="outline-secondary"
+                title="Search"
+                id="segmented-button"
+                onClick={handleClick}
+              >
+                <FilterListIcon />
+                Filter
+              </Button>
+              <Popper id={open ? 'simple-popper' : undefined} open={open} anchorEl={anchorEl} style={{ width: '20%' }}>
+                <StyledPopperDiv>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Medical Use</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={medicalUseValue}
+                      label="medicalUse"
+                      onChange={(e) => setMedicalUseValue(e.target.value)}
+                    >
+                      <MenuItem value="">any</MenuItem>
+                      {medicalUses.map((use, index) => (
+                        <MenuItem value={use} key={index}>
+                          {use}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    <div>
+                      <Button
+                        variant="outline-dark"
+                        style={{ width: '45%', marginRight: '5%', marginTop: '2%' }}
+                        onClick={() => {
+                          handleClick();
+                          handleMedicalUseFilter(medicalUseValue);
+                        }}
+                      >
+                        Filter
+                      </Button>
+                      <Button
+                        variant="outline-dark"
+                        style={{ width: '45%', marginTop: '2%' }}
+                        onClick={() => {
+                          handleClick();
+                          getMedicines();
+                        }}
+                      >
+                        Reset
+                      </Button>
+                    </div>
+                  </FormControl>
+                </StyledPopperDiv>
+              </Popper>
+            </InputGroup>
+            {errorMessage && (
+              <div className="alert alert-danger" role="alert">
+                {errorMessage}
+              </div>
+            )}
           </div>
-        )}
-       </div>
-      <div className="homescreen">
-        <h2 className="homescreen_title">Meds</h2>
-        <div className="homescreen_meds">
-          {Array.isArray(allMedicines) ? (
-            allMedicines.map((medicine) => <Meds key={medicine.Name} medicines={[medicine]} />)
-          ) : (
-            <p>Error: Medicines data is not in the expected format.</p>
-          )}
+          <div className="homescreen">
+            <h2 className="homescreen_title">Meds</h2>
+            <div className="homescreen_meds">
+              {Array.isArray(allMedicines) ? (
+                allMedicines.map((medicine) => <Meds key={medicine.Name} medicines={[medicine]} />)
+              ) : (
+                <p>Error: Medicines data is not in the expected format.</p>
+              )}
+            </div>
+          </div>
         </div>
-
       </div>
-    </div>
-  );
-};
-
-export default Homescreen;
+        </div>
+      );
+    }
+    export default Homescreen;

@@ -11,6 +11,7 @@ import Checkout from './Components/Checkout';
 import Cancel from './Components/cancel';
 import PaymentPage from './Components/paymentMethod';
 import Success from './Components/success';
+import Sidebar from './Components/sidebar.js';
 import ViewReqPharmDoc from './Components/viewReqPharmDoc.js';
 import AdminPage from './Screens/AdminScreen';
 import AvailableMeds from './Screens/AvailableMeds.js';
