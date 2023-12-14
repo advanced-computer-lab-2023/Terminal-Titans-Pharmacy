@@ -20,8 +20,11 @@ const Homescreen = () => {
   const [medicalUseValue, setMedicalUseValue] = React.useState('');
 
   // get from params token
-  const { id } = useParams();
-  sessionStorage.setItem("token", id);
+  const params = new URLSearchParams(window.location.search);
+  const  sessid  = params.get('id');
+  if(sessid){
+    sessionStorage.setItem("token", sessid);
+  }
 
   const getMedicines = async () => {
     //   setAnchorEl(null);

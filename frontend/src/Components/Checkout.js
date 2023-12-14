@@ -41,7 +41,10 @@ function Checkout() {
     const id = params.get('id');
   const [activeStep, setActiveStep] = React.useState(0);
   const [value, setValue] =  useState("card");
-   
+  const  sessid  = params.get('sessid');
+  if(sessid){
+    sessionStorage.setItem("token", sessid);
+  }
 
   const handleChange = (event) => {
     setValue(event.target.value);
@@ -59,10 +62,12 @@ function Checkout() {
     console.log(value);
       console.log("pop")
      handlePayment();
-     if(value=="card")
+     if(value=="card"){
      setActiveStep(activeStep);
-return;
+      return;
+     }
     }
+    console.log("pop2")
     setActiveStep(activeStep + 1);
 
   };

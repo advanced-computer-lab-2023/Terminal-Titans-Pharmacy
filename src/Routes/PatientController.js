@@ -1035,11 +1035,12 @@ router.get('/checkout/:id/:address/:paymentMethod', async (req, res) => {
     // Initialize variables for order creation
     let total = 0;
     const itemsForOrder = [];
-    
+    const status=await changeStatusOfPres(req.params.id)
+    console.log(status+"status")
     // Calculate the total cost and construct the order
     for (const cartItem of cartItems) {
       const medicine = await MedicineModel.findById(cartItem.medicineId);
-      console.log(medicine);
+     // console.log(medicine);
 
       if (medicine) {
         const itemTotal = cartItem.quantity * medicine.Price;
@@ -1485,6 +1486,100 @@ const addTransaction = (amount, userId, paymentMethod, description) => {
   newTransaction.save();
   console.log('l')
 }
+async function changeStatusOfPres(userId){ 
+  try{ 
+    console.log("in change status");
+      var cartItems = await CartItem.find({ userId: userId }); 
+      console.log(cartItems)
+      var prescriptions = await PrescriptionModel.find({ PatientId: userId ,InCart:true, status:"not filled"}); 
+      console.log(prescriptions)
+     
+      for (var pres in prescriptions){ 
+        let flag=true; 
+          var medList =prescriptions[pres].items; 
+          for (var x in cartItems) { 
+              console.log(cartItems[x]) 
+              const med = await MedicineModel.findById(cartItems[x].medicineId); 
+              console.log(med.Name)
+              
+              if(!med.OverTheCounter){ 
+                 console.log("pp")
+                  let flag2=false;
+                  let matchingMed = {}; 
+                  for (var y in medList) {
+                    console.log(medList[y].medicineId)
+                    console.log(med._id)
+                    if(medList[y].medicineId.equals( med._id)){
+                      flag2=true;
+                      matchingMed=medList[y];
+                      break;
+                    }
+                  }
+                  
+                  if(!flag2 || cartItems[x].quantity > matchingMed.dosage) 
+                    flag=false; 
+              
+              } } 
+
+
+              if(flag){ 
+                  const updatedPres = await PrescriptionModel.findOneAndUpdate({ _id: prescriptions[pres]._id }, { status:"filled"}); 
+                  return true; 
+                  //  prescriptions = await PrescriptionModel.find({ PatientId: patient._id}); 
+                  }
+              }
+              console.log("popopoppoossckskd")
+              prescriptions = await PrescriptionModel.find({ PatientId: userId,status:"not filled" }); 
+              console.log(prescriptions+"pres")
+              let arr = new Array(cartItems.length).fill(false);
+             
+              for (var pres in prescriptions){ 
+                let newflag=false;
+                  var medList =prescriptions[pres].items; 
+                  console.log(medList+"medlist")
+                  for (var x in cartItems) { 
+                      if(arr[x])
+                      continue;
+                      console.log(cartItems[x]+"cart") 
+                      const med = await MedicineModel.findById(cartItems[x].medicineId); 
+                      let flag2=false;
+                      let matchingMed = {}; 
+                      if(!med.OverTheCounter){ 
+                          let matchingMed = {}; 
+                          for (var y in medList) {
+                            console.log(medList[y].medicineId)
+                            console.log(med._id)
+                            if(medList[y].medicineId.equals( med._id)){
+                              flag2=true;
+                              matchingMed=medList[y];
+                              break;
+                            }
+                          }
+                          console.log(matchingMed+"mm")
+                          console.log(cartItems[x].quantity+"cart")
+                          console.log(matchingMed.dosage+"dos")
+
+                          if(flag2 && cartItems[x].quantity <= matchingMed.dosage){ 
+                              arr[x]=true;
+                              newflag=true;
+                          }
+                      
+                      } 
+                  } 
+      
+      
+                      if(newflag){ 
+                          const updatedPres = await PrescriptionModel.findOneAndUpdate({ _id: prescriptions[pres]._id }, { status:"filled"}); 
+                         
+                          //  prescriptions = await PrescriptionModel.find({ PatientId: patient._id}); 
+                          }
+                      }
+                      return true;
+              }catch(error){
+                console.error(error)
+return false;
+                   } 
+                  }
 
 
 module.exports = router;
