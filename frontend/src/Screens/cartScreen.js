@@ -123,6 +123,7 @@ import axios from 'axios';
 import { useCart } from '../Components/CartContext';
 import CartItem from '../Components/CartItem';
 import Navbar from '../Components/Navbar';
+import Sidebar from '../Components/sidebar'; // Adjust the import path accordingly
 
 const CartScreen = () => {
   const { cartItems, updateCartItems } = useCart();
@@ -152,27 +153,31 @@ const CartScreen = () => {
 
   return (
     <div>
-      <Navbar/>
+    <div className="content">
+      <Navbar />
         <div className="cartscreen">
-      <div className="cart_left">
-        <h2>Shopping Cart</h2>
-        {cartItems.map((item) => (
-          <CartItem key={item._id} item={item} />
-        ))}
-      </div>
-      <div className="cart_right">
-        <div className="cart_info">
-          <p>Subtotal ({cartItems.length}) items</p>
-          <p>${totalSum}</p>
-        </div>
-        <div>
-          <button onClick={() => window.location.pathname='./checkout'}>Checkout</button>
+        <Sidebar /> {/* Include the Sidebar component here */}
+
+          <div className="cart_left">
+            <h2>Shopping Cart</h2>
+            {cartItems.map((item) => (
+              <CartItem key={item._id} item={item} />
+            ))}
+          </div>
+          <div className="cart_right">
+            <div className="cart_info">
+              <p>Subtotal ({cartItems.length}) items</p>
+              <p>${totalSum}</p>
+            </div>
+            <div>
+              <button onClick={() => window.location.pathname='./checkout'}>Checkout</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    </div>
-  
   );
 };
 
 export default CartScreen;
+
