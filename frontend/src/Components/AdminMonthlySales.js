@@ -22,6 +22,7 @@ function Sales() {
    
     const getMedicines = async () => {
         //   setAnchorEl(null);
+        console.log(sessionStorage.getItem("token"))
         setNoMedsSold(false)
            try {
              const response = await fetch(`http://localhost:7000/Admin/totalSalesReport/${date}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });

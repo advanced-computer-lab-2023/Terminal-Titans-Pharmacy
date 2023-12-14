@@ -12,9 +12,10 @@ import Nav from "../Components/Admin-NavBar"
 import "./Homescreen.css";
 import "../Styles/AdminScreen.css";
 
-import { useParams } from 'react-router-dom';
 
 const Homescreen = () => {
+ 
+
   const [allMedicines, setAllMedicines] = useState([]);
   const [medicalUses, setMedicalUses] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');

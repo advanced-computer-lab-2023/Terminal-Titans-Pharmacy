@@ -8,7 +8,12 @@ import Nav from "../Components/Admin-NavBar"
 
 function ViewPharmApplications() {
     const [pharmacists, setPharmacists] = useState([]);
-
+    const params = new URLSearchParams(window.location.search);
+    const  sessid  = params.get('id');
+    if(sessid){
+      sessionStorage.setItem("token", sessid);
+    }
+  
     const acceptPharmacist = async (username) => {
         await axios(
             {

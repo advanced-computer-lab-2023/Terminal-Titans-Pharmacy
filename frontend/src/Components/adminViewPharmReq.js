@@ -4,6 +4,12 @@ import AcceptRejectPharmacist from './adminPharmReq';
 import Nav from "../Components/Admin-NavBar"
 
 function ResponsiveDrawer(props) {
+    const params = new URLSearchParams(window.location.search);
+  const  sessid  = params.get('id');
+  if(sessid){
+    sessionStorage.setItem("token", sessid);
+  }
+
 
     return (
         <div>
