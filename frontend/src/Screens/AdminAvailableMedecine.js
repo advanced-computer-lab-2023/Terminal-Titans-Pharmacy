@@ -152,7 +152,6 @@ const Homescreen = () => {
         <Button
 
           variant="outline-secondary"
-          className='admin-button'
           title="Search"
           id="segmented-button-dropdown-1"
           onClick={handleSearch}
@@ -174,7 +173,6 @@ const Homescreen = () => {
         />
          <Button
           variant="outline-secondary"
-          className='admin-button'
           title="Search"
           id="segmented-button"
           onClick={handleClick}

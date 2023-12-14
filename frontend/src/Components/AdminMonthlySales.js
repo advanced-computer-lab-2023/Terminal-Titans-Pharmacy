@@ -118,7 +118,7 @@ function Sales() {
           <option value={12}>December</option>
     </Form.Select>
 
-    <Button className={selectedMonth ? 'blackButton' : ''} onClick={Filter}>
+    <Button  onClick={Filter}>
   Filter
 </Button>
    </InputGroup>

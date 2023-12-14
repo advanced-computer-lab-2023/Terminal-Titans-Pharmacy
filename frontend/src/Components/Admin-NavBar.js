@@ -48,15 +48,16 @@ export default function Pricing() {
 
             <Link>
               <Button
-                style={{ color: 'black' }}
+                style={{ color: 'black' , backgroundColor: 'rgb(220, 220, 220)'}}
                 onClick={() => { goToHome() }}
                 sx={{ my: 1, mx: 1.5 }}
-              >
+                >
                 Home Page
               </Button>
             </Link>
             <Button
               variant="button"
+              style={{ color: 'black' , backgroundColor: 'rgb(220, 220, 220)'}}
               color="text.primary"
               onClick={() => { changePassword() }}
               sx={{ my: 1, mx: 1.5 }}
@@ -65,7 +66,7 @@ export default function Pricing() {
             </Button>
           </nav>
 
-          <Button onClick={signoutButtonFunc}>Sign Out</Button>
+          <Button style={{ backgroundColor: 'rgb(220, 220, 220)'}} onClick={signoutButtonFunc}>Sign Out</Button>
         </Toolbar>
       </AppBar>
       </div>
