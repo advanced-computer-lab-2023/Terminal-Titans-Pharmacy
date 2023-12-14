@@ -7,8 +7,30 @@ this projects intends to serve as a fully functional pharmacy webapp , it's link
 #  Motivation
 We came up with this project in order to facilitate communication between pharmacies and clinics and our goal is to bridge the gap between individuals and the medications they need, making healthcare more accessible and convenient for everyone.
 # Build Status 
-
+#### Due to the free plan subscription to Mongo Atlas database the speed of the website in which you fetch data from the database or send data to the database may be slower than expected , and sometimes this may cause a runtime error yet as developers we are searching on how to make the website faster so don't worry if tou feel that the website is slow it's not an error 
 # Code Style
+
+#### 1- Indentation 
+use the tab to indent 
+
+#### 2- Naming Conventions 
+use camelCase for naming 
+```javascript
+let medicalUse = "cold";
+```
+#### 3- Comments 
+Use descriptive comments to explain complex code or logic. Keep comments concise and up to date.
+```javascript
+// This function calculates the sum of two numbers
+function add(a, b) {
+  return a + b;
+}
+```
+#### 4- Line Length
+limit line length to the width of the screen to have better readability
+
+#### 5- File Organisation
+Organize files logically and group related functionalities together.
 # Tech/Frameworks Used
 
 Our web application is built using the MERN stack, incorporating various technologies and frameworks to provide a powerful and modern development environment.
@@ -225,7 +247,127 @@ function pharmacistScreen() {
 }
 export default pharmacistScreen;
 ```
-# Installation
+
+## 4. React Component #1
+
+```javascript
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+const Meds = ({ medicines }) => {
+    if (!medicines || !Array.isArray(medicines)) {
+        return null; // or handle this case in a way that makes sense for your application
+      }
+  return (
+    <div className="Medcines">
+      {medicines.map((medicine) => (
+        <div key={medicine.id} className="medicine">
+          {medicine.Picture && medicine.Picture.data && medicine.Picture.contentType && (
+            <img
+              src={`data:${medicine.Picture.contentType};base64,${arrayBufferToBase64(medicine.Picture.data.data)}`}
+              alt={medicine.Name}
+            />
+          )}
+          <div className="meds_info">
+            <p className="info_name">{medicine.Name}</p>
+            <p className="infooo">{medicine.MedicalUse.join(' ')}</p>
+            <p className="price">${medicine.Price} </p>
+            <Link to={`/medicine?medicineId=${medicine._id}`} className="info_buttom">
+              View
+            </Link>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default Meds;
+
+// Utility function to convert ArrayBuffer to Base64
+function arrayBufferToBase64(buffer) {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+
+  return btoa(binary);
+}
+
+
+```
+## React Component #2
+```javascript
+import React, { useState } from 'react';
+
+const SearchFilterComponent = ({ onSearchResult }) => {
+  const [searchInput, setSearchInput] = useState('');
+  const [filterInput, setFilterInput] = useState('');
+
+  const handleSearch = async () => {
+    try {
+      const response = await fetch('http://localhost:7000/Patient/getMedicine2', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ Name: searchInput }),
+      });
+
+      const jsonData = await response.json();
+      console.log(jsonData);
+
+      // Invoke the onSearchResult prop with the search result
+      onSearchResult && onSearchResult(jsonData.Result);
+
+      // If needed, perform other actions with the result
+    } catch (error) {
+      console.error('Error searching:', error);
+    }
+  };
+
+  const handleFilter = async () => {
+    try {
+      const response = await fetch('http://localhost:7000/Patient/filterMedical2', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ MedicalUse: filterInput }),
+      });
+
+      const jsonData = await response.json();
+      console.log(jsonData);
+      // Update state or handle the response as needed
+    } catch (error) {
+      console.error('Error filtering:', error);
+    }
+  };
+
+  return (
+    <div>
+      <textarea
+        placeholder="Search..."
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+      />
+      <button onClick={handleSearch}>Search</button>
+      <textarea
+        placeholder="Filter..."
+        value={filterInput}
+        onChange={(e) => setFilterInput(e.target.value)}
+      />
+      <button onClick={handleFilter}>Filter</button>
+    </div>
+  );
+};
+
+export default SearchFilterComponent;
+
+```# Installation
 
 Follow these steps to set up and run the MERN stack application locally on your machine.
 
