@@ -718,7 +718,7 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
     fetchData();
 
     // Poll for updates every 5 seconds (adjust the interval as needed)
-    const intervalId = setInterval(fetchData, 5000);
+    const intervalId = setInterval(fetchData, 1000);
 
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);

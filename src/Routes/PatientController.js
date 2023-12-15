@@ -322,6 +322,46 @@ router.get('/findAlternatives/:Name', protect, async (req, res) => {
   }
 });
 
+router.get('/findAlternatives2/:MedicalUse', protect, async (req, res) => {
+  try {
+    let exists = await PatientModel.findById(req.user);
+    if (!exists || req.user.__t !== "patient") {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+
+    const use = req.params.MedicalUse.toLowerCase();
+    console.log(use);
+
+    const searchedMedicine = await MedicineModel.find({ MedicalUse: use, OverTheCounter: true, Archived: false,Quantity: { $gt: 0 } });
+
+    // Fetch prescribed medicines for the patient
+    const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id, status: 'not filled' });
+
+    // Extract and deduplicate medicine IDs from prescriptions
+    const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
+
+    // Fetch details of prescribed medicines
+    const prescribedMeds = await MedicineModel.find({ _id: { $in: Array.from(prescribedMedicineIds) },MedicalUse: use,OverTheCounter: false,Archived: false,Quantity: { $gt: 0 } });
+
+    // Combine over-the-counter and prescribed medicines into a single array with no duplicates
+    const combinedMedsSet = new Set([...searchedMedicine, ...prescribedMeds]);
+    const combinedMeds = Array.from(combinedMedsSet);
+    console.log(combinedMeds);
+    if (combinedMeds.Quantity <= 0) {
+        return res.status(400).send({ message: "Medicine is out of stock and no alternatives found", success: false });
+      }
+
+      return res.status(200).json({ Alternatives: combinedMeds, success: true });
+    
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to find alternatives", success: false });
+  }
+});
 // //get all medicine over the counter and not archived
 // router.get('/getAllMedicine2', protect, async (req, res) => {
 //   try {
