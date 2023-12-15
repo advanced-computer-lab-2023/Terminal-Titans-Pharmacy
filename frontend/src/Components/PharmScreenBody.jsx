@@ -4,13 +4,18 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import 'typeface-roboto';
 import './PharmScreenBody.css'
-
+import { useParams } from 'react-router-dom';
 
 export default function Body(){
   const font={
     fontFamily:'roboto,sans-serif'
   }
+  
+  const params = new URLSearchParams(window.location.search);
 
+  const  id  = params.get('id');
+  if (id)
+  sessionStorage.setItem("token", id);
 
       return(
         <div>

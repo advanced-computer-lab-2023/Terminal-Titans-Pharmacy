@@ -11,6 +11,11 @@
 }
 
 
+.dropdown-toggle::after {
+    display: none;
+}
+
+
 .navButton {
     background-color: rgb(220, 220, 220) !important;
     color:black !important;

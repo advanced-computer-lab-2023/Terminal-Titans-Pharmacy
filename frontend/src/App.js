@@ -30,6 +30,7 @@ import AdminSalesReport from './Screens/AdminSalesReport';
 import AdminPharmProfile from './Components/adminViewPharmReq';
 import ViewAdminPharmApplications from './Components/ViewAdminPharmApplications';
 import WalletPatient from './Screens/WalletPatient';
+import PharmProfile from './Screens/PharmProfile';
 
 
 function App() {
@@ -85,6 +86,7 @@ function App() {
             <Route path="/payment" element={<PaymentPage />} />
             <Route path="/Health-Plus/viewReqPharmcDoc" element={<ViewReqPharmDoc />} />
             <Route path="/cart" element={<CartScreen />} />
+            <Route path="/pharmProfile/:id" element={<PharmProfile />} />
 
           </Routes>
         </main>
