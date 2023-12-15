@@ -30,6 +30,7 @@ const Homescreen = () => {
   // }
   console.log(useParams())
   const { id } = useParams();
+  if (id)
   sessionStorage.setItem("token", id);
 
   const getMedicines = async () => {

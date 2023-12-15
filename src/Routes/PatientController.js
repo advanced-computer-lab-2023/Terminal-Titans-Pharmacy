@@ -14,6 +14,9 @@ const MedicineModel = require("../Models/Medicine.js");
 const CartItem = require("../Models/Cart.js");
 const Order = require("../Models/Orders.js");
 const user = require("../Models/user.js");
+const nodemailer=require('nodemailer');
+const notificationModel=require("../Models/notificationModel.js");
+const pharmacistModel=require("../Models/Pharmacist.js");
 //const cors = require('cors');
 app.use(express.urlencoded({ extended: false }))
 const stripeInstance = stripe('sk_test_51OAmglE5rOvAFcqVk714zBO64pgCArV8MfP0BWTnycXGzLnWqkX5cP37OvMffUIDt6DdoKif93x9PfiC39XvkhJr00LuYVmMyv');
@@ -711,11 +714,11 @@ router.get('/cartinCheckOut',protect, async (req, res) => {
       message: "Not authorized"
     });
   } let pid = req.user._id//temp until login
- 
-  let myHealthStatus = await healthPackageStatus.findOne({ patientId: pid, status: 'Subscribed' });
-  
-  const packId = myHealthStatus.healthPackageId;
   var discountP = 0;
+
+  let myHealthStatus = await healthPackageStatus.findOne({ patientId: pid, status: 'Subscribed' });
+  if(myHealthStatus){
+  const packId = myHealthStatus.healthPackageId;
   if (packId) {
       const allPackages = await healthPackageModel.find({ _id: packId });
       if (allPackages.length > 0)
@@ -725,6 +728,7 @@ router.get('/cartinCheckOut',protect, async (req, res) => {
 
   }
   console.log(packId);
+}
   const cartItems = await CartItem.find({ userId: pid });
   let list = []
   let total=0;
@@ -1052,6 +1056,15 @@ router.get('/checkout/:id/:address/:paymentMethod', async (req, res) => {
           quantity: cartItem.quantity,
           price: medicine.Price, // Use the price from the medicine schema
         });
+        medicine.Quantity -= cartItem.quantity;
+        medicine.Sales+=cartItem.quantity;
+        console.log("Quantity "+medicine.Quantity+" "+medicine.Name)
+        if(medicine.Quantity<=0){
+
+         await  alertPharmaicist(medicine.Name);
+        }
+        await medicine.save();
+
       } else {
         // Handle the case where the medicine is not found
         return res.status(400).json({ error: 'Medicine not found' });
@@ -1070,9 +1083,11 @@ router.get('/checkout/:id/:address/:paymentMethod', async (req, res) => {
     // Debugging: Output the 'total' value after setting it
     console.log('Total after setting:', total);
     if (total > 0) {
-      let myHealthStatus = await healthPackageStatus.findOne({ patientId: patientId.id, status: 'Subscribed' });
-      const packId = myHealthStatus?.healthPackageId;
       var discountP = 0;
+
+      let myHealthStatus = await healthPackageStatus.findOne({ patientId: patientId.id, status: 'Subscribed' });
+      if(myHealthStatus){
+      const packId = myHealthStatus?.healthPackageId;
       if (packId) {
           const allPackages = await healthPackageModel.find({ _id: packId });
           if (allPackages.length > 0)
@@ -1081,6 +1096,7 @@ router.get('/checkout/:id/:address/:paymentMethod', async (req, res) => {
               return (res.status(400).send({ error: "cant find package", success: false }));
 
       }
+    }
       const discount = (total * (discountP / 100));
       total = total - discount;
 
@@ -1112,6 +1128,67 @@ router.get('/checkout/:id/:address/:paymentMethod', async (req, res) => {
   return  res.status(500).json({ error: 'Checkout failed. Server error.' });
   }
 });
+async function alertPharmaicist(medicineName) {
+  // Your code here
+
+  try {
+    const allPharmacist = await pharmacistModel.find();
+    for(var i in allPharmacist){
+      const mailResponse = await mailSender(
+        allPharmacist[i].Email,
+        "OUT OF STOCK",
+        `<p>${medicineName} medicine is out of stock<p>`
+        
+    );
+    if (mailResponse) {
+        console.log("Email to pharmacist sent successfully: ", mailResponse);
+       
+    }
+    else {
+        console.log("Error sending email to pharmacist");
+    }
+    const newNotification = new notificationModel({
+      userId: allPharmacist[i]._id, 
+      Message: `${medicineName} medicine is out of stock<p>`,
+      type:"out of stock"
+
+  });
+  console.log(newNotification)
+console.log("notification")
+  await newNotification.save();
+    }
+  }
+
+  catch (error) {
+  //  res.status(500).json({ message: "Error in selling medicine", success: false });
+  }
+}
+
+const mailSender = async (email, title, body) => {
+  try {
+      let transporter = nodemailer.createTransport({
+          host: 'smtp.gmail.com',
+          port: 465,
+          secure: true,
+          auth: {
+              user: process.env.MAIL_USER,
+              pass: process.env.MAIL_PASS,
+          }
+      });
+      // Send emails to users
+      let info = await transporter.sendMail({
+          from: 'Terminal Titans',
+          to: email,
+          subject: title,
+          html: body,
+      });
+      console.log("Email info: ", info);
+      return info;
+  } catch (error) {
+      console.log(error.message);
+  }
+};
+
 
 // Add a new delivery address for a patient
 router.post('/addAddress', protect,async (req, res) => {
@@ -1295,8 +1372,10 @@ router.put('/cancelOrder/:orderId', protect,async (req, res) => {
 async function getOrderDetails(pid) {
   try {
       let myHealthStatus = await healthPackageStatus.findOne({ patientId: pid, status: 'Subscribed' });
-      const packId = myHealthStatus.healthPackageId;
       var discountP = 0;
+
+      if(myHealthStatus){
+      const packId = myHealthStatus.healthPackageId;
       if (packId) {
           const allPackages = await healthPackageModel.find({ _id: packId });
           if (allPackages.length > 0)
@@ -1305,6 +1384,7 @@ async function getOrderDetails(pid) {
               return (res.status(400).send({ error: "cant find package", success: false }));
 
       }
+    }
       const cartItems = await CartItem.find({ userId: pid });
       let list = []
       for (var x in cartItems) {
