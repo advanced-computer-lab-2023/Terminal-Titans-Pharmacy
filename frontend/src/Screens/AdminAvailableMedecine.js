@@ -1,5 +1,6 @@
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import CancelIcon from '@mui/icons-material/Cancel';
 import Popper from '@mui/material/Popper';
 import { css, styled } from '@mui/material/styles';
 import axios from 'axios';
@@ -14,6 +15,8 @@ import "../Styles/AdminScreen.css";
 
 
 const Homescreen = () => {
+  const [searchInput, setSearchInput] = useState('');
+
  
 
   const [allMedicines, setAllMedicines] = useState([]);
@@ -33,7 +36,6 @@ const Homescreen = () => {
     //   setAnchorEl(null);
     try {
       const response = await fetch('http://localhost:7000/Admin/getAllMedicine/', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
-      debugger
       const jsonData = await response.json();
 
       if (Array.isArray(jsonData.Result)) {
@@ -51,6 +53,7 @@ const Homescreen = () => {
 
   const handleSearch = async () => {
     const inputValue = document.getElementById('searchInput').value;
+    setSearchInput(inputValue);
     try {
       const response = await axios.get(`http://localhost:7000/Admin/getMedicine/${inputValue}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
 
@@ -144,42 +147,53 @@ const Homescreen = () => {
   );
   const open = Boolean(anchorEl);
 
+  const handleReset = () => {
+    setSearchInput(''); // Reset the search input state
+    getMedicines(); // Fetch all medicines
+  };
+
   return (
     <div>
-    <Nav/>
-    <div style={{ padding:'2%' }}>
-     <div>
-      <InputGroup className="mb-3">
+      <Nav />
+      <div style={{ padding: '2%' }}>
+        <div>
+        <InputGroup className="mb-3">
         <Button
-
           variant="outline-secondary"
           title="Search"
           id="segmented-button-dropdown-1"
           onClick={handleSearch}
         >
           Search
-          {/* <Dropdown.Header>Filter</Dropdown.Header>
-          {medicalUses.map((use, index) => (
-            <Dropdown.Item key={index} onClick={() => handleMedicalUseFilter(use)}>
-              {use}
-            </Dropdown.Item>
-          ))}
-          <Dropdown.Divider /> */}
         </Button>
         <Form.Control
           id="searchInput"
           type="search"
           placeholder="Search"
           aria-label="Text input for search"
+          value={searchInput} // Bind the input value to the state
+          onChange={(e) => setSearchInput(e.target.value)} // Update the state on input change
         />
-         <Button
-          variant="outline-secondary"
-          title="Search"
-          id="segmented-button"
-          onClick={handleClick}
-        >  <FilterListIcon />
-        Filter</Button>
-        <Popper id={open ? 'simple-popper' : undefined} open={open} anchorEl={anchorEl} style={{width:'20%'}}>
+            <Button
+              variant="outline-secondary"
+              title="Search"
+              id="segmented-button"
+              onClick={handleClick}
+            >
+              <FilterListIcon />
+              Filter
+            </Button>
+            {/* Add Reset button with CancelIcon */}
+            <Button
+              variant="outline-secondary"
+              title="Reset"
+              onClick={handleReset}
+              style={{ marginLeft: '5px' }}
+              disabled={!searchInput} 
+            >
+              <CancelIcon />
+            </Button>
+            <Popper id={open ? 'simple-popper' : undefined} open={open} anchorEl={anchorEl} style={{ width: '20%' }}>
         <StyledPopperDiv>
         <FormControl fullWidth>
          <InputLabel id="demo-simple-select-label">Medical Use</InputLabel>
