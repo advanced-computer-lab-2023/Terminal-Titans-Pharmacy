@@ -23,6 +23,8 @@ const Homescreen = () => {
   // get from params token
   const params = new URLSearchParams(window.location.search);
   const  sessid  = params.get('id');
+  console.log(params)
+  console.log(sessionStorage.getItem("token"))
   if(sessid){
     sessionStorage.setItem("token", sessid);
   }

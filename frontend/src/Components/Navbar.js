@@ -583,6 +583,11 @@ import Homescreen from '../Screens/Homescreen';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Sidebar from './sidebar';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { Button as MyButton }  from '@mui/material';
+import PaidIcon from '@mui/icons-material/Paid';
 
 const Navbar1 = ({ click, onSearch, onFilter }) => {
   const { cartItems } = useCart();
@@ -592,6 +597,8 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
   const [filteredMedicines, setFilteredMedicines] = useState([]);
   const [searchedMedicines, setSearchedMedicines] = useState([]); // Updated variable name
   const [filteredAndSearchedMedicines, setFilteredAndSearchedMedicines] = useState([]);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // const handleSearch = async (Name) => {
   //   try {
@@ -675,7 +682,17 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
   //     console.error('Error:', error);
   //   }
   // };
+  function goBack(){
+      
+    // console.log(location.pathname.substring(0,14))
+    // if(location.pathname.substring(0,14)==='/viewMyProfile'){
+      
+    //   window.location.href = '/Health-Plus/patientHome';
+    //   return;      
+    // }
+    navigate(-1);
 
+    }
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -715,6 +732,18 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
         onHide={() => setModalShow(false)}
       />
       <Container fluid>
+      <MyButton
+           // hena link el chatting
+           variant="text"
+           style={{ color: 'black' }}
+           onClick={() => { goBack() }}
+                      sx={{ my: 1, mx: 0 }}
+                      size="small"
+
+         >
+             <ArrowBackIosIcon />
+           
+         </MyButton>
         <Navbar.Brand href="/patient">Titans Pharmacy</Navbar.Brand>
         <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${'xl'}`} />
        {/* <InputGroup className="mb-3">
@@ -741,7 +770,14 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
           aria-labelledby={`offcanvasNavbarLabel-expand-${'xl'}`}
           placement="end"
         >
+            
           <Nav className="justify-content-end flex-grow-1 pe-3">
+          <Nav.Link href="/wallet">
+              <Button variant="light">
+                <PaidIcon />
+                Wallet
+              </Button>
+            </Nav.Link>
             <Nav.Link href="/cart">
               <Button variant="primary">
                 Cart <Badge bg="secondary">{cartItemCount}</Badge>

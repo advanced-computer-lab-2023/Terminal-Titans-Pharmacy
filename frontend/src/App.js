@@ -29,7 +29,7 @@ import AdminAvailableMeds from './Screens/AdminAvailableMedecine';
 import AdminSalesReport from './Screens/AdminSalesReport';
 import AdminPharmProfile from './Components/adminViewPharmReq';
 import ViewAdminPharmApplications from './Components/ViewAdminPharmApplications';
-
+import WalletPatient from './Screens/WalletPatient';
 
 
 function App() {
@@ -75,6 +75,7 @@ function App() {
             <Route path="/medicinepharm" element={<MedPharm/>}/>
             <Route path="/medicinepharm/:medicineId" element={<MedPharm/>}/>
             <Route path="/NewMed" element={<NewMed/>}/>
+            <Route path="/wallet" element={<WalletPatient/>}/>
             {/* <Route path="/medicinePharm/:medicineId" element={<MedPharm/>}/> */}
             <Route path="/AvailableMeds" element={<AvailableMeds/>}/>
             {/* Pass cartItems to CartScreen */}

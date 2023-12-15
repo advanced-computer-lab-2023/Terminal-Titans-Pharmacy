@@ -1580,6 +1580,30 @@ async function changeStatusOfPres(userId){
 return false;
                    } 
                   }
+                  router.get('/getTransactionHistory',protect,async(req,res)=>{
+                    try{
+                        const exists = await PatientModel.findOne(req.user);
+                        if (!exists) {
+                            return res.status(400).json({ message: "Patient not found", success: false })
+                        }
+                        console.log(exists.Wallet)
+                        const transactions=await transactionsModel.find({userId:req.user._id});
+                        
+                        res.status(200).json({
+                            success: true,
+                            transactions:transactions,
+                            wallet:Math.round(exists.Wallet * 100) / 100
+                        });
+                    }
+                    catch(error){
+                        console.log(error);
+                        res.status(500).json({
+                            success: false,
+                            message: "Internal error mate2refnash"
+                        });
+                    }
+                });
+                
 
 
 module.exports = router;

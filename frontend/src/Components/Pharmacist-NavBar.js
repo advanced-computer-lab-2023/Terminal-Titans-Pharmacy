@@ -9,19 +9,33 @@ import Link from '@mui/material/Link';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Dropdown from 'react-bootstrap/Dropdown';
-
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
 export default function Pricing() {
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const createHandleMenuClick = (menuItem) => {
     return () => {
       console.log(`Clicked on ${menuItem}`);
     };
   };
+  function goBack(){
+      
+    // console.log(location.pathname.substring(0,14))
+    // if(location.pathname.substring(0,14)==='/viewMyProfile'){
+      
+    //   window.location.href = '/Health-Plus/patientHome';
+    //   return;      
+    // }
+    navigate(-1);
 
+    }
   function goToChat() {
     
     window.location.href = `http://localhost:3000/Health-Plus/chat/:${sessionStorage.getItem('token')}`
@@ -48,6 +62,19 @@ export default function Pricing() {
         sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}
       >
         <Toolbar sx={{ flexWrap: 'wrap' }}>
+        {location.pathname!=='/Health-Plus/pharmacistScreen'?
+           <Button
+           // hena link el chatting
+           style={{ color: 'black' }}
+           onClick={() => { goBack() }}
+                      sx={{ my: 1, mx: 0 }}
+                      size="small"
+         >
+             <ArrowBackIosIcon />
+           
+         </Button>
+         
+            :null}
           <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
             Health Plus+
           </Typography>
