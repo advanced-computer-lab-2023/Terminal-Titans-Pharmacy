@@ -15,7 +15,26 @@
     margin-left: 8px;
 
 }
-
+  
+  .rotate-left-button {
+    background-color: black;
+    color: white;
+    height: 50px; /* Adjust the height as needed */
+    /* Add any other styles you need */
+  
+    /* Hover effect */
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+  }
+  .rotate-left-button button {
+    height: 100%; /* Make the button fill the height of the container */
+    width: 100%;
+  }
+  
+  .rotate-left-button:hover {
+    background-color: white;
+    color: black;
+  }
+  
 .homescreen_meds{
     margin-left: 1rem;
     display: grid;
