@@ -12,6 +12,8 @@ import Navbar from '../Components/Navbar';
 import "./Homescreen.css";
 import { useParams } from 'react-router-dom';
 import Sidebar from '../Components/sidebar.js';
+import { Link } from 'react-router-dom';
+import { Token } from '@mui/icons-material';
 
 const Homescreen = () => {
   const [allMedicines, setAllMedicines] = useState([]);
@@ -85,7 +87,10 @@ const Homescreen = () => {
       console.error('Error:', error);
     }
   };
-
+  const navigateToPatient = () => {
+    // Change the URL to "/patient"
+    window.location.pathname = `/patient/${id}`;
+  };
   const handleMedicalUseFilter = async (medicalUse) => {
     try {
       // setAnchorEl(null);
@@ -154,6 +159,7 @@ const Homescreen = () => {
         <Sidebar />
 
         <div className="content-wrapper">
+       
           <div>
             <InputGroup className="mb-3">
               <Button
@@ -176,6 +182,8 @@ const Homescreen = () => {
                 id="segmented-button"
                 onClick={handleClick}
               >
+              
+              
                 <FilterListIcon />
                 Filter
               </Button>
@@ -219,10 +227,15 @@ const Homescreen = () => {
                         Reset
                       </Button>
                     </div>
+                    
                   </FormControl>
                 </StyledPopperDiv>
               </Popper>
+              <button className="rotate-left-button" onClick={navigateToPatient}>
+                <i className="fas fa-arrow-rotate-left"></i>
+              </button>
             </InputGroup>
+            
             {errorMessage && (
               <div className="alert alert-danger" role="alert">
                 {errorMessage}

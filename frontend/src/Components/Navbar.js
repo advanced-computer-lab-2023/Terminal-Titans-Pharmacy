@@ -791,11 +791,7 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
                 Home
               </Button>
             </Nav.Link>
-            <Nav.Link href="/patient">
-              <Button variant="light">
-                undo searches
-              </Button>
-            </Nav.Link>
+            
             
 
             {/*<Nav.Link href="/orderDetails">Order</Nav.Link>
