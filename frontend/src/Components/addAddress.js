@@ -41,15 +41,15 @@ function Address() {
   const handleChooseAddress = (event) => {
     console.log(event.target.value);
     console.log("k");
-    const temp=event.target.value.split(",");
-          console.log(temp[0])
-          setAddress(temp[0]);
-          setCity(temp[1]);
-          setCountry(temp[2]);
-    const index=addresses.indexOf(event.target.value);
+    const temp = event.target.value.split(",");
+    console.log(temp[0])
+    setAddress(temp[0]);
+    setCity(temp[1]);
+    setCountry(temp[2]);
+    const index = addresses.indexOf(event.target.value);
     setselectedAddress(index);
     finalAddress = event.target.value;
-    indexAddress=index;
+    indexAddress = index;
   }
 
   const addAddress = async (event) => {
@@ -59,7 +59,7 @@ function Address() {
       return;
     }
     // Create a JSON object with the username and password
-    const newAddress=address+","+city+","+country;
+    const newAddress = address + "," + city + "," + country;
     const data = { address: newAddress };
 
     // Make a POST request to your backend register route
@@ -94,30 +94,30 @@ function Address() {
       }
     })
       .then(response => response.json())
-      .then(data =>{ 
+      .then(data => {
         console.log(data.result.address.length)
         setName(data.result.Name);
         setAddresses(data.result.address);
-        if(data.result.address.length>0){
-          setselectedAddress(data.result.address.length-1);
-          finalAddress =data.result.address[data.result.address.length-1];
+        if (data.result.address.length > 0) {
+          setselectedAddress(data.result.address.length - 1);
+          finalAddress = data.result.address[data.result.address.length - 1];
           setFlag(true);
-          const temp=data.result.address[data.result.address.length-1].split(",");
+          const temp = data.result.address[data.result.address.length - 1].split(",");
           console.log(temp[0])
           setAddress(temp[0]);
           setCity(temp[1]);
           setCountry(temp[2]);
           console.log(address)
-          indexAddress=data.result.address.length-1;
+          indexAddress = data.result.address.length - 1;
         }
       })
       .catch(error => console.error('Error fetching addresses: ', error));
-    }
+  }
   useEffect(() => {
     // Fetch addresses when the component mounts
     getAddresses();
-      
-      //console.log(finalAddress)
+
+    //console.log(finalAddress)
   }, []);
   const PopupBody = styled('div')(
     ({ theme }) => `
@@ -125,13 +125,12 @@ function Address() {
     padding: 12px 16px;
     margin: 8px;
     border-radius: 8px;
-    border: 1px solid ${theme.palette.mode === 'dark' ? '#434D5B' :'#DAE2ED'};
+    border: 1px solid ${theme.palette.mode === 'dark' ? '#434D5B' : '#DAE2ED'};
     background-color: ${theme.palette.mode === 'dark' ? '#1C2025' : '#fff'};
-    box-shadow: ${
-      theme.palette.mode === 'dark'
+    box-shadow: ${theme.palette.mode === 'dark'
         ? `0px 4px 8px rgb(0 0 0 / 0.7)`
         : `0px 4px 8px rgb(0 0 0 / 0.1)`
-    };
+      };
     font-family: 'IBM Plex Sans', sans-serif;
     font-size: 0.875rem;
     z-index: 1;
@@ -143,141 +142,141 @@ function Address() {
     setAddress('');
     setCity('');
     setCountry('');
-    indexAddress=-1;
+    indexAddress = -1;
     setAnchor(anchor ? null : event.currentTarget);
   }
-  const popup=(
-    
-<BasePopup id={id} open={open} anchor={anchor}>
-<PopupBody>
-<FormControl style={{width:'100%',textAlign:'left'}}>
-            <FormLabel id="">Choose Address</FormLabel>
-            <RadioGroup
-                aria-labelledby="demo-controlled-radio-buttons-group"
-                name="controlled-radio-buttons-group"
-                value={address+","+city+","+country}
-                onChange={handleChooseAddress}
-                
-            >
-                {addresses.map((value,index) => (
-                    <FormControlLabel value={value} control={<Radio />} label={value}  />
-                ))}
-               
-                
-            </RadioGroup>
-        </FormControl>
-        <Button variant="contained" color="primary" onClick={resetForm} style={{marginBottom:"10px",width:'100%'}}>
-             Add new address
-           </Button>
-           <br></br>
-           <Button variant="contained" color="primary" onClick={handleClick}  style={{width:'100%'}}>
-             Save
-           </Button>
+  const popup = (
 
-</PopupBody>
-      </BasePopup>
+    <BasePopup id={id} open={open} anchor={anchor}>
+      <PopupBody>
+        <FormControl style={{ width: '100%', textAlign: 'left' }}>
+          <FormLabel id="">Choose Address</FormLabel>
+          <RadioGroup
+            aria-labelledby="demo-controlled-radio-buttons-group"
+            name="controlled-radio-buttons-group"
+            value={address + "," + city + "," + country}
+            onChange={handleChooseAddress}
+
+          >
+            {addresses.map((value, index) => (
+              <FormControlLabel value={value} control={<Radio />} label={value} />
+            ))}
+
+
+          </RadioGroup>
+        </FormControl>
+        <Button variant="contained" color="primary" onClick={resetForm} style={{ marginBottom: "10px", width: '100%' }}>
+          Add new address
+        </Button>
+        <br></br>
+        <Button variant="contained" color="primary" onClick={handleClick} style={{ width: '100%' }}>
+          Save
+        </Button>
+
+      </PopupBody>
+    </BasePopup>
   )
- console.log(selectedAddress==-1)
-    return (
-      <React.Fragment>
-        <Typography variant="h6" gutterBottom>
-          Shipping address
-        </Typography>
-      
-        <Grid container spacing={3}>
-         
-         {selectedAddress===-1?(
-          console.log("here"), 
+  console.log(selectedAddress == -1)
+  return (
+    <React.Fragment>
+      <Typography variant="h6" gutterBottom>
+        Shipping address
+      </Typography>
+
+      <Grid container spacing={3}>
+
+        {selectedAddress === -1 ? (
+          console.log("here"),
           <Grid item xs={12}>
-           <TextField
-          required
-          fullWidth
-          id="outlined-required"
-          label="address"
-          onChange={(event) => setAddress(event.target.value)}
-          error={address === '' && error}
-        />
+            <TextField
+              required
+              fullWidth
+              id="outlined-required"
+              label="address"
+              onChange={(event) => setAddress(event.target.value)}
+              error={address === '' && error}
+            />
           </Grid>
-         ):(
+        ) : (
           console.log("here2"),
           console.log(address),
-          
+
           <Grid item xs={12}>
-           
-          <input  type="text" id="add"  style={{width: "50%", border:"0px", padding:'8px'}} value='Address'  />
-        <input type="text" id="add"  style={{width: "50%", border:"0px",padding:'8px'}} value={address}  />
+
+            <input type="text" id="add" style={{ width: "50%", border: "0px", padding: '8px' }} value='Address' />
+            <input type="text" id="add" style={{ width: "50%", border: "0px", padding: '8px' }} value={address} />
 
 
           </Grid>
-         )}
-            {selectedAddress===-1?( 
+        )}
+        {selectedAddress === -1 ? (
           <Grid item xs={12} sm={6}>
-             <TextField
-          required
-          fullWidth
-          id="outlined-required2"
-          label="city"
-          onChange={(event) => setCity(event.target.value)}
-          error={city === '' && error}
-        />
+            <TextField
+              required
+              fullWidth
+              id="outlined-required2"
+              label="city"
+              onChange={(event) => setCity(event.target.value)}
+              error={city === '' && error}
+            />
           </Grid>
-         ):(
+        ) : (
           <Grid item xs={12} >
-            <input  type="text" id="add"  style={{width: "50%", border:"0px", padding:'8px'}} value='City'  />
-        <input type="text" id="add"  style={{width: "50%", border:"0px",padding:'8px'}} value={city}  />
-      
+            <input type="text" id="add" style={{ width: "50%", border: "0px", padding: '8px' }} value='City' />
+            <input type="text" id="add" style={{ width: "50%", border: "0px", padding: '8px' }} value={city} />
+
           </Grid>
-         )}
-          {selectedAddress==-1?( 
+        )}
+        {selectedAddress == -1 ? (
           <Grid item xs={12} sm={6}>
-             <TextField
-          required
-          fullWidth
-          id="outlined-required"
-          label="country"
-        error={country === '' && error}
+            <TextField
+              required
+              fullWidth
+              id="outlined-required"
+              label="country"
+              error={country === '' && error}
               onChange={(event) => setCountry(event.target.value)}
             />
           </Grid>
-         ):(
+        ) : (
 
           <Grid item xs={12} >
-         
-         <input  type="text" id="add"  style={{width: "50%", border:"0px", padding:'8px'}} value='Country'  />
-        <input type="text" id="add"  style={{width: "50%", border:"0px",padding:'8px'}} value={country}  />
+
+            <input type="text" id="add" style={{ width: "50%", border: "0px", padding: '8px' }} value='Country' />
+            <input type="text" id="add" style={{ width: "50%", border: "0px", padding: '8px' }} value={country} />
 
           </Grid>
-         )}
-         {selectedAddress==-1?( 
-           <Grid item xs={12} sm={6}>
-           <Button variant="contained" color="primary" onClick={addAddress}>
-             Add address
-           </Button>
-         </Grid>
-         ):(
+        )}
+        {selectedAddress == -1 ? (
+          <Grid item xs={12} sm={6}>
+            <Button variant="contained" color="primary" onClick={addAddress}>
+              Add address
+            </Button>
+          </Grid>
+        ) : (
           <Grid item xs={12}>
-          <Button variant="contained" color="primary"onClick={handleClick}>
-            change address
-          </Button>
-          
-       {popup}
+            <Button variant="contained" color="primary" onClick={handleClick}>
+              change address
+            </Button>
 
-        </Grid>
-         )}
-        
-         
-          
-          
+            {popup}
+
           </Grid>
-          
-          
-         
-      </React.Fragment>
-      
-    );
+        )}
+
+
+
+
+      </Grid>
+
+
+
+    </React.Fragment>
+
+  );
 
 
 
 }
-export { finalAddress,indexAddress };
+export { finalAddress, indexAddress };
 export default Address;

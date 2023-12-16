@@ -1,76 +1,79 @@
-.homescreen{
-    max-width: 70%;
-    
+.homescreen_admin {
     justify-self: center;
 }
 
-.homescreen_admin{
-    
-    justify-self: center;
-}
-.homescreen_title{
+.homescreen_title {
     font-size: 1.5rem;
     color: #171717;
     margin-bottom: 1rem;
     margin-left: 8px;
-
 }
-  
-  .rotate-left-button {
+
+.rotate-left-button {
     background-color: black;
     color: white;
-    height: 50px; /* Adjust the height as needed */
+    height: 50px;
+    /* Adjust the height as needed */
     /* Add any other styles you need */
-  
+
     /* Hover effect */
     transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
-  }
-  .rotate-left-button button {
-    height: 100%; /* Make the button fill the height of the container */
+}
+
+.rotate-left-button button {
+    height: 100%;
+    /* Make the button fill the height of the container */
     width: 100%;
-  }
-  
-  .rotate-left-button:hover {
+}
+
+.rotate-left-button:hover {
     background-color: white;
     color: black;
-  }
-  
-.homescreen_meds{
-    margin-left: 1rem;
-    display: grid;
-    grid-gap: 2.5rem;
-    grid-template-columns: repeat(4, 1fr);
 }
-.homescreen_meds_admin{
+
+.homescreen_meds {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 0.1rem;
+}
+
+.homescreen_meds_admin {
     margin-left: 1rem;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
 }
 
-@media (max-width : 1232px){
-    .homescreen_meds{
-        grid-template-columns: repeat(3,1fr);
+@media (max-width : 1232px) {
+    .homescreen_meds {
+        grid-template-columns: repeat(3, 1fr);
     }
-    .homescreen_meds_admin{
-        grid-template-columns: repeat(3,1fr);
+
+    .homescreen_meds_admin {
+        grid-template-columns: repeat(3, 1fr);
     }
 
 }
-@media (max-width : 950px){
-    .homescreen_meds{
-        grid-template-columns: repeat(2,1fr);
+
+@media (max-width : 950px) {
+    .homescreen_meds {
+        grid-template-columns: repeat(2, 1fr);
     }
-    .homescreen_meds_admin{
-        grid-template-columns: repeat(2,1fr);
+
+    .homescreen_meds_admin {
+        grid-template-columns: repeat(2, 1fr);
     }
-    
+
 }
-@media (max-width : 630px){
-    .homescreen_meds{
+
+@media (max-width : 630px) {
+    .homescreen_meds {
         grid-template-columns: 1fr;
     }
-    .homescreen_meds_admin{
+
+    .homescreen_meds_admin {
         grid-template-columns: 1fr;
     }
-    
+
 }
