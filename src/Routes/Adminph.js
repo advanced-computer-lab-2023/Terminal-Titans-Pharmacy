@@ -16,15 +16,15 @@ const app = express();
 app.use(express.urlencoded({ extended: false }))
 //continue from here
 //create a another admin account
-router.post('/createAdmin',protect, async (req, res) => {
-    let exists = await adminModel.findById(req.user);
-    if (!exists || req.user.__t != "Admin") {
-      return res.status(500).json({
-        success: false,
-        message: "Not authorized"
-      });
-    }
-    
+router.post('/createAdmin', protect, async (req, res) => {
+  let exists = await adminModel.findById(req.user);
+  if (!exists || req.user.__t != "Admin") {
+    return res.status(500).json({
+      success: false,
+      message: "Not authorized"
+    });
+  }
+
   const Username = req.body.Username.toLowerCase();
   const Pass = req.body.Pass;
   const Position = 'Admin';
@@ -55,12 +55,12 @@ router.post('/createAdmin',protect, async (req, res) => {
 //delete an pharmacist/patient account
 const deleteAdmin = async (req, res) => {
   let exists = await adminModel.findById(req.user);
-    if (!exists || req.user.__t != "Admin") {
-      return res.status(500).json({
-        success: false,
-        message: "Not authorized"
-      });
-    }
+  if (!exists || req.user.__t != "Admin") {
+    return res.status(500).json({
+      success: false,
+      message: "Not authorized"
+    });
+  }
   const Username = req.query.Username.toLowerCase();
   if (!Username) {
     return res.status(400).send({ message: 'user not filled' });
@@ -79,7 +79,7 @@ const deleteAdmin = async (req, res) => {
     res.status(500).json({ message: 'Failed to delete user', success: false });
   }
 };
-router.get('/deleteAdmin',protect, async (req, res) => {
+router.get('/deleteAdmin', protect, async (req, res) => {
   // Handle GET requests.
   const Username = req.query.Username.toLowerCase();
 
@@ -105,12 +105,12 @@ router.delete('/deleteAdmin', deleteAdmin);
 //search for medicine based on name
 const getMedicine = async (req, res) => {
   let exists = await adminModel.findById(req.user);
-    if (!exists || req.user.__t != "Admin") {
-      return res.status(500).json({
-        success: false,
-        message: "Not authorized"
-      });
-    }
+  if (!exists || req.user.__t != "Admin") {
+    return res.status(500).json({
+      success: false,
+      message: "Not authorized"
+    });
+  }
   const Name = req.params.Name.toLowerCase();
   console.log(Name)
   if (!Name) {
@@ -130,7 +130,7 @@ const getMedicine = async (req, res) => {
   }
 }
 
-router.get('/getMedicine/:Name',protect, getMedicine);
+router.get('/getMedicine/:Name', protect, getMedicine);
 
 
 //view a list of all available medicines (including picture of medicine, price, description)
@@ -245,7 +245,7 @@ router.get('/getAllMedicalUses', protect, async (req, res) => {
       });
     }
 
-    const medicines = await MedicineModel.find({Archived:false, OverTheCounter: true});
+    const medicines = await MedicineModel.find({ Archived: false, OverTheCounter: true });
 
     // Extract unique medical uses using Set
     const medicalUsesSet = new Set();
@@ -265,7 +265,7 @@ router.get('/getAllMedicalUses', protect, async (req, res) => {
 });
 
 //view a list of all requested pharmacists
-router.get('/viewReqPharm', protect,async (req, res) => {
+router.get('/viewReqPharm', protect, async (req, res) => {
   try {
     let user = await adminModel.findById(req.user);
     if (!user || user.__t !== "Admin") {
@@ -317,7 +317,7 @@ router.post('/Acceptance/:username', protect, async (req, res) => {
       res.status(200).json({
         success: true,
         message: "Pharmacist accepted successfully",
-        Result:myResult
+        Result: myResult
       });
     }
     else {
@@ -353,7 +353,7 @@ router.delete('/Rejection/:username', protect, async (req, res) => {
       res.status(200).json({
         success: true,
         message: "Pharmacist rejected successfully",
-        Result:myResult
+        Result: myResult
       });
     }
     else {
@@ -453,4 +453,75 @@ async function resolveMedicineDetails(medicinesSold) {
   }
   return medicineDetails;
 }
+
+router.get('/totalSalesReportWeek', protect, async (req, res) => {
+  try {
+    // Check if the user is authorized (Pharmacist)
+    if (req.user.__t !== "Admin") {
+      return res.status(500).json({
+        success: false,
+        message: "Not authorized"
+      });
+    }
+
+    const today = new Date();
+    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const startingDay = daysOfWeek[today.getDay()];
+    const startDay = today.getDate();
+
+    const startIndex = daysOfWeek.indexOf(startingDay);
+    let temp = []
+    temp[0] = startDay - startIndex;
+    for (let i = 0; i < daysOfWeek.length - 1; i++) {
+      temp[i + 1] = temp[i] + 1;
+    }
+
+    const dates = temp.map(day => new Date(today.getFullYear(), today.getMonth(), day + 1));
+
+
+    const salesData = await OrderModel.aggregate([
+      {
+        $match: {
+          $expr: {
+            $in: [
+              { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+              dates.map(date => ({ $dateToString: { format: '%Y-%m-%d', date } })),
+            ],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+          totalSales: { $sum: '$total' },
+        },
+      },
+    ]);
+
+    let salesPerDay = [0, 0, 0, 0, 0, 0, 0];
+
+
+    salesData.forEach((dayData) => {
+      const dayOfMonth = new Date(dayData._id);
+      // let index = daysOfWeek.findIndex(dayOfMonth.toLocaleDateString('en-US', { weekday: 'long' }))
+      let index = daysOfWeek.findIndex(day => day === dayOfMonth.toLocaleDateString('en-US', { weekday: 'long' }));
+      let sale = 0;
+      if (index != -1) {
+        sale = dayData.totalSales;
+        salesPerDay[index] = [sale];
+      }
+    });
+
+
+
+    // Return the total sales, total quantity sold, and medicine details for the past 7 days
+    res.status(200).json({ Result: { totalSales: salesPerDay }, success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error retrieving total sales report", success: false });
+  }
+});
+
+
+
 module.exports = router;

@@ -39,7 +39,7 @@ export default function Pricing() {
     }
   function goToChat() {
     
-    window.location.href = `http://localhost:3000/Health-Plus/chat/:${sessionStorage.getItem('token')}`
+    window.location.href = `http://localhost:3000/Health-Plus/chat/${sessionStorage.getItem('token')}`
   }
 
   function goToReports() {
