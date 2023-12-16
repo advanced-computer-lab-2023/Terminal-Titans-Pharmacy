@@ -27,6 +27,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import Navbar from '../Components/Navbar';
+import { useNavigate } from 'react-router-dom';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 
 import { Method } from './paymentMethod';
@@ -46,7 +48,7 @@ function Checkout() {
   if(sessid){
     sessionStorage.setItem("token", sessid);
   }
-
+const navigate = useNavigate();
   const handleChange = (event) => {
     setValue(event.target.value);
    
@@ -55,7 +57,12 @@ function Checkout() {
 
 
   };
+  function goBack(){
+      
+    
+    navigate(-1);
 
+    }
 
   const handleNext = () => {
     if(activeStep==steps.length-1)
@@ -189,6 +196,17 @@ const goToHome = () => {
         }}
       >
        <Toolbar>
+       <Button
+           // hena link el chatting
+           style={{ color: 'black' }}
+           onClick={() => { goBack() }}
+                      sx={{ my: 1, mx: 0 }}
+                      size="small"
+         >
+             <ArrowBackIosIcon />
+           
+         </Button>
+         
            <Typography variant="h6" color="inherit" noWrap onClick={goToHome}>
             Terminal Pharmacy
           </Typography>
