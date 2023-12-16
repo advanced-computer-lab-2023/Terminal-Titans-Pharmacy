@@ -12,6 +12,7 @@ const AdminController = require('./Adminph');
 const protect = require('../middleware/authMiddleware.js');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+const transactionsModel = require('../Models/transactionsModel.js');
 
 
 //search for medicine based on name
@@ -161,7 +162,59 @@ router.get('/getMedicine', protect, async (req, res) => {
 //     }
 
 //  }
+router.get('/getCurrentPharm', protect, async (req, res) => {
+  const exists = await PharmacistModel.findById(req.user);
+    if (!exists || req.user.__t !== 'Pharmacist') {
+      return res.status(500).json({
+        success: false,
+        message: 'Not authorized',
+      });
+    }
+      res.status(200).json({ Result: exists, success: true })
+  
+})
+router.get('/getTransactionHistory', protect, async (req, res) => {
+  try {
+    const exists = await PharmacistModel.findById(req.user);
+    if (!exists || req.user.__t !== 'Pharmacist') {
+      return res.status(500).json({
+        success: false,
+        message: 'Not authorized',
+      });
+    }
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000*30); // Calculate 24 hours ago
+    const records = await transactionsModel.find({ createdAt: { $gte: twentyFourHoursAgo } ,userId: req.user._id});
 
+    if (records.length === 0) {
+        // Add a new record if no record exists in the last 24 hours
+        exists.Wallet+=exists.HourlyRate*30;
+        await exists.save();
+        const newTransaction = new transactionsModel({
+          amount: exists.HourlyRate*30,
+          userId: req.user._id,
+          paymentMethod: "Wallet",
+          description: "Salary"
+      });
+      await newTransaction.save(); // Save the new record to the collection
+    }
+       
+      //console.log(exists.Wallet)
+      const transactions = await transactionsModel.find({ userId: req.user._id });
+
+      res.status(200).json({
+          success: true,
+          transactions: transactions,
+          wallet: Math.round(exists.Wallet * 100) / 100
+      });
+  }
+  catch (error) {
+      console.log(error);
+      res.status(500).json({
+          success: false,
+          message: "Internal error mate2refnash"
+      });
+  }
+});
 
 router.get('/filterMedical/:MedicalUse', protect, async (req, res) => {
   try {

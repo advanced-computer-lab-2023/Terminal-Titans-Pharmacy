@@ -9,19 +9,34 @@ import Link from '@mui/material/Link';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Dropdown from 'react-bootstrap/Dropdown';
-
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import Avatar from '@mui/material/Avatar';
 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
 export default function Pricing() {
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const createHandleMenuClick = (menuItem) => {
     return () => {
       console.log(`Clicked on ${menuItem}`);
     };
   };
+  function goBack(){
+      
+    console.log(location.pathname.substring(0,13))
+    if(location.pathname.substring(0,13)==='/pharmProfile'){
+      
+      window.location.href = '/Health-Plus/pharmacistScreen';
+      return;      
+    }
+    navigate(-1);
 
+    }
   function goToChat() {
     
     window.location.href = `http://localhost:3000/Health-Plus/chat/${sessionStorage.getItem('token')}`
@@ -48,8 +63,21 @@ export default function Pricing() {
         sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}
       >
         <Toolbar sx={{ flexWrap: 'wrap' }}>
-          <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
-            Health Plus+
+        {location.pathname!=='/Health-Plus/pharmacistScreen'?
+           <Button
+           // hena link el chatting
+           style={{ color: 'black' }}
+           onClick={() => { goBack() }}
+                      sx={{ my: 1, mx: 0 }}
+                      size="small"
+         >
+             <ArrowBackIosIcon />
+           
+         </Button>
+         
+            :null}
+         <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
+            <span className='homePage' onClick={() => { window.location.href = '/Health-Plus/pharmacistScreen' }}>Health Plus+</span>
           </Typography>
           <nav>
             <Dropdown className="d-inline mx-2">
@@ -86,7 +114,24 @@ export default function Pricing() {
           </nav>
           {/* mehtag a7ot hena el link ely hywadini 3ala el home page tani */}
 
-          <Button onClick={signoutButtonFunc}>Sign Out</Button>
+          {/* <Button onClick={signoutButtonFunc}>Sign Out</Button> */}
+          <Dropdown className="d-inline mx-2" >
+              <Dropdown.Toggle id="dropdown-autoclose-true">
+                <Avatar src="/broken-image.jpg" />
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                <Dropdown.Item href="/pharmProfile/0">My Profile</Dropdown.Item>
+                <Dropdown.Divider />
+                <Dropdown.Item href="/pharmProfile/1">Change Password</Dropdown.Item>
+                <Dropdown.Divider />
+                <Dropdown.Item href="/pharmProfile/2">Wallet</Dropdown.Item>
+                
+                <Dropdown.Divider />
+                <Dropdown.Item onClick={signoutButtonFunc}>Sign Out</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+
         </Toolbar>
       </AppBar>
 

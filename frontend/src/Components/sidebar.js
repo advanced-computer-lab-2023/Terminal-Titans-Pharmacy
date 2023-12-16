@@ -33,7 +33,8 @@ const Sidebar = () => {
 
     const signoutButtonFunc = () => {
         sessionStorage.removeItem('token');
-        window.location.href = '/Health-Plus';
+        
+        window.location.href = 'http://localhost:3000/Health-Plus';;
     };
     const token = sessionStorage.getItem("token");
     const navigateChat=()=>{
@@ -63,7 +64,7 @@ const Sidebar = () => {
         {
             label: "Clinic Account",
             icon: <BsPeople />,
-            to: "/",
+            to: "http://localhost:3000/Health-Plus/patientHome",
             notification: 1,
         },
     ];

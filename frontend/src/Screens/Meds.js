@@ -4,6 +4,7 @@ import { useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 import './Meds.css';
 import Navbar from '../Components/Navbar';
+import Meds from '../Components/Meds';
 
 function arrayBufferToBase64(buffer) {
     let binary = '';
@@ -19,6 +20,7 @@ function arrayBufferToBase64(buffer) {
 
 function Meds2() {
     const [medicines, setMedicines] = useState([]);
+    const [allMedicines, setAllMedicines] = useState([]);
     const location = useLocation();
     const { medicineId } = useParams();
     const userId = new URLSearchParams(location.search).get('medicineId');
@@ -62,6 +64,24 @@ function Meds2() {
     if (!medicine) {
         return <div>Medicine not found</div>;
     }
+    if (medicine.Quantity === 0) {
+        const handleAlternatives = async () => {
+            try {
+              const alternativesResponse = await axios.get(`http://localhost:7000/Patient/findAlternatives2/${medicine.MedicalUse}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
+          
+              if (alternativesResponse.status === 200) {
+                setAllMedicines(alternativesResponse.data.Alternatives);
+              } else {
+                console.error('Failed to find alternatives. Unexpected response:', alternativesResponse);
+              }
+            } catch (error) {
+              console.error('Error:', error);
+            }
+        };
+    
+        // Call handleAlternatives when Quantity === 0
+        handleAlternatives();
+    }
 
     const handleQuantityChange = (event) => {
         const newQuantity = parseInt(event.target.value);
@@ -89,7 +109,6 @@ function Meds2() {
                 console.log('Added to cart:', cartItem);
 
                 // Update the quantity based on the selected quantity using functional update
-                // Update the quantity based on the selected quantity using functional update
                 setMedicines((prevMedicines) => {
                     const updatedMedicines = [...prevMedicines];
                     const index = updatedMedicines.findIndex((m) => m._id === medicine._id);
@@ -101,8 +120,6 @@ function Meds2() {
 
                 // Reset the selected quantity to 1 after successful addition
                 setSelectedQuantity(1);
-
-
 
                 // Clear any previous error message
                 setErrorMessage('');
@@ -130,55 +147,64 @@ function Meds2() {
 
     return (
         <div>
-            <Navbar/>
-        
-        <div className="meds">
+          <Navbar />
+          <div className="meds">
             <div className="medscreen_left">
-                <div className="left_img">
-                    {medicine.Picture && medicine.Picture.data && medicine.Picture.contentType && (
-                        <img
-                            src={`data:${medicine.Picture.contentType};base64,${arrayBufferToBase64(
-                                medicine.Picture.data.data
-                            )}`}
-                            alt={medicine.Name}
-                        />
-                    )}
-                </div>
-                <div className="left_info">
-                    <p className="left_name">{medicine.Name}</p>
-                    <p>Price: ${medicine.Price}</p>
-                    <p>{medicine.MedicalUse.join(' ')}</p>
-                </div>
+              <div className="left_img">
+                {medicine.Picture && medicine.Picture.data && medicine.Picture.contentType && (
+                  <img
+                    src={`data:${medicine.Picture.contentType};base64,${arrayBufferToBase64(
+                      medicine.Picture.data.data
+                    )}`}
+                    alt={medicine.Name}
+                  />
+                )}
+              </div>
+              <div className="left_info">
+                <p className="left_name">{medicine.Name}</p>
+                <p>Price: ${medicine.Price}</p>
+                <p>{medicine.MedicalUse.join(' ')}</p>
+              </div>
             </div>
             <div className="medscreen_right">
-                <div className="right_info">
-                    <p>
-                        Price: <span>${medicine.Price}</span>
-                    </p>
-                    <p>
-                        Status: <span>{medicine.Quantity > 0 ? 'In stock' : 'Out of stock'}</span>
-                    </p>
-                    <p>
-                        Quantity
-                        <select value={selectedQuantity} onChange={handleQuantityChange}>
-                            {Array.from({ length: medicine.Quantity + 1 }, (_, i) => (
-                                <option key={i} value={i}>
-                                    {i}
-                                </option>
-                            ))}
-                        </select>
-                    </p>
-                    <p>
-                        <button type="button" onClick={handleAddToCart}>
-                            Add to cart
-                        </button>
-                    </p>
-                    {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-                </div>
+              <div className="right_info">
+                <p>
+                  Price: <span>${medicine.Price}</span>
+                </p>
+                <p>
+                  Status: <span>{medicine.Quantity > 0 ? 'In stock' : 'Out of stock'}</span>
+                </p>
+                <p>
+                  Quantity
+                  <select value={selectedQuantity} onChange={handleQuantityChange}>
+                    {Array.from({ length: medicine.Quantity + 1 }, (_, i) => (
+                      <option key={i} value={i}>
+                        {i}
+                      </option>
+                    ))}
+                  </select>
+                </p>
+                <p>
+                  <button type="button" onClick={handleAddToCart}>
+                    Add to cart
+                  </button>
+                </p>
+                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+              </div>
             </div>
+          </div>
+          {allMedicines.length > 0 && (
+            <div className="alternatives">
+              <h2>Alternatives</h2>
+              <div className="alternatives_meds">
+                {allMedicines.map((alternative) => (
+                  <Meds key={alternative._id} medicines={[alternative]} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-        </div>
-    );
-};
+      );
+ }
 
 export default Meds2;

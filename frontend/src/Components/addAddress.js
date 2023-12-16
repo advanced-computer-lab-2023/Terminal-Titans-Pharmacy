@@ -166,7 +166,7 @@ function Address() {
                 
             </RadioGroup>
         </FormControl>
-        <Button variant="contained" color="primary" onClick={resetForm} style={{width:'100%'}}>
+        <Button variant="contained" color="primary" onClick={resetForm} style={{marginBottom:"10px",width:'100%'}}>
              Add new address
            </Button>
            <br></br>
