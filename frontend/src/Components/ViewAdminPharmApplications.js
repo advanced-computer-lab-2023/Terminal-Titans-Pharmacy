@@ -73,24 +73,30 @@ function ViewPharmApplications() {
 
     return (
         <div>
-    <Nav/>
-        <div>
-          <div style={{ width: "100%", padding: '10px' }}>
-            <h1 style={{ color: 'white', textAlign: 'center',backgroundColor: 'black',borderRadius:'15px' }}>Requested Pharmacists List </h1>
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-            {pharmacists.map((pharmacist, index) => (
-              <PharmacistCard
-                key={index}
-                pharmacist={pharmacist}
-                onAccept={acceptPharmacist}
-                onReject={rejectPharmacist}
-              />
-            ))}
-          </div>
+            <Nav />
+            <div>
+                <div style={{ width: "100%", padding: '10px' }}>
+                    <h1 style={{ color: 'white', textAlign: 'center', backgroundColor: 'black', borderRadius: '15px' }}>Requested Pharmacists List </h1>
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                    {pharmacists.length === 0 ? (
+                        <div style={{ width: '100%', textAlign: 'center', marginTop: '50px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', padding: '20px', borderRadius: '8px' }}>
+                            <h3>No pharmacist requests in the list</h3>
+                        </div>
+                    ) : (
+                        pharmacists.map((pharmacist, index) => (
+                            <PharmacistCard
+                                key={index}
+                                pharmacist={pharmacist}
+                                onAccept={acceptPharmacist}
+                                onReject={rejectPharmacist}
+                            />
+                        ))
+                    )}
+                </div>
+            </div>
         </div>
-        </div>
-      );
+    );
 }
 
 export default ViewPharmApplications;
