@@ -31,6 +31,7 @@ import AdminPharmProfile from './Components/adminViewPharmReq';
 import ViewAdminPharmApplications from './Components/ViewAdminPharmApplications';
 import WalletPatient from './Screens/WalletPatient';
 import PharmProfile from './Screens/PharmProfile';
+import Notification from './Components/Notification';
 
 
 function App() {
@@ -63,22 +64,22 @@ function App() {
             <Route path="/Health-Plus/admin" element={<AdminPage />} />
             <Route path="/Health-Plus/adminAvailableMeds" element={<AdminAvailableMeds />} />
             <Route path="/Health-Plus/adminSalesReport" element={<AdminSalesReport />} />
-            <Route path="/Health-Plus/adminPharmApplicationList" element={<ViewAdminPharmApplications />} /> 
-            <Route path="/Health-Plus/adminViewReqPharm" element={<AdminPharmProfile />} /> 
+            <Route path="/Health-Plus/adminPharmApplicationList" element={<ViewAdminPharmApplications />} />
+            <Route path="/Health-Plus/adminViewReqPharm" element={<AdminPharmProfile />} />
             <Route path="/orderDetails" element={<OrderScreen />} />
             <Route path="/Health-Plus/pharmacistScreen" element={<PharmacistScreen />} />
             <Route path="/orderDetails/:orderId" element={<OrderDetails />} />
             <Route path="/patient" element={<Homescreen />} />
             <Route path="/patient/:id" element={<Homescreen />} />
             <Route path="/medicine" element={<Meds2 />} />
-            <Route path='/monthlysales' element={<MonthlySales/>}/>
+            <Route path='/monthlysales' element={<MonthlySales />} />
             <Route path="/medicine/:medicineId" element={<Meds2 />} />
-            <Route path="/medicinepharm" element={<MedPharm/>}/>
-            <Route path="/medicinepharm/:medicineId" element={<MedPharm/>}/>
-            <Route path="/NewMed" element={<NewMed/>}/>
-            <Route path="/wallet" element={<WalletPatient/>}/>
+            <Route path="/medicinepharm" element={<MedPharm />} />
+            <Route path="/medicinepharm/:medicineId" element={<MedPharm />} />
+            <Route path="/NewMed" element={<NewMed />} />
+            <Route path="/wallet" element={<WalletPatient />} />
             {/* <Route path="/medicinePharm/:medicineId" element={<MedPharm/>}/> */}
-            <Route path="/AvailableMeds" element={<AvailableMeds/>}/>
+            <Route path="/AvailableMeds" element={<AvailableMeds />} />
             {/* Pass cartItems to CartScreen */}
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/success" element={<Success />} />
@@ -87,6 +88,7 @@ function App() {
             <Route path="/Health-Plus/viewReqPharmcDoc" element={<ViewReqPharmDoc />} />
             <Route path="/cart" element={<CartScreen />} />
             <Route path="/pharmProfile/:id" element={<PharmProfile />} />
+            <Route path="/notifications" element={<Notification />} />
 
           </Routes>
         </main>

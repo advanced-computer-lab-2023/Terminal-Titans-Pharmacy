@@ -4,19 +4,19 @@ const app = express();
 
 const protect = require("../middleware/authMiddleware.js");
 const router = express.Router();
-const stripe= require('stripe')
+const stripe = require('stripe')
 const healthPackageModel = require("../Models/healthPackageModel.js");
 const healthPackageStatus = require("../Models/healthPackageStatus.js");
-const transactionsModel=require("../Models/transactionsModel.js");
+const transactionsModel = require("../Models/transactionsModel.js");
 const PrescriptionModel = require("../Models/Prescription.js");
 const PatientModel = require("../Models/Patient.js");
 const MedicineModel = require("../Models/Medicine.js");
 const CartItem = require("../Models/Cart.js");
 const Order = require("../Models/Orders.js");
 const user = require("../Models/user.js");
-const nodemailer=require('nodemailer');
-const notificationModel=require("../Models/notificationModel.js");
-const pharmacistModel=require("../Models/Pharmacist.js");
+const nodemailer = require('nodemailer');
+const notificationModel = require("../Models/notificationModel.js");
+const pharmacistModel = require("../Models/Pharmacist.js");
 //const cors = require('cors');
 app.use(express.urlencoded({ extended: false }))
 const stripeInstance = stripe('sk_test_51OAmglE5rOvAFcqVk714zBO64pgCArV8MfP0BWTnycXGzLnWqkX5cP37OvMffUIDt6DdoKif93x9PfiC39XvkhJr00LuYVmMyv');
@@ -31,7 +31,7 @@ router.get('/filterMedical/:MedicalUse', protect, async (req, res) => {
         message: 'Not authorized',
       });
     }
-console.log(req.params.MedicalUse)
+    console.log(req.params.MedicalUse)
     const medicalUse = req.params.MedicalUse.toLowerCase();
     console.log(medicalUse);
 
@@ -44,18 +44,18 @@ console.log(req.params.MedicalUse)
       OverTheCounter: true,
       Archived: false,
     });
-        // Fetch prescribed medicines for the patient
-        const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id, status: 'not filled' });
+    // Fetch prescribed medicines for the patient
+    const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id, status: 'not filled' });
 
-        // Extract and deduplicate medicine IDs from prescriptions
-        const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
-    
-        // Fetch details of prescribed medicines
-        const prescribedMeds = await MedicineModel.find({ _id: { $in: Array.from(prescribedMedicineIds) }, MedicalUse: medicalUse,OverTheCounter: false,Archived: false });
-    
-        // Combine over-the-counter and prescribed medicines into a single array with no duplicates
-        const combinedMedsSet = new Set([...filteredMedicines, ...prescribedMeds]);
-        const combinedMeds = Array.from(combinedMedsSet);
+    // Extract and deduplicate medicine IDs from prescriptions
+    const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
+
+    // Fetch details of prescribed medicines
+    const prescribedMeds = await MedicineModel.find({ _id: { $in: Array.from(prescribedMedicineIds) }, MedicalUse: medicalUse, OverTheCounter: false, Archived: false });
+
+    // Combine over-the-counter and prescribed medicines into a single array with no duplicates
+    const combinedMedsSet = new Set([...filteredMedicines, ...prescribedMeds]);
+    const combinedMeds = Array.from(combinedMedsSet);
     if (!combinedMeds.length) {
       return res.status(400).send({
         message: 'No medicines found with the specified medical use and conditions.',
@@ -147,7 +147,7 @@ console.log(req.params.MedicalUse)
 //     if (!searchedMedicine) {
 //       // If the searched medicine is not found, check for alternatives based on medical use
 //       const alternatives = await MedicineModel.find({ MedicalUse: searchedMedicine.MedicalUse, OverTheCounter: true, Archived: false });
-      
+
 //       if (alternatives.length === 0) {
 //         return res.status(400).send({ message: "No Medicine with this name and no alternatives found", success: false });
 //       }
@@ -158,7 +158,7 @@ console.log(req.params.MedicalUse)
 //     if (searchedMedicine.Stock <= 0) {
 //       // If the searched medicine is out of stock, get alternatives based on medical use
 //       const alternatives = await MedicineModel.find({ MedicalUse: searchedMedicine.MedicalUse, OverTheCounter: true, Archived: false });
-      
+
 //       if (alternatives.length === 0) {
 //         return res.status(400).send({ message: "Medicine is out of stock and no alternatives found", success: false });
 //       }
@@ -206,7 +206,7 @@ console.log(req.params.MedicalUse)
 //     // // Combine over-the-counter and prescribed medicines into a single array with no duplicates
 //     // const combinedMedsSet = new Set([...searchedMedicineArray, ...prescribedMedsArray]);
 //     // const combinedMeds = Array.from(combinedMedsSet);
-    
+
 //     if (!combinedMeds) {
 //       return res.status(400).send({ message: "No Medicine with this name found", success: false });
 //     }
@@ -287,7 +287,7 @@ router.get('/findAlternatives/:Name', protect, async (req, res) => {
     const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
 
     // Fetch details of prescribed medicines
-    const prescribedMeds = await MedicineModel.find({ _id: { $in: Array.from(prescribedMedicineIds) },Name,OverTheCounter: false,Archived: false });
+    const prescribedMeds = await MedicineModel.find({ _id: { $in: Array.from(prescribedMedicineIds) }, Name, OverTheCounter: false, Archived: false });
 
     // Combine over-the-counter and prescribed medicines into a single array with no duplicates
     const combinedMedsSet = new Set([...searchedMedicine, ...prescribedMeds]);
@@ -335,7 +335,7 @@ router.get('/findAlternatives2/:MedicalUse', protect, async (req, res) => {
     const use = req.params.MedicalUse.toLowerCase();
     console.log(use);
 
-    const searchedMedicine = await MedicineModel.find({ MedicalUse: use, OverTheCounter: true, Archived: false,Quantity: { $gt: 0 } });
+    const searchedMedicine = await MedicineModel.find({ MedicalUse: use, OverTheCounter: true, Archived: false, Quantity: { $gt: 0 } });
 
     // Fetch prescribed medicines for the patient
     const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id, status: 'not filled' });
@@ -344,18 +344,18 @@ router.get('/findAlternatives2/:MedicalUse', protect, async (req, res) => {
     const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
 
     // Fetch details of prescribed medicines
-    const prescribedMeds = await MedicineModel.find({ _id: { $in: Array.from(prescribedMedicineIds) },MedicalUse: use,OverTheCounter: false,Archived: false,Quantity: { $gt: 0 } });
+    const prescribedMeds = await MedicineModel.find({ _id: { $in: Array.from(prescribedMedicineIds) }, MedicalUse: use, OverTheCounter: false, Archived: false, Quantity: { $gt: 0 } });
 
     // Combine over-the-counter and prescribed medicines into a single array with no duplicates
     const combinedMedsSet = new Set([...searchedMedicine, ...prescribedMeds]);
     const combinedMeds = Array.from(combinedMedsSet);
     console.log(combinedMeds);
     if (combinedMeds.Quantity <= 0) {
-        return res.status(400).send({ message: "Medicine is out of stock and no alternatives found", success: false });
-      }
+      return res.status(400).send({ message: "Medicine is out of stock and no alternatives found", success: false });
+    }
 
-      return res.status(200).json({ Alternatives: combinedMeds, success: true });
-    
+    return res.status(200).json({ Alternatives: combinedMeds, success: true });
+
 
   } catch (error) {
     console.error(error);
@@ -394,7 +394,7 @@ router.get('/findAlternatives2/:MedicalUse', protect, async (req, res) => {
 //     });
 //   }
 //   try {
-    
+
 
 //     // Fetch over-the-counter medicines
 //     const overTheCounterMeds = await MedicineModel.find({ OverTheCounter: true, Archived: false });
@@ -504,11 +504,11 @@ router.get('/getAllMedicine', protect, async (req, res) => {
     });
   }
   try {
-    
+
 
     const meds = await MedicineModel.find();
-console.log(meds)
-    
+    console.log(meds)
+
     // const medicines = data.Result.filter((medicine) => medicine.Picture);
     res.status(200).json({ success: true, meds });
   } catch (error) {
@@ -526,7 +526,7 @@ router.get('/getMedicineById/:id', protect, async (req, res) => {
         success: false,
         message: "Not authorized"
       });
-    
+
     }
     const id = req.params.id;
     const meds = await MedicineModel.findById(id);
@@ -540,29 +540,29 @@ router.get('/getMedicineById/:id', protect, async (req, res) => {
 });
 
 router.get('/getAllMedicalUses', protect, async (req, res) => {
-  
+
   try {
 
     let exists = await PatientModel.findById(req.user);
-    if (!exists || req.user.__t !== 'patient' ) {
+    if (!exists || req.user.__t !== 'patient') {
       return res.status(500).json({
         success: false,
         message: 'Not authorized',
       });
     }
-    const medicines = await MedicineModel.find({Archived:false, OverTheCounter: true});
-        // Fetch prescribed medicines for the patient
-        const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id, status: 'not filled' });
+    const medicines = await MedicineModel.find({ Archived: false, OverTheCounter: true });
+    // Fetch prescribed medicines for the patient
+    const prescriptions = await PrescriptionModel.find({ PatientId: req.user._id, status: 'not filled' });
 
-        // Extract and deduplicate medicine IDs from prescriptions
-        const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
-    
-        // Fetch details of prescribed medicines
-        const prescribedMeds = await MedicineModel.find({ _id: { $in: Array.from(prescribedMedicineIds) },OverTheCounter: false,Archived: false });
-    
-        // Combine over-the-counter and prescribed medicines into a single array with no duplicates
-        const combinedMedsSet = new Set([...medicines, ...prescribedMeds]);
-        const combinedMeds = Array.from(combinedMedsSet);
+    // Extract and deduplicate medicine IDs from prescriptions
+    const prescribedMedicineIds = new Set(prescriptions.flatMap(prescription => prescription.items.map(item => item.medicineId)));
+
+    // Fetch details of prescribed medicines
+    const prescribedMeds = await MedicineModel.find({ _id: { $in: Array.from(prescribedMedicineIds) }, OverTheCounter: false, Archived: false });
+
+    // Combine over-the-counter and prescribed medicines into a single array with no duplicates
+    const combinedMedsSet = new Set([...medicines, ...prescribedMeds]);
+    const combinedMeds = Array.from(combinedMedsSet);
     // Extract unique medical uses using Set
     const medicalUsesSet = new Set();
     combinedMeds.forEach((medicine) => {
@@ -572,7 +572,7 @@ router.get('/getAllMedicalUses', protect, async (req, res) => {
     });
 
     const medicalUses = Array.from(medicalUsesSet);
-console.log(medicalUsesSet)
+    console.log(medicalUsesSet)
     res.status(200).json({ success: true, medicalUses });
   } catch (error) {
     console.error('Error fetching medical uses:', error);
@@ -671,7 +671,7 @@ router.post('/addToCart/:medicineId', protect, async (req, res) => {
       // If it exists, update the quantity and calculate the new price
       if (medicine.Quantity - existingCartItem.quantity >= quantity) {
         existingCartItem.quantity += quantity;
-      }else{
+      } else {
         return res.status(400).json({ message: "no stoke", success: false });
       }
       existingCartItem.price = medicine.Price; // Calculate the new price
@@ -746,7 +746,7 @@ router.get('/cartItemCount', protect, async (req, res) => {
 // router.get('/getAllMedicine', getListMed);
 
 // View the cart
-router.get('/cartinCheckOut',protect, async (req, res) => {
+router.get('/cartinCheckOut', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
   if (!exists || req.user.__t !== "patient") {
     return res.status(500).json({
@@ -757,38 +757,38 @@ router.get('/cartinCheckOut',protect, async (req, res) => {
   var discountP = 0;
 
   let myHealthStatus = await healthPackageStatus.findOne({ patientId: pid, status: 'Subscribed' });
-  if(myHealthStatus){
-  const packId = myHealthStatus.healthPackageId;
-  if (packId) {
+  if (myHealthStatus) {
+    const packId = myHealthStatus.healthPackageId;
+    if (packId) {
       const allPackages = await healthPackageModel.find({ _id: packId });
       if (allPackages.length > 0)
-          discountP = allPackages[0].medicinDiscountInPercentage;
+        discountP = allPackages[0].medicinDiscountInPercentage;
       else
-          return (res.status(400).send({ error: "cant find package", success: false }));
+        return (res.status(400).send({ error: "cant find package", success: false }));
 
+    }
+    console.log(packId);
   }
-  console.log(packId);
-}
   const cartItems = await CartItem.find({ userId: pid });
   let list = []
-  let total=0;
+  let total = 0;
   for (var x in cartItems) {
     console.log(cartItems[x])
     const med = await MedicineModel.findById(cartItems[x].medicineId);
     medInfo = {
       id: med._id,
       Name: med.Name,
-      Price: med.Price-(med.Price*discountP/100),
+      Price: med.Price - (med.Price * discountP / 100),
       Quantity: cartItems[x].quantity,
     }
-    total+=(med.Price-(med.Price*discountP/100))*cartItems[x].quantity,
-    list.push(medInfo);
+    total += (med.Price - (med.Price * discountP / 100)) * cartItems[x].quantity,
+      list.push(medInfo);
   }
-  
+
   Result = {
     total: total,
     medInfo: list,
-    wallet: Math.round(exists.Wallet * 100) / 100,  
+    wallet: Math.round(exists.Wallet * 100) / 100,
   }
   res.json(Result);
 });
@@ -853,7 +853,7 @@ router.get('/cart', protect, async (req, res) => {
 
 //     // Fetch details of prescribed medicines
 //     const prescribedMeds = await MedicineModel.find({ _id: { $in: Array.from(prescribedMedicineIds) } });
-    
+
 //     // Check if the cart item's medicineId is in the prescribed medicines
 //     const isPrescribedMedicine = prescribedMeds.some(medicine => medicine._id.toString() === cartItem.medicineId.toString());
 
@@ -1079,12 +1079,12 @@ router.get('/checkout/:id/:address/:paymentMethod', async (req, res) => {
     // Initialize variables for order creation
     let total = 0;
     const itemsForOrder = [];
-    const status=await changeStatusOfPres(req.params.id)
-    console.log(status+"status")
+    const status = await changeStatusOfPres(req.params.id)
+    console.log(status + "status")
     // Calculate the total cost and construct the order
     for (const cartItem of cartItems) {
       const medicine = await MedicineModel.findById(cartItem.medicineId);
-     // console.log(medicine);
+      // console.log(medicine);
 
       if (medicine) {
         const itemTotal = cartItem.quantity * medicine.Price;
@@ -1097,11 +1097,11 @@ router.get('/checkout/:id/:address/:paymentMethod', async (req, res) => {
           price: medicine.Price, // Use the price from the medicine schema
         });
         medicine.Quantity -= cartItem.quantity;
-        medicine.Sales+=cartItem.quantity;
-        console.log("Quantity "+medicine.Quantity+" "+medicine.Name)
-        if(medicine.Quantity<=0){
+        medicine.Sales += cartItem.quantity;
+        console.log("Quantity " + medicine.Quantity + " " + medicine.Name)
+        if (medicine.Quantity <= 0) {
 
-         await  alertPharmaicist(medicine.Name);
+          await alertPharmaicist(medicine.Name);
         }
         await medicine.save();
 
@@ -1126,46 +1126,46 @@ router.get('/checkout/:id/:address/:paymentMethod', async (req, res) => {
       var discountP = 0;
 
       let myHealthStatus = await healthPackageStatus.findOne({ patientId: patientId.id, status: 'Subscribed' });
-      if(myHealthStatus){
-      const packId = myHealthStatus?.healthPackageId;
-      if (packId) {
+      if (myHealthStatus) {
+        const packId = myHealthStatus?.healthPackageId;
+        if (packId) {
           const allPackages = await healthPackageModel.find({ _id: packId });
           if (allPackages.length > 0)
-              discountP = allPackages[0].medicinDiscountInPercentage;
+            discountP = allPackages[0].medicinDiscountInPercentage;
           else
-              return (res.status(400).send({ error: "cant find package", success: false }));
+            return (res.status(400).send({ error: "cant find package", success: false }));
 
+        }
       }
-    }
       const discount = (total * (discountP / 100));
       total = total - discount;
 
       // Create the order in the database
       const newOrder = new Order({
-          userId: patientId,
-          items: itemsForOrder,
-          total: total,
-          discount: discount,
-          address: req.params.address,
-          paymentMethod: req.params.paymentMethod,
-          status: 'processing'
+        userId: patientId,
+        items: itemsForOrder,
+        total: total,
+        discount: discount,
+        address: req.params.address,
+        paymentMethod: req.params.paymentMethod,
+        status: 'processing'
       });
       await newOrder.save();
       addTransaction(-1 * total, patientId, req.params.paymentMethod, 'Medicine Purchase');
 
-  }
+    }
 
     // Clear the cart by removing all cart items
 
     await CartItem.deleteMany({ userId: patientId });
     console.log('right before redirect')
-    if(req.params.paymentMethod==='Card')
-    return res.redirect('http://localhost:4000/checkout?id=true')
-  else
-  return res.status(200).json({ message: 'Checkout successful. Your order has been placed.' });
+    if (req.params.paymentMethod === 'Card')
+      return res.redirect('http://localhost:4000/checkout?id=true')
+    else
+      return res.status(200).json({ message: 'Checkout successful. Your order has been placed.' });
   } catch (error) {
     console.error(error);
-  return  res.status(500).json({ error: 'Checkout failed. Server error.' });
+    return res.status(500).json({ error: 'Checkout failed. Server error.' });
   }
 });
 async function alertPharmaicist(medicineName) {
@@ -1173,65 +1173,66 @@ async function alertPharmaicist(medicineName) {
 
   try {
     const allPharmacist = await pharmacistModel.find();
-    for(var i in allPharmacist){
+    for (var i in allPharmacist) {
       const mailResponse = await mailSender(
         allPharmacist[i].Email,
         "OUT OF STOCK",
         `<p>${medicineName} medicine is out of stock<p>`
-        
-    );
-    if (mailResponse) {
-        console.log("Email to pharmacist sent successfully: ", mailResponse);
-       
-    }
-    else {
-        console.log("Error sending email to pharmacist");
-    }
-    const newNotification = new notificationModel({
-      userId: allPharmacist[i]._id, 
-      Message: `${medicineName} medicine is out of stock<p>`,
-      type:"out of stock"
 
-  });
-  console.log(newNotification)
-console.log("notification")
-  await newNotification.save();
+      );
+      if (mailResponse) {
+        console.log("Email to pharmacist sent successfully: ", mailResponse);
+
+      }
+      else {
+        console.log("Error sending email to pharmacist");
+      }
+      const newNotification = new notificationModel({
+        userId: allPharmacist[i]._id,
+        Message: `${medicineName} medicine is out of stock<p>`,
+        type: "out of stock",
+        Category: "inbox",
+
+      });
+      console.log(newNotification)
+      console.log("notification")
+      await newNotification.save();
     }
   }
 
   catch (error) {
-  //  res.status(500).json({ message: "Error in selling medicine", success: false });
+    //  res.status(500).json({ message: "Error in selling medicine", success: false });
   }
 }
 
 const mailSender = async (email, title, body) => {
   try {
-      let transporter = nodemailer.createTransport({
-          host: 'smtp.gmail.com',
-          port: 465,
-          secure: true,
-          auth: {
-              user: process.env.MAIL_USER,
-              pass: process.env.MAIL_PASS,
-          }
-      });
-      // Send emails to users
-      let info = await transporter.sendMail({
-          from: 'Terminal Titans',
-          to: email,
-          subject: title,
-          html: body,
-      });
-      console.log("Email info: ", info);
-      return info;
+    let transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
+      }
+    });
+    // Send emails to users
+    let info = await transporter.sendMail({
+      from: 'Terminal Titans',
+      to: email,
+      subject: title,
+      html: body,
+    });
+    console.log("Email info: ", info);
+    return info;
   } catch (error) {
-      console.log(error.message);
+    console.log(error.message);
   }
 };
 
 
 // Add a new delivery address for a patient
-router.post('/addAddress', protect,async (req, res) => {
+router.post('/addAddress', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
   if (!exists || req.user.__t != "patient") {
     return res.status(500).json({
@@ -1285,7 +1286,7 @@ router.post('/addAddress', protect,async (req, res) => {
 
 
 // Retrieve the patient's addresses
-router.get('/getAddresses',protect, async (req, res) => {
+router.get('/getAddresses', protect, async (req, res) => {
   let exists = await PatientModel.findById(req.user);
   if (!exists || req.user.__t != "patient") {
     return res.status(500).json({
@@ -1305,9 +1306,9 @@ router.get('/getAddresses',protect, async (req, res) => {
     }
 
     const address = patient.address; // Retrieve the patient's addresses
-    let result={
-      address:address,
-      Name:patient.Name
+    let result = {
+      address: address,
+      Name: patient.Name
     }
     res.json({ result });
   } catch (error) {
@@ -1317,7 +1318,7 @@ router.get('/getAddresses',protect, async (req, res) => {
 });
 
 // Retrieve order details and status
-router.get('/getOrder', protect,async (req, res) => {
+router.get('/getOrder', protect, async (req, res) => {
   const user = await PatientModel.findById(req.user);
   if (!user || user.__t !== 'patient') {
     return res.status(500).json({
@@ -1331,7 +1332,7 @@ router.get('/getOrder', protect,async (req, res) => {
   try {
     // Find the order by its ID
     // const order = await Order.find({_id:orderId,userId:req.user._id});
-    const order = await Order.find({userId:req.user._id});
+    const order = await Order.find({ userId: req.user._id });
 
     if (!order) {
       return res.status(404).json({ error: 'Order not found' });
@@ -1346,7 +1347,7 @@ router.get('/getOrder', protect,async (req, res) => {
 });
 
 // Retrieve a certain order details and status
-router.get('/getOrder/:orderId', protect,async (req, res) => {
+router.get('/getOrder/:orderId', protect, async (req, res) => {
   const user = await PatientModel.findById(req.user);
   if (!user || user.__t !== 'patient') {
     return res.status(500).json({
@@ -1359,7 +1360,7 @@ router.get('/getOrder/:orderId', protect,async (req, res) => {
 
   try {
     // Find the order by its ID
-    const order = await Order.findOne({_id:orderId,userId:req.user._id});
+    const order = await Order.findOne({ _id: orderId, userId: req.user._id });
 
     if (!order) {
       return res.status(404).json({ error: 'Order not found' });
@@ -1374,7 +1375,7 @@ router.get('/getOrder/:orderId', protect,async (req, res) => {
 });
 
 // Cancel an order
-router.put('/cancelOrder/:orderId', protect,async (req, res) => {
+router.put('/cancelOrder/:orderId', protect, async (req, res) => {
   console.log(req);
   const user = await PatientModel.findById(req.user);
   if (!user || user.__t !== 'patient') {
@@ -1387,20 +1388,20 @@ router.put('/cancelOrder/:orderId', protect,async (req, res) => {
 
   try {
     // Find the order by its ID
-    let order = await Order.findOne({_id:orderId,userId:req.user._id});
+    let order = await Order.findOne({ _id: orderId, userId: req.user._id });
 
     if (!order) {
       return res.status(404).json({ error: 'Order not found' });
     }
     console.log(order);
     // Update the order's status to "canceled"
-    if(order.status !== 'out for delievery' || order.status !== 'delivered' || order.status !== 'returned' || order.status !== 'refunded' || order.status !== 'failed' || order.status !== 'completed')
+    if (order.status !== 'out for delievery' || order.status !== 'delivered' || order.status !== 'returned' || order.status !== 'refunded' || order.status !== 'failed' || order.status !== 'completed')
       order.status = 'canceled';
 
     // Save the updated order data
     await order.save();
 
-    let myOrders = await Order.find({userId:req.user._id});
+    let myOrders = await Order.find({ userId: req.user._id });
 
     res.json({ message: 'Order canceled successfully', myOrders });
   } catch (error) {
@@ -1411,46 +1412,46 @@ router.put('/cancelOrder/:orderId', protect,async (req, res) => {
 
 async function getOrderDetails(pid) {
   try {
-      let myHealthStatus = await healthPackageStatus.findOne({ patientId: pid, status: 'Subscribed' });
-      var discountP = 0;
+    let myHealthStatus = await healthPackageStatus.findOne({ patientId: pid, status: 'Subscribed' });
+    var discountP = 0;
 
-      if(myHealthStatus){
+    if (myHealthStatus) {
       const packId = myHealthStatus.healthPackageId;
       if (packId) {
-          const allPackages = await healthPackageModel.find({ _id: packId });
-          if (allPackages.length > 0)
-              discountP = allPackages[0].medicinDiscountInPercentage;
-          else
-              return (res.status(400).send({ error: "cant find package", success: false }));
+        const allPackages = await healthPackageModel.find({ _id: packId });
+        if (allPackages.length > 0)
+          discountP = allPackages[0].medicinDiscountInPercentage;
+        else
+          return (res.status(400).send({ error: "cant find package", success: false }));
 
       }
     }
-      const cartItems = await CartItem.find({ userId: pid });
-      let list = []
-      for (var x in cartItems) {
-          const med = await MedicineModel.findById(cartItems[x].medicineId);
-          medInfo = {
-              id: med._id,
-              name: med.Name,
-              price: med.Price * 100 * (1 - discountP / 100),
-              quantity: cartItems[x].quantity
-          }
-          list.push(medInfo);
+    const cartItems = await CartItem.find({ userId: pid });
+    let list = []
+    for (var x in cartItems) {
+      const med = await MedicineModel.findById(cartItems[x].medicineId);
+      medInfo = {
+        id: med._id,
+        name: med.Name,
+        price: med.Price * 100 * (1 - discountP / 100),
+        quantity: cartItems[x].quantity
       }
-      return list
+      list.push(medInfo);
+    }
+    return list
   }
   catch (error) {
-      console.log(error);
+    console.log(error);
   }
 
 }
 
-const processCardPayment = async (req, res,pid,address) => {
+const processCardPayment = async (req, res, pid, address) => {
   const paymentMethod = 'Card';
   try {
-    let orderDetails=await getOrderDetails(pid);
+    let orderDetails = await getOrderDetails(pid);
     console.log(address)
-    const session =await stripeInstance.checkout.sessions.create({
+    const session = await stripeInstance.checkout.sessions.create({
 
       payment_method_types: ["card"],
       mode: "payment",
@@ -1469,11 +1470,11 @@ const processCardPayment = async (req, res,pid,address) => {
       success_url: `http://localhost:7000/patient/checkout/${pid}/${encodeURIComponent(address)}/${encodeURIComponent(paymentMethod)}`,
       cancel_url: `http://localhost:4000/cancel`,
     })
-   
+
 
     // Handle the response as needed
-    
-    return res.json({ url: session.url});
+
+    return res.json({ url: session.url });
   } catch (e) {
     console.error('Error processing card payment', e.message);
     return false;
@@ -1481,40 +1482,40 @@ const processCardPayment = async (req, res,pid,address) => {
   }
 };
 
-const processWalletPayment = async (req,res,userId,address) => {
+const processWalletPayment = async (req, res, userId, address) => {
   const paymentMethod = 'Wallet';
-  let orderDetails=await getOrderDetails(userId);
-  var total=0;
+  let orderDetails = await getOrderDetails(userId);
+  var total = 0;
   console.log(orderDetails);
-for(var x in orderDetails){
-  total+=orderDetails[x].price;
-  console.log(total);
-}
-total=total/100;
+  for (var x in orderDetails) {
+    total += orderDetails[x].price;
+    console.log(total);
+  }
+  total = total / 100;
   const user = await PatientModel.findById(userId);
   user.Wallet = user.Wallet - total;
   if (user.Wallet < 0) {
-      console.error('Insufficient funds in wallet');
-      let result = res.status(400).send({ hello: 'Insufficient funds' });
-      console.log(result);
-      return result;
+    console.error('Insufficient funds in wallet');
+    let result = res.status(400).send({ hello: 'Insufficient funds' });
+    console.log(result);
+    return result;
   }
   try {
-      await PatientModel.findByIdAndUpdate(userId, user);
-      var response = await fetch(`http://localhost:7000/patient/checkout/${userId}/${encodeURIComponent(address)}/${encodeURIComponent(paymentMethod)}`);
-    if(response.status===200)
-    return res.status(200).json({ message: 'Checkout successful. Your order has been placed.' });
+    await PatientModel.findByIdAndUpdate(userId, user);
+    var response = await fetch(`http://localhost:7000/patient/checkout/${userId}/${encodeURIComponent(address)}/${encodeURIComponent(paymentMethod)}`);
+    if (response.status === 200)
+      return res.status(200).json({ message: 'Checkout successful. Your order has been placed.' });
   } catch (e) {
-      console.error('Error processing wallet payment', e.message);
-      return res.status(500).json({ error: e.message });
+    console.error('Error processing wallet payment', e.message);
+    return res.status(500).json({ error: e.message });
   }
 };
 
-router.post('/payment' ,protect, async (req,res) => {
+router.post('/payment', protect, async (req, res) => {
   console.log('kkk')
-  
 
-    
+
+
   let exists = await PatientModel.findById(req.user);
   if (!exists || req.user.__t != "patient") {
     return res.status(500).json({
@@ -1522,33 +1523,33 @@ router.post('/payment' ,protect, async (req,res) => {
       message: "Not authorized"
     });
   }
-  let userId=exists._id
+  let userId = exists._id
   console.log(req.body)
   let paymentMethod = req.body.paymentMethod;
   try {
     if (paymentMethod === "wallet") {
-      
-      let respone= await processWalletPayment(req,res,userId,req.body.address);
+
+      let respone = await processWalletPayment(req, res, userId, req.body.address);
       console.log(response)
       return response
-  } else {
-    if (paymentMethod === "card"){ 
-         const response= await processCardPayment(req,res,userId,req.body.address);
-         console.log('card')
-         //console.log(response);
+    } else {
+      if (paymentMethod === "card") {
+        const response = await processCardPayment(req, res, userId, req.body.address);
+        console.log('card')
+        //console.log(response);
 
-          }
-       
-    else
-    var response= await fetch(`http://localhost:7000/patient/checkout/${userId}/${encodeURIComponent(req.body.address)}/${encodeURIComponent(paymentMethod)}`);
-    if(response.status===200)
-    return res.status(200).json({ message: 'Checkout successful. Your order has been placed.' });
-  }
+      }
+
+      else
+        var response = await fetch(`http://localhost:7000/patient/checkout/${userId}/${encodeURIComponent(req.body.address)}/${encodeURIComponent(paymentMethod)}`);
+      if (response.status === 200)
+        return res.status(200).json({ message: 'Checkout successful. Your order has been placed.' });
+    }
   }
 
-   catch (e) {
-      console.error('Error processing payment', e.message);
-      return false;
+  catch (e) {
+    console.error('Error processing payment', e.message);
+    return false;
   }
 });
 
@@ -1598,132 +1599,133 @@ router.get('/viewWallet', protect, async (req, res) => {
 const addTransaction = (amount, userId, paymentMethod, description) => {
   console.log('l')
   const newTransaction = new transactionsModel({
-      amount: Math.round(amount * 100) / 100,
-      userId: userId,
-      paymentMethod: paymentMethod,
-      description: description
+    amount: Math.round(amount * 100) / 100,
+    userId: userId,
+    paymentMethod: paymentMethod,
+    description: description
   });
   newTransaction.save();
   console.log('l')
 }
-async function changeStatusOfPres(userId){ 
-  try{ 
+async function changeStatusOfPres(userId) {
+  try {
     console.log("in change status");
-      var cartItems = await CartItem.find({ userId: userId }); 
-      console.log(cartItems)
-      var prescriptions = await PrescriptionModel.find({ PatientId: userId ,InCart:true, status:"not filled"}); 
-      console.log(prescriptions)
-     
-      for (var pres in prescriptions){ 
-        let flag=true; 
-          var medList =prescriptions[pres].items; 
-          for (var x in cartItems) { 
-              console.log(cartItems[x]) 
-              const med = await MedicineModel.findById(cartItems[x].medicineId); 
-              console.log(med.Name)
-              
-              if(!med.OverTheCounter){ 
-                 console.log("pp")
-                  let flag2=false;
-                  let matchingMed = {}; 
-                  for (var y in medList) {
-                    console.log(medList[y].medicineId)
-                    console.log(med._id)
-                    if(medList[y].medicineId.equals( med._id)){
-                      flag2=true;
-                      matchingMed=medList[y];
-                      break;
-                    }
-                  }
-                  
-                  if(!flag2 || cartItems[x].quantity > matchingMed.dosage) 
-                    flag=false; 
-              
-              } } 
+    var cartItems = await CartItem.find({ userId: userId });
+    console.log(cartItems)
+    var prescriptions = await PrescriptionModel.find({ PatientId: userId, InCart: true, status: "not filled" });
+    console.log(prescriptions)
+
+    for (var pres in prescriptions) {
+      let flag = true;
+      var medList = prescriptions[pres].items;
+      for (var x in cartItems) {
+        console.log(cartItems[x])
+        const med = await MedicineModel.findById(cartItems[x].medicineId);
+        console.log(med.Name)
+
+        if (!med.OverTheCounter) {
+          console.log("pp")
+          let flag2 = false;
+          let matchingMed = {};
+          for (var y in medList) {
+            console.log(medList[y].medicineId)
+            console.log(med._id)
+            if (medList[y].medicineId.equals(med._id)) {
+              flag2 = true;
+              matchingMed = medList[y];
+              break;
+            }
+          }
+
+          if (!flag2 || cartItems[x].quantity > matchingMed.dosage)
+            flag = false;
+
+        }
+      }
 
 
-              if(flag){ 
-                  const updatedPres = await PrescriptionModel.findOneAndUpdate({ _id: prescriptions[pres]._id }, { status:"filled"}); 
-                  return true; 
-                  //  prescriptions = await PrescriptionModel.find({ PatientId: patient._id}); 
-                  }
-              }
-              console.log("popopoppoossckskd")
-              prescriptions = await PrescriptionModel.find({ PatientId: userId,status:"not filled" }); 
-              console.log(prescriptions+"pres")
-              let arr = new Array(cartItems.length).fill(false);
-             
-              for (var pres in prescriptions){ 
-                let newflag=false;
-                  var medList =prescriptions[pres].items; 
-                  console.log(medList+"medlist")
-                  for (var x in cartItems) { 
-                      if(arr[x])
-                      continue;
-                      console.log(cartItems[x]+"cart") 
-                      const med = await MedicineModel.findById(cartItems[x].medicineId); 
-                      let flag2=false;
-                      let matchingMed = {}; 
-                      if(!med.OverTheCounter){ 
-                          let matchingMed = {}; 
-                          for (var y in medList) {
-                            console.log(medList[y].medicineId)
-                            console.log(med._id)
-                            if(medList[y].medicineId.equals( med._id)){
-                              flag2=true;
-                              matchingMed=medList[y];
-                              break;
-                            }
-                          }
-                          console.log(matchingMed+"mm")
-                          console.log(cartItems[x].quantity+"cart")
-                          console.log(matchingMed.dosage+"dos")
+      if (flag) {
+        const updatedPres = await PrescriptionModel.findOneAndUpdate({ _id: prescriptions[pres]._id }, { status: "filled" });
+        return true;
+        //  prescriptions = await PrescriptionModel.find({ PatientId: patient._id}); 
+      }
+    }
+    console.log("popopoppoossckskd")
+    prescriptions = await PrescriptionModel.find({ PatientId: userId, status: "not filled" });
+    console.log(prescriptions + "pres")
+    let arr = new Array(cartItems.length).fill(false);
 
-                          if(flag2 && cartItems[x].quantity <= matchingMed.dosage){ 
-                              arr[x]=true;
-                              newflag=true;
-                          }
-                      
-                      } 
-                  } 
-      
-      
-                      if(newflag){ 
-                          const updatedPres = await PrescriptionModel.findOneAndUpdate({ _id: prescriptions[pres]._id }, { status:"filled"}); 
-                         
-                          //  prescriptions = await PrescriptionModel.find({ PatientId: patient._id}); 
-                          }
-                      }
-                      return true;
-              }catch(error){
-                console.error(error)
-return false;
-                   } 
-                  }
-                  router.get('/getTransactionHistory',protect,async(req,res)=>{
-                    try{
-                        const exists = await PatientModel.findOne(req.user);
-                        if (!exists) {
-                            return res.status(400).json({ message: "Patient not found", success: false })
-                        }
-                        console.log(exists.Wallet)
-                        const transactions=await transactionsModel.find({userId:req.user._id});
-                        
-                        res.status(200).json({
-                            success: true,
-                            transactions:transactions,
-                            wallet:Math.round(exists.Wallet * 100) / 100
-                        });
-                    }
-                    catch(error){
-                        console.log(error);
-                        res.status(500).json({
-                            success: false,
-                            message: "Internal error mate2refnash"
-                        });
-                    }
-                });
-                
+    for (var pres in prescriptions) {
+      let newflag = false;
+      var medList = prescriptions[pres].items;
+      console.log(medList + "medlist")
+      for (var x in cartItems) {
+        if (arr[x])
+          continue;
+        console.log(cartItems[x] + "cart")
+        const med = await MedicineModel.findById(cartItems[x].medicineId);
+        let flag2 = false;
+        let matchingMed = {};
+        if (!med.OverTheCounter) {
+          let matchingMed = {};
+          for (var y in medList) {
+            console.log(medList[y].medicineId)
+            console.log(med._id)
+            if (medList[y].medicineId.equals(med._id)) {
+              flag2 = true;
+              matchingMed = medList[y];
+              break;
+            }
+          }
+          console.log(matchingMed + "mm")
+          console.log(cartItems[x].quantity + "cart")
+          console.log(matchingMed.dosage + "dos")
+
+          if (flag2 && cartItems[x].quantity <= matchingMed.dosage) {
+            arr[x] = true;
+            newflag = true;
+          }
+
+        }
+      }
+
+
+      if (newflag) {
+        const updatedPres = await PrescriptionModel.findOneAndUpdate({ _id: prescriptions[pres]._id }, { status: "filled" });
+
+        //  prescriptions = await PrescriptionModel.find({ PatientId: patient._id}); 
+      }
+    }
+    return true;
+  } catch (error) {
+    console.error(error)
+    return false;
+  }
+}
+router.get('/getTransactionHistory', protect, async (req, res) => {
+  try {
+    const exists = await PatientModel.findOne(req.user);
+    if (!exists) {
+      return res.status(400).json({ message: "Patient not found", success: false })
+    }
+    console.log(exists.Wallet)
+    const transactions = await transactionsModel.find({ userId: req.user._id });
+
+    res.status(200).json({
+      success: true,
+      transactions: transactions,
+      wallet: Math.round(exists.Wallet * 100) / 100
+    });
+  }
+  catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal error mate2refnash"
+    });
+  }
+});
+
 
 
 module.exports = router;
