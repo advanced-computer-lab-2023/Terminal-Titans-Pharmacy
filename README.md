@@ -34,7 +34,7 @@ Organize files logically and group related functionalities together.
 
 # Screenshots
 
-#### To view the images of the system press 
+#### To view the images of the system press [here](https://drive.google.com/drive/folders/1v_4ZHKCGxWNHmmG9vTANK-lVoi_IKDdN?usp=share_link)
 
 
 
