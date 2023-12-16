@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import validator from 'validator'
 import axios from 'axios';
 import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
 
 
 function ChangePasswordForm() {
@@ -86,10 +87,8 @@ function ChangePasswordForm() {
               type="password"
               value={password}
              onChange={(e) => validatePass(e.target.value)}></input> <br />
-              {errorMessagePass === '' ? null :
-                <h5 style={{
-                  color: 'red',
-                }}>{errorMessagePass}</h5>}
+             {errorMessagePass===''? null : errorMessagePass === 'Is Strong Password' ? <Alert severity="success">{errorMessagePass}</Alert> :
+                <Alert severity="error">{errorMessagePass}</Alert>}
                <br />
             <Button
               fullWidth
