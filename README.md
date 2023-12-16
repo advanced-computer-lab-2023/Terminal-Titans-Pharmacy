@@ -441,10 +441,51 @@ After downloading these two, open a terminal and do the following:
 
   ### Admin
 
+#### Gets all medicine
+
+```http
+  GET /Admin/getAllMedicine
+```
+
+| Description                       |
+|  :-------------------------------- |
+|  gets a list of all Medicines |
+
+#### Gets medicine by a specific name
+
+```http
+  GET /Admin/getMedicine/${Name}
+```
+
+| Query|Type|Description                       |
+| ---|--|:-------------------------------- |
+| ` Name`|` String`| Fetches the Medicine having the same Name as the queryParam provided|
+
+
+#### Gets all medical use
+
+```http
+  GET /Admin/getAllMedicalUses
+```
+
+| Description                       |
+|  :-------------------------------- |
+|  gets a list of all Medical Uses |
+
+#### Gets medicine by a specific medical use
+
+```http
+  GET /Admin/filterMedical/${MedicalUse)
+```
+
+| Query|Type|Description                       |
+| ---|--|:-------------------------------- |
+| ` MedicalUse`|` String`| Fetches a list of all medicine with a certain Medical Use Provided|
+
 #### Accept Pharmacist
 
 ```http
-  POST /admin/Acceptance/${username}
+  POST /Admin/Acceptance/${username}
 ```
 
 | Parameter | Type     | Description                |
@@ -454,7 +495,7 @@ After downloading these two, open a terminal and do the following:
 #### Reject Pharmacist
 
 ```http
-  GET /admin/Rejection/${username}
+  DELETE /Admin/Rejection/${username}
 ```
 
 | Parameter | Type     | Description                       |
@@ -464,47 +505,22 @@ After downloading these two, open a terminal and do the following:
 #### Get all requested pharmacists
 
 ```http
-  GET /admin/viewReqPharm
+  GET /Admin/viewReqPharm
 ```
 
 | Description                       |
 |  :-------------------------------- |
 |  gets a list of all the requested pharmacists |
 
-
-#### Create Admin
-
-```http
-  POST /admin/createAdmin
-```
-
-| Body|Type|Description                       |
-| ---|--|:-------------------------------- |
-| `Username - Password`|`String - String`| Adds a new admin to the system with the given username and password |
-
-
-
-#### Delete Admin
+#### Get the total sales report by a specific month
 
 ```http
-  DELETE /admin/DeleteAdmin/${Username}
+  GET /Admin/totalSalesReport/${chosenMonth}
 ```
 
 | Query|Type|Description                       |
 | ---|--|:-------------------------------- |
-| `Username `|`String `| Deletes the admin with the given username from the system |
-
-
-#### Get medicine by name 
-
-```http
-  POST /admin/getMedicine/${Name}
-```
-
-| Query|Type|Description                       |
-| ---|--|:-------------------------------- |
-| `Name `|`String `| Gets the medicine by the medicine name |
-
+| ` chosenMonth`|` String`| Fetches the sales report filtered by the month provided as a queryParam|
 
 
 ## Pharmacist
