@@ -4,15 +4,14 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import * as React from 'react';
 // StarIcon from '@mui/icons-material/StarBorder';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import Avatar from '@mui/material/Avatar';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Link from '@mui/material/Link';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Dropdown from 'react-bootstrap/Dropdown';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import { useNavigate } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
-import Avatar from '@mui/material/Avatar';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
@@ -86,9 +85,9 @@ export default function Pricing() {
               </Dropdown.Toggle>
 
               <Dropdown.Menu>
-                <Dropdown.Item href="#">Available Medicines</Dropdown.Item>
+                <Dropdown.Item href="/AvailableMeds">Available Medicines</Dropdown.Item>
                 <Dropdown.Divider />
-                <Dropdown.Item href="#">Add a new medicine</Dropdown.Item>
+                <Dropdown.Item href="/NewMed">Add a new medicine</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
 
