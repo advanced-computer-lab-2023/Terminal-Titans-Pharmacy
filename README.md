@@ -31,6 +31,16 @@ limit line length to the width of the screen to have better readability
 
 #### 5- File Organisation
 Organize files logically and group related functionalities together.
+
+# Screenshots
+
+#### To view the images of the system press [here](https://drive.google.com/drive/folders/1v_4ZHKCGxWNHmmG9vTANK-lVoi_IKDdN?usp=share_link)
+
+
+
+
+
+
 # Tech/Frameworks Used
 
 Our web application is built using the MERN stack, incorporating various technologies and frameworks to provide a powerful and modern development environment.
@@ -367,15 +377,238 @@ const SearchFilterComponent = ({ onSearchResult }) => {
 
 export default SearchFilterComponent;
 
-```# Installation
+```
+## Installation
+
+- [Install VS Code](https://code.visualstudio.com/download)
+- [Install Node](http://nodejs.org/)
+- [Install Git](https://git-scm.com/downloads)
+After downloading these two, open a terminal and do the following:
+```bash
+  npm install -g nodemon
+  npm install -g express
+  npm install -g mongoose
+```
+
+# API Reference
+
+ ### General
+
+#### Forgot password
+
+ ```http
+  POST /security/forgotPassword
+```
+
+|Body|Type|Description |
+|----------|--|:------------------------- |
+|`User Email`|`String`|resets the password |
+
+
+
+#### Change password
+
+ ```http
+  POST /security/changePassword
+```
+
+|Body|Type|Description |
+|---------|---|:------------------------- |
+|`Old Password - New Password`|`String - String`|Changes the password given that the old password macthes the password in the database (for extra security) with the new password |
+
+
+
+#### OTP sending via email 
+
+ ```http
+  POST /security/sendOTP
+```
+
+|Body|Description                |
+|------------|:------------------------- |
+| `User Email`|Sends an OTP to the user via email in case of forgotten password |
+
+
+#### OTP verification
+
+ ```http
+  POST /security/verifyOTP
+```
+
+|Body|Description                |
+|----|:------------------------- |
+| `User Email`|Verifies the OTP  |
+
+  ### Admin
+
+#### Gets all medicine
+
+```http
+  GET /Admin/getAllMedicine
+```
+
+| Description                       |
+|  :-------------------------------- |
+|  gets a list of all Medicines |
+
+#### Gets medicine by a specific name
+
+```http
+  GET /Admin/getMedicine/${Name}
+```
+
+| Query|Type|Description                       |
+| ---|--|:-------------------------------- |
+| ` Name`|` String`| Fetches the Medicine having the same Name as the queryParam provided|
+
+
+#### Gets all medical use
+
+```http
+  GET /Admin/getAllMedicalUses
+```
+
+| Description                       |
+|  :-------------------------------- |
+|  gets a list of all Medical Uses |
+
+#### Gets medicine by a specific medical use
+
+```http
+  GET /Admin/filterMedical/${MedicalUse)
+```
+
+| Query|Type|Description                       |
+| ---|--|:-------------------------------- |
+| ` MedicalUse`|` String`| Fetches a list of all medicine with a certain Medical Use Provided|
+
+#### Accept Pharmacist
+
+```http
+  POST /Admin/Acceptance/${username}
+```
+
+| Parameter | Type     | Description                |
+| :-------- | :------- | :------------------------- |
+| `Username` | `String` | **Required**. The username of the pharmacist |
+
+#### Reject Pharmacist
+
+```http
+  DELETE /Admin/Rejection/${username}
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `Username` | `String` | **Required**. The username of the pharmacist |
+
+#### Get all requested pharmacists
+
+```http
+  GET /Admin/viewReqPharm
+```
+
+| Description                       |
+|  :-------------------------------- |
+|  gets a list of all the requested pharmacists |
+
+#### Get the total sales report by a specific month
+
+```http
+  GET /Admin/totalSalesReport/${chosenMonth}
+```
+
+| Query|Type|Description                       |
+| ---|--|:-------------------------------- |
+| ` chosenMonth`|` String`| Fetches the sales report filtered by the month provided as a queryParam|
+
+
+## Pharmacist
+
+#### Add medicine
+
+```http
+  POST /Pharma/addMedicine
+```
+
+| Body      | Description                |
+| :--------------- | :------------------------- |
+| `Formdata`  |  Adds a new medicine based on the values in the formdata  
+
+Formdata contains medicine name , price , quantity , active ingrredient(s) , Medical use , (Over the counter or prescription based medicine) , medicine image
+
+
+
+#### View Total sales report
+
+```http
+  GET /Pharma/totalSalesReport
+```
+
+|   Description | 
+| :----- |
+| Gets the total sales report for the year 
+
+#### Filter sales report on month
+
+```http
+GET /Pharma/totalSalesReport/${date}
+```
+|Parameter | Description |
+| :----- | :---- |
+|date| Returns the total sales report for a specific month 
+
+
+
+## Patient
+
+####  Add a new address 
+
+```http
+POST /Patient/addAddress
+```
+|Body| Description|
+|:-----|:------|
+|Address| Allows the patient to add a new address where the medicines are to be delivered 
+
+#### Get all the unarchived medicines 
+
+```http
+GET /Patient/getAllMedicine2
+```
+|Description|
+|:-----|
+Gets all the unarchived medicines and displays them to the patient
+
+#### Find an alternative
+```http
+GET /Patient/findAlternatives/${inputValue}
+```
+
+|Parameter|Description|
+|:----|:-----|
+input value|Finds an alternative for the medicine 
+
+N.B: the input value is the medicine name 
+
+
+#### Delete cart item
+
+``` http
+POST /Patient/deleteCartItem/${item._id}
+````
+
+|Parameter|Description|
+|:----|:-----|
+item_id|Deletes an item from the cart based on the id of this item 
+
+
+## Test cases 
+#### to view test cases press [here](https://drive.google.com/drive/folders/1YnBdlzHtmMuBAtA8-NMeNZC3hgSjfdd8?usp=sharing)
+# How to use
 
 Follow these steps to set up and run the MERN stack application locally on your machine.
 
-## Prerequisites
-
-Make sure you have the following installed:
-
-- [Node.js](https://nodejs.org/) (v14 or later)
 
 ## Clone the Repository
 
@@ -433,163 +666,6 @@ npm install
 npm start
 
 ```
-
-
-# API Reference
-
- ### General
-
-#### Forgot password
-
- ```http
-  POST /security/forgotPassword
-```
-
-|Body|Type|Description |
-|----------|--|:------------------------- |
-|`User Email`|`String`|resets the password |
-
-
-
-#### Change password
-
- ```http
-  POST /security/changePassword
-```
-
-|Body|Type|Description |
-|---------|---|:------------------------- |
-|`Old Password - New Password`|`String - String`|Changes the password given that the old password macthes the password in the database (for extra security) with the new password |
-
-
-
-#### OTP sending via email 
-
- ```http
-  POST /security/sendOTP
-```
-
-|Body|Description                |
-|------------|:------------------------- |
-| `User Email`|Sends an OTP to the user via email in case of forgotten password |
-
-
-#### OTP verification
-
- ```http
-  POST /security/verifyOTP
-```
-
-|Body|Description                |
-|----|:------------------------- |
-| `User Email`|Verifies the OTP  |
-
-  ### Admin
-
-#### Accept Pharmacist
-
-```http
-  POST /admin/Acceptance/${username}
-```
-
-| Parameter | Type     | Description                |
-| :-------- | :------- | :------------------------- |
-| `Username` | `String` | **Required**. The username of the pharmacist |
-
-#### Reject Pharmacist
-
-```http
-  GET /admin/Rejection/${username}
-```
-
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `Username` | `String` | **Required**. The username of the pharmacist |
-
-#### Get all requested pharmacists
-
-```http
-  GET /admin/viewReqPharm
-```
-
-| Description                       |
-|  :-------------------------------- |
-|  gets a list of all the requested pharmacists |
-
-
-#### Create Admin
-
-```http
-  POST /admin/createAdmin
-```
-
-| Body|Type|Description                       |
-| ---|--|:-------------------------------- |
-| `Username - Password`|`String - String`| Adds a new admin to the system with the given username and password |
-
-
-
-#### Delete Admin
-
-```http
-  POST /admin/DeleteAdmin/${Username}
-```
-
-| Query|Type|Description                       |
-| ---|--|:-------------------------------- |
-| `Username `|`String `| Deletes the admin with the given username from the system |
-
-
-#### Get medicine by name 
-
-```http
-  POST /admin/getMedicine/${Name}
-```
-
-| Query|Type|Description                       |
-| ---|--|:-------------------------------- |
-| `Name `|`String `| Gets the medicine by the medicine name |
-
-
-
-## Pharmacist
-
-#### Add medicine
-
-```http
-  POST /Pharma/addMedicine
-```
-
-| Body      | Description                |
-| :--------------- | :------------------------- |
-| `Formdata`  |  Adds a new medicine based on the values in the formdata  
-
-Formdata contains medicine name , price , quantity , active ingrredient(s) , Medical use , (Over the counter or prescription based medicine) , medicine image
-
-
-
-#### View Total sales report
-
-```http
-  GET /Pharma/totalSalesReport
-```
-
-|   Description | 
-| :----- |
-| Gets the total sales report for the year 
-
-#### Filter sales report on month
-
-```http
-GET /Pharma/totalSalesReport/${date}
-```
-|Parameter | Description |
-| :----- | :---- |
-||
-
-
-
-## Patient
 
 # Contributing
 

@@ -46,11 +46,12 @@ const MongoURI = process.env.MONGO_URI;
 //App variables
 const app = express();
 const port = process.env.PORT || "7000";
-const http =require ('http');
+const http = require('http');
 const Admin = require('./Routes/Adminph.js');
 const Patient = require('./Routes/PatientController.js');
 const Pharmacist = require('./Routes/PharmacistController.js');
-const securityModule=require('./Routes/securityRoute.js')
+const securityModule = require('./Routes/securityRoute.js')
+const notificationModule = require('./Routes/notificationRoute.js')
 
 const ejs = require('ejs');
 // #Importing the userController
@@ -59,16 +60,16 @@ const ejs = require('ejs');
 // configurations
 // Mongo DB
 
-  
-  connectDB()
 
-  //App variables
- 
-  
-  const server = http.Server(app)
-  server.listen(port, "localhost", () => {
-    console.log("Server is running on port 7000");
-  });
+connectDB()
+
+//App variables
+
+
+const server = http.Server(app)
+server.listen(port, "localhost", () => {
+  console.log("Server is running on port 7000");
+});
 
 /*
                                                     Start of your code
@@ -95,11 +96,12 @@ app.get("", (req, res) => {
 const cors = require('cors');
 app.use(cors());
 app.use(express.json())
-app.use(express.urlencoded({extended: false}))
+app.use(express.urlencoded({ extended: false }))
 app.use('/Admin', Admin);
-app.use('/Patient',Patient);
+app.use('/Patient', Patient);
 app.use('/Pharma', Pharmacist);
-app.use('/security',securityModule)
+app.use('/security', securityModule)
+app.use('/notification', notificationModule);
 
 app.get('/Admin', (req, res) => {
   res.render('AdminPage.ejs')
