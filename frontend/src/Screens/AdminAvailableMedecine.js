@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
-import Meds from '../Components/Meds';
+import Meds from '../Components/MedsAdmin';
 import Nav from "../Components/Admin-NavBar"
 import "./Homescreen.css";
 import "../Styles/AdminScreen.css";
@@ -59,16 +59,18 @@ const Homescreen = () => {
 
       if (response.status === 200) {
         const result = response.data.Result;
-
+      //  setAllMedicines([response.data.Result]);
         if (result && result.Quantity > 0) {
           setAllMedicines([response.data.Result]);
-        } else if (result && result.Quantity === 0) {
-          setErrorMessage(`The medicine is out of stock. Here are some alternatives.`);
+        } else  {
+          setAllMedicines([]);
+        }
+        //   setErrorMessage(`The medicine is out of stock. Here are some alternatives.`);
 
-          // Set a timer to clear the error message after 2 minutes (adjust as needed)
-          setTimeout(() => {
-            setErrorMessage('');
-          }, 4000);
+        //   // Set a timer to clear the error message after 2 minutes (adjust as needed)
+        //   setTimeout(() => {
+        //     setErrorMessage('');
+        //   }, 4000);
 
         //   const alternativesResponse = await axios.get(`http://localhost:7000/Admin/findAlternatives/${inputValue}`, { headers: { Authorization: 'Bearer ' + sessionStorage.getItem("token") } });
 
@@ -77,7 +79,7 @@ const Homescreen = () => {
         //   } else {
         //     console.error('Failed to find alternatives. Unexpected response:', alternativesResponse);
         //   }
-        }
+     //   }
       } else {
         console.error('Failed to search medicines. Unexpected response:', response);
       }

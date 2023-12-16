@@ -27,7 +27,8 @@ export default function Pricing() {
   const navigate = useNavigate();
 
   function goToHome() {
-    window.location.href = `http://localhost:3000/Health-Plus/admin`
+    window.location.href = 'http://localhost:3000/Health-Plus/admin';
+
   }
 
   const signoutButtonFunc = () => {
@@ -62,8 +63,8 @@ export default function Pricing() {
              <ArrowBackIosIcon />
            
          </Button>
-          <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
-            Health Plus+
+         <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
+            <span className='homePage' onClick={goToHome}>Health Plus+</span>
           </Typography>
           <nav>
 

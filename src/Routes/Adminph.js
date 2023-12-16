@@ -117,11 +117,13 @@ const getMedicine = async (req, res) => {
     return res.status(400).send({ message: 'Please fill the input' });
   }
   try {
+
     // const Name = req.body;
     const Medicines = await MedicineModel.findOne({ Name });
-    if (!Medicines) {
-      return (res.status(400).send({ message: "No Medicine with this name" }));
-    }
+    
+    // if (!Medicines) {
+    //   return (res.status(400).send({ message: "No Medicine with this name" }));
+    // }
     res.status(200).json({ Result: Medicines, success: true });
   }
 
