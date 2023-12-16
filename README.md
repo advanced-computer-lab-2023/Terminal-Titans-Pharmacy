@@ -31,6 +31,16 @@ limit line length to the width of the screen to have better readability
 
 #### 5- File Organisation
 Organize files logically and group related functionalities together.
+
+# Screenshots
+
+#### To view the images of the system press 
+
+
+
+
+
+
 # Tech/Frameworks Used
 
 Our web application is built using the MERN stack, incorporating various technologies and frameworks to provide a powerful and modern development environment.
@@ -367,73 +377,18 @@ const SearchFilterComponent = ({ onSearchResult }) => {
 
 export default SearchFilterComponent;
 
-```# Installation
-
-Follow these steps to set up and run the MERN stack application locally on your machine.
-
-## Prerequisites
-
-Make sure you have the following installed:
-
-- [Node.js](https://nodejs.org/) (v14 or later)
-
-## Clone the Repository
-
-```bash
-git clone https://github.com/advanced-computer-lab-2023/Terminal-Titans-Pharmacy.git
-
-cd Terminal-Titans-Pharmacy
-
 ```
+## Installation
 
-## Backend Setup
-
-
-
+- [Install VS Code](https://code.visualstudio.com/download)
+- [Install Node](http://nodejs.org/)
+- [Install Git](https://git-scm.com/downloads)
+After downloading these two, open a terminal and do the following:
 ```bash
-# Navigate to the server directory
-
-cd src
-
-# Install server dependencies
-
-npm install
-
-# Create a .env file in the server directory and add the following:
-# PORT=7000
-# MONGO_URI='mongodb+srv://farahalfawzy:terminaltitans@mernapp.n3hzhmm.mongodb.net/?retryWrites=true&w=majority'
-#JWT_SECRET='abc123'
-#MAIL_USER='terminaltitansacl@gmail.com'
-#MAIL_PASS='hzbw etjg nozv yluu'
-
-# You can start the backend either by running it on Node using
-
-node App.js
-
-#Or on Nodemon using 
-
-npm run dev
-
+  npm install -g nodemon
+  npm install -g express
+  npm install -g mongoose
 ```
-
-
-## Frontend Setup
-
-
-
-```bash
-# Navigate to the Frontend directory
-
-cd frontend
-
-# Install frontend dependencies
-
-npm install
-
-npm start
-
-```
-
 
 # API Reference
 
@@ -532,7 +487,7 @@ npm start
 #### Delete Admin
 
 ```http
-  POST /admin/DeleteAdmin/${Username}
+  DELETE /admin/DeleteAdmin/${Username}
 ```
 
 | Query|Type|Description                       |
@@ -585,11 +540,116 @@ GET /Pharma/totalSalesReport/${date}
 ```
 |Parameter | Description |
 | :----- | :---- |
-||
+|date| Returns the total sales report for a specific month 
 
 
 
 ## Patient
+
+####  Add a new address 
+
+```http
+POST /Patient/addAddress
+```
+|Body| Description|
+|:-----|:------|
+|Address| Allows the patient to add a new address where the medicines are to be delivered 
+
+#### Get all the unarchived medicines 
+
+```http
+GET /Patient/getAllMedicine2
+```
+|Description|
+|:-----|
+Gets all the unarchived medicines and displays them to the patient
+
+#### Find an alternative
+```http
+GET /Patient/findAlternatives/${inputValue}
+```
+
+|Parameter|Description|
+|:----|:-----|
+input value|Finds an alternative for the medicine 
+
+N.B: the input value is the medicine name 
+
+
+#### Delete cart item
+
+``` http
+POST /Patient/deleteCartItem/${item._id}
+````
+
+|Parameter|Description|
+|:----|:-----|
+item_id|Deletes an item from the cart based on the id of this item 
+
+
+## Test cases 
+#### to view test cases press [here](https://drive.google.com/drive/folders/1YnBdlzHtmMuBAtA8-NMeNZC3hgSjfdd8?usp=sharing)
+# How to use
+
+Follow these steps to set up and run the MERN stack application locally on your machine.
+
+
+## Clone the Repository
+
+```bash
+git clone https://github.com/advanced-computer-lab-2023/Terminal-Titans-Pharmacy.git
+
+cd Terminal-Titans-Pharmacy
+
+```
+
+## Backend Setup
+
+
+
+```bash
+# Navigate to the server directory
+
+cd src
+
+# Install server dependencies
+
+npm install
+
+# Create a .env file in the server directory and add the following:
+# PORT=7000
+# MONGO_URI='mongodb+srv://farahalfawzy:terminaltitans@mernapp.n3hzhmm.mongodb.net/?retryWrites=true&w=majority'
+#JWT_SECRET='abc123'
+#MAIL_USER='terminaltitansacl@gmail.com'
+#MAIL_PASS='hzbw etjg nozv yluu'
+
+# You can start the backend either by running it on Node using
+
+node App.js
+
+#Or on Nodemon using 
+
+npm run dev
+
+```
+
+
+## Frontend Setup
+
+
+
+```bash
+# Navigate to the Frontend directory
+
+cd frontend
+
+# Install frontend dependencies
+
+npm install
+
+npm start
+
+```
 
 # Contributing
 
