@@ -725,7 +725,7 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
   }, []); // Runs once on mount
 
   return (
-    
+
     <Navbar key={'xl'} expand={'xl'} className="bg-body-tertiary mb-3">
       <MyVerticallyCenteredModal
         show={modalShow}
@@ -773,6 +773,7 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
             
           <Nav className="justify-content-end flex-grow-1 pe-3">
           <Nav.Link href="/wallet">
+
               <Button variant="light">
                 <PaidIcon />
                 Wallet
@@ -783,7 +784,6 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
                 Cart <Badge bg="secondary">{cartItemCount}</Badge>
               </Button>
             </Nav.Link>
-    
  
 
             <Nav.Link href="/patient">
@@ -809,7 +809,7 @@ const Navbar1 = ({ click, onSearch, onFilter }) => {
               <Button variant="danger" onClick={signoutButtonFunc}>Sign Out</Button>
             </Nav.Link> */}
 
-            <Nav.Link><Button variant="light" onClick={() => setModalShow(true)}>Change Password</Button></Nav.Link>
+            {/* <Nav.Link><Button variant="light" onClick={() => setModalShow(true)}>Change Password</Button></Nav.Link> */}
             
           </Nav>
         </Navbar.Offcanvas>

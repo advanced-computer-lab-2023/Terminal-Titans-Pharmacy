@@ -34,14 +34,7 @@
     margin-bottom: 20px;
   }
   
-  .btn {
-    background-color: #000000;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-  }
+
   
   .btn:hover {
     background-color: #535658;

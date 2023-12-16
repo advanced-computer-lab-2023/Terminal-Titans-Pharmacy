@@ -26,6 +26,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
+import Navbar from '../Components/Navbar';
 
 
 import { Method } from './paymentMethod';
@@ -71,7 +72,9 @@ function Checkout() {
     setActiveStep(activeStep + 1);
 
   };
-
+const goToHome = () => {
+    window.location.href = '/patient';
+  }
   const handleBack = () => {
     
     setActiveStep(activeStep - 1);
@@ -186,7 +189,7 @@ function Checkout() {
         }}
       >
        <Toolbar>
-           <Typography variant="h6" color="inherit" noWrap>
+           <Typography variant="h6" color="inherit" noWrap onClick={goToHome}>
             Terminal Pharmacy
           </Typography>
         </Toolbar>
