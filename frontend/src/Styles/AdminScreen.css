@@ -37,3 +37,6 @@ input{
     background: #8080805e!important;
 }
   
+.simplebar-placeholder{
+    height: 0px !important;
+}
