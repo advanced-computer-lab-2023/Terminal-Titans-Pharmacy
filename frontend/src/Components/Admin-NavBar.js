@@ -18,22 +18,20 @@ import "../Styles/AdminScreen.css";
 
 
 
-
 // TODO remove, this demo shouldn't need to reset the theme.
 // const defaultTheme = createTheme();
 
 export default function Pricing() {
   const [modalShow, setModalShow] = React.useState(false);
+  const location = useLocation();
   const navigate = useNavigate();
-
   function goToHome() {
-    window.location.href = 'http://localhost:3000/Health-Plus/admin';
-
+    window.location.href = `http://localhost:3000/Health-Plus/admin`
   }
 
   const signoutButtonFunc = () => {
     sessionStorage.removeItem('token');
-    window.location.href = 'http://localhost:3000/Health-Plus';;
+    window.location.href = '/Health-Plus';
   }
 
   return (
@@ -53,45 +51,39 @@ export default function Pricing() {
         sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}
       >
         <Toolbar sx={{ flexWrap: 'wrap' }}>
-        <Button
-           // hena link el chatting
-           style={{ color: 'black' }}
-           onClick={() => { navigate(-1) }}
-                      sx={{ my: 1, mx: 0 }}
-                      size="small"
-         >
-             <ArrowBackIosIcon />
-           
-         </Button>
-         <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
+          {location.pathname !== '/admin' ?
+            <Button
+              // hena link el chatting
+              style={{ color: 'black' }}
+              onClick={() => { navigate(-1) }}
+              sx={{ my: 1, mx: 0 }}
+              size="small"
+            >
+              <ArrowBackIosIcon />
+
+            </Button>
+
+            : null}
+          <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
             <span className='homePage' onClick={goToHome}>Health Plus+</span>
           </Typography>
           <nav>
 
-            <Link>
-              <Button
-                style={{ color: 'black' , backgroundColor: 'rgb(220, 220, 220)'}}
-                onClick={() => { goToHome() }}
-                sx={{ my: 1, mx: 1.5 }}
-                >
-                Home Page
-              </Button>
-            </Link>
+
             <Button
               variant="button"
-              style={{ color: 'black' , backgroundColor: 'rgb(220, 220, 220)'}}
-              color="text.primary"
+              style={{ color: 'black !important', backgroundColor: 'rgb(220, 220, 220)' }}
               onClick={() => { setModalShow(true) }}
               sx={{ my: 1, mx: 1.5 }}
             >
               Change Password
             </Button>
+            <Button style={{ backgroundColor: 'rgb(220, 220, 220)' }} onClick={signoutButtonFunc}>Sign Out</Button>
           </nav>
 
-          <Button style={{ backgroundColor: 'rgb(220, 220, 220)'}} onClick={signoutButtonFunc}>Sign Out</Button>
         </Toolbar>
       </AppBar>
-      </div>
+    </div >
     // </ThemeProvider>
   );
 }
@@ -117,7 +109,7 @@ function MyVerticallyCenteredModal(props) {
     // Create a JSON object with the username and password
     const data = { password, oldPassword };
 
-    fetch('http://localhost:7000/security/changePassword', {
+    fetch('http://localhost:8000/security/changePassword', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + sessionStorage.getItem("token") },
       body: JSON.stringify(data),
@@ -166,11 +158,11 @@ function MyVerticallyCenteredModal(props) {
           type="password"
           value={password}
           onChange={(e) => validatePass(e.target.value)}></input> <br />
-        {errorMessagePass && <p className={errorMessagePass !== 'Is Strong Password'?'error-msg':''}>{errorMessagePass}</p>}
+        {errorMessagePass && <p className={errorMessagePass !== 'Is Strong Password' ? 'error-msg' : ''}>{errorMessagePass}</p>}
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={props.onHide}>Close</Button>
-        <Button variant="success" className={errorMessagePass !== 'Is Strong Password'?'fail-button':'success-button'} onClick={changePassword} disabled={errorMessagePass !== 'Is Strong Password'} style={{}} >Update Password</Button>
+        <Button variant="success" className={errorMessagePass !== 'Is Strong Password' ? 'fail-button' : 'success-button'} onClick={changePassword} disabled={errorMessagePass !== 'Is Strong Password'} style={{}} >Update Password</Button>
       </Modal.Footer>
     </Modal>
   );
