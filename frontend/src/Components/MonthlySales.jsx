@@ -110,11 +110,19 @@ const getAllMeds= async () =>{
           console.log( jsonData)
 
           if (Array.isArray(jsonData.Result.medicinesSold)) {
-            setMeds(jsonData.Result.medicinesSold);
-            setTotal(jsonData.Result.totalSales);
-            console.log(meds);
-            setuniqueMedicineNames ( [...new Set(jsonData.Result.medicinesSold.map(med => med.medicineName))]);
-            console.log('Unique Medicine Names:', uniqueMedicineNames); 
+            var filteredMeds = jsonData.Result.medicinesSold.filter(med => med.medicineName === medName);
+            setMeds(filteredMeds);
+            console.log(filteredMeds)
+            
+            //jsonData.Result.medicinesSold is an array of elements with quantitySold and price i want total price
+            var total=0;
+            for(var i=0;i<filteredMeds.length;i++){
+              total+=filteredMeds[i].price*filteredMeds[i].quantitySold;
+            }
+            setTotal(total);
+            console.log(total);
+            // setuniqueMedicineNames ( [...new Set(jsonData.Result.medicinesSold.map(med => med.medicineName))]);
+            // console.log('Unique Medicine Names:', uniqueMedicineNames); 
 
           }          
           else {
@@ -157,9 +165,9 @@ const getAllMeds= async () =>{
     
 <div> 
 
-  <div style={{width:"50%" , margin:"auto"}}>
+  <div style={{width:"50%" , marginLeft:"25%"}}>
   <InputGroup className='mt-3 mb-3'>
-  <Form.Select aria-label="Month" size="lg" name='month' style={{width:"50%" , margin:"auto" }} onChange={handleChange} value={selectedMonth}>
+  <Form.Select aria-label="Month" size="lg" name='month' style={{width:"50%"  }} onChange={handleChange} value={selectedMonth}>
     <option value=''>Choose a month</option>
       <option value={1}>January</option>
           <option value={2}>February</option>
@@ -184,10 +192,10 @@ const getAllMeds= async () =>{
 
   </div>
 
-  <div style={{width:"50%",marginLeft:"450px"}} >
+  <div style={{width:"50%",marginLeft:"25%"}} >
 {date !== 0 && !noMedsSold &&(
  <InputGroup className='mt-3 mb-3'>
- <Form.Select aria-label="Name" size="lg" name='name' style={{width:"50%" , margin:"auto" }}  >
+ <Form.Select aria-label="Name" size="lg" name='name' style={{width:"50%" }}  >
    <option>Choose a medicine name</option>
 
 

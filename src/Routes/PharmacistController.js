@@ -805,6 +805,7 @@ router.get('/filterSalesReport/:medicineName/:chosenDate', protect, async (req, 
     if (medicineName) {
       // console.log(medicineName);
       const medicine = await MedicineModel.findOne({ Name: medicineName }).select("-Picture");
+      console.log(medicine)
       // console.log("MEDICINE"+ medicine)
       // console.log(medicine!==null||medicine!={});
       if (medicine!==null||medicine!={}) {
