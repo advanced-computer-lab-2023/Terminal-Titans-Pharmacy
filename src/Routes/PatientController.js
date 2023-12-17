@@ -1189,7 +1189,7 @@ async function alertPharmaicist(medicineName) {
       }
       const newNotification = new notificationModel({
         userId: allPharmacist[i]._id,
-        Message: `${medicineName} medicine is out of stock<p>`,
+        Message: `${medicineName} medicine is out of stock`,
         type: "out of stock",
         Category: "inbox",
 
