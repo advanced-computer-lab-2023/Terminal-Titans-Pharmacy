@@ -31,7 +31,7 @@ export default function Pricing() {
 
   const signoutButtonFunc = () => {
     sessionStorage.removeItem('token');
-    window.location.href = '/Health-Plus';
+    window.location.href = 'http://localhost:3000/Health-Plus';
   }
 
   return (

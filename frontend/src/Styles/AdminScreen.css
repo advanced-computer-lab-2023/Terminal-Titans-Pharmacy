@@ -47,3 +47,6 @@ input{
 .css-1e6y48t-MuiButtonBase-root-MuiButton-root{
     color: black !important;
 }
+.simplebar-placeholder{
+    height: 0px !important;
+}
