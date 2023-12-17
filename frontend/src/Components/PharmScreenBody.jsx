@@ -6,45 +6,45 @@ import 'typeface-roboto';
 import './PharmScreenBody.css'
 import { useParams } from 'react-router-dom';
 
-export default function Body(){
-  const font={
-    fontFamily:'roboto,sans-serif'
+export default function Body() {
+  const font = {
+    fontFamily: 'roboto,sans-serif'
   }
-  
+
   const params = new URLSearchParams(window.location.search);
 
-  const  id  = params.get('id');
+  const id = params.get('id');
   if (id)
-  sessionStorage.setItem("token", id);
+    sessionStorage.setItem("token", id);
 
-      return(
-        <div>
-          <div style={{
-             backgroundImage: `url(${require("../assets/Pharmacy-home.png")})`, // Replace 'your-image.jpg' with your actual image file path
-             backgroundSize: 'cover',
-             backgroundPosition: 'center',
-             backgroundRepeat: 'no-repeat',
-             minHeight: '90vh'
-          }}></div>
+  return (
+    <div>
+      <div style={{
+        backgroundImage: `url(${require("../assets/Pharmacy-home.png")})`, // Replace 'your-image.jpg' with your actual image file path
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        minHeight: '90vh'
+      }}></div>
 
-            <Container>
-            <Row style={{
-              zIndex:'1',
-              top:'30%',
-              left:'10%',
-              position:'absolute',
-              
-            }}>
-        <Col xs={4} md={6}
-         className='custom-font-size'>
-           Empowering pharmacists to be guardians of health, where expertise and compassion converge.
-        </Col>
-        <Col xs={6} md={4}>
-  
-        </Col>
-      </Row>
-            </Container>
-        </div>
-      )
+      <Container>
+        <Row style={{
+          zIndex: '1',
+          top: '30%',
+          left: '10%',
+          position: 'absolute',
 
-    }
+        }}>
+          <Col xs={4} md={6}
+            className='custom-font-size'>
+            Empowering pharmacists to be guardians of health, where expertise and compassion converge.
+          </Col>
+          <Col xs={6} md={4}>
+
+          </Col>
+        </Row>
+      </Container>
+    </div>
+  )
+
+}

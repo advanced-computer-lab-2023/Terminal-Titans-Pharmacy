@@ -103,7 +103,7 @@ export default function Pricing() {
           <nav>
             <Dropdown className="d-inline mx-2">
               <Dropdown.Toggle id="dropdown-autoclose-true">
-                Medicines
+                MEDICINES
               </Dropdown.Toggle>
 
               <Dropdown.Menu>
